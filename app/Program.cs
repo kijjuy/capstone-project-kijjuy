@@ -13,6 +13,8 @@ public class Program
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
 
+	builder.Logging.AddConsole();
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
