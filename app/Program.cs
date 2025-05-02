@@ -15,6 +15,15 @@ public class Program
 
 	builder.Logging.AddConsole();
 
+	//Setup kestral to host on port 8080
+	builder.WebHost.ConfigureKestrel((context, serverOptions) => {
+	    var kestralSection = context.Configuration.GetSection("Kestral");
+	    serverOptions.Configure(kestralSection)
+		.Endpoint("HTTP", listenOptions => {
+
+		});
+	});
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
