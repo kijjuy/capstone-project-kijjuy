@@ -39,7 +39,7 @@ public class Program
 
         app.UseAuthorization();
 
-        app.MapControllerRoute();
+        app.MapControllers();
 
         app.Run();
     }
