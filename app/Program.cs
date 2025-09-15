@@ -1,4 +1,3 @@
-
 namespace app;
 
 public class Program
@@ -13,16 +12,20 @@ public class Program
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
 
-	builder.Logging.AddConsole();
+        builder.Logging.AddConsole();
 
-	//Setup kestral to host on port 8080
-	builder.WebHost.ConfigureKestrel((context, serverOptions) => {
-	    var kestralSection = context.Configuration.GetSection("Kestral");
-	    serverOptions.Configure(kestralSection)
-		.Endpoint("HTTP", listenOptions => {
+        builder.Services.AddControllers();
 
-		});
-	});
+        //Setup kestral to host on port 8080
+        builder.WebHost.ConfigureKestrel((context, serverOptions) =>
+        {
+            var kestralSection = context.Configuration.GetSection("Kestral");
+            serverOptions.Configure(kestralSection)
+            .Endpoint("HTTP", listenOptions =>
+            {
+
+            });
+        });
 
         var app = builder.Build();
 
@@ -36,24 +39,7 @@ public class Program
 
         app.UseAuthorization();
 
-        var summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
-        app.MapGet("/weatherforecast", (HttpContext httpContext) =>
-        {
-            var forecast =  Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                {
-                    Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    TemperatureC = Random.Shared.Next(-20, 55),
-                    Summary = summaries[Random.Shared.Next(summaries.Length)]
-                })
-                .ToArray();
-            return forecast;
-        })
-        .WithName("GetWeatherForecast");
+        app.MapControllerRoute();
 
         app.Run();
     }
