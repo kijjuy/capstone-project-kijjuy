@@ -14,8 +14,8 @@ public class ProductsController : ControllerBase
     [HttpGet("hello")]
     public IActionResult HelloWorld()
     {
-        _logger.LogInformation("Hit Hello World method");
-        return Ok("Hello");
+        _logger.LogDebug("Hit Hello World method");
+        return Ok("Hello\n");
     }
 }
 
