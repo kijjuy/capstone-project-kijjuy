@@ -45,12 +45,23 @@ CREATE TABLE users (
 
 DROP TABLE IF EXISTS orders;
 CREATE TABLE orders (
-    
+    order_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    user_id INTEGER FOREIGN KEY REFERENCES "users" (user_id) NOT NULL,
+    subtotal_paid NUMERIC(7,2) NOT NULL,
+    tax_paid NUMERIC(6,2) NOT NULL,
+    shipping_paid NUMERIC(5,2) NOT NULL,
+    total_paid NUMERIC (7,2) NOT NULL,
+    shipping_address NVARCHAR(100) NOT NULL,
+    shipping_name NVARCHAR(100) NOT NULL,
+    cc_last_4 CHAR(4) NOT NULL,
+    order_date DATE NOT NULL
 );
 
 DROP TABLE IF EXISTS order_products;
 CREATE TABLE order_products (
-    
+    order_product_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    product_id INTEGER FOREIGN KEY REFERENCES "products" (product_id) NOT NULL,
+    order_id INTEGER FOREIGN KEY REFERENCES "orders" (order_id) NOT NULL,
 );
 
 
