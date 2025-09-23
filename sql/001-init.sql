@@ -19,15 +19,17 @@ CREATE TABLE products (
     update_date DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     is_available INTEGER NOT NULL,
 
-    FOREIGN KEY (category_id) REFERENCES "categories" (category_id)
+    FOREIGN KEY (category_id) REFERENCES categories(category_id)
 );
 
 DROP TABLE IF EXISTS images;
 
 CREATE TABLE images (
     image_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    product_id INTEGER FOREIGN KEY REFERENCES "products" (product_id),
-    file_path NVARCHAR(100) NOT NULL
+    product_id INTEGER NOT NULL,
+    file_path NVARCHAR(100) NOT NULL,
+
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 
 DROP TABLE IF EXISTS users;
@@ -40,13 +42,13 @@ CREATE TABLE users (
     phone CHAR(10),
     address NVARCHAR(100),
     creation_date DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    update_date DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_date DATE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 DROP TABLE IF EXISTS orders;
 CREATE TABLE orders (
     order_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    user_id INTEGER FOREIGN KEY REFERENCES "users" (user_id) NOT NULL,
+    user_id INTEGER NOT NULL,
     subtotal_paid NUMERIC(7,2) NOT NULL,
     tax_paid NUMERIC(6,2) NOT NULL,
     shipping_paid NUMERIC(5,2) NOT NULL,
@@ -54,21 +56,26 @@ CREATE TABLE orders (
     shipping_address NVARCHAR(100) NOT NULL,
     shipping_name NVARCHAR(100) NOT NULL,
     cc_last_4 CHAR(4) NOT NULL,
-    order_date DATE NOT NULL
+    order_date DATE NOT NULL,
+
+    FOREIGN KEY(user_id) REFERENCES users(user_id)
 );
 
 DROP TABLE IF EXISTS order_products;
 CREATE TABLE order_products (
     order_product_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    product_id INTEGER FOREIGN KEY REFERENCES "products" (product_id) NOT NULL,
-    order_id INTEGER FOREIGN KEY REFERENCES "orders" (order_id) NOT NULL,
+    product_id INTEGER NOT NULL,
+    order_id INTEGER NOT NULL,
+
+    FOREIGN KEY(product_id) REFERENCES products(product_id),
+    FOREIGN KEY(order_id) REFERENCES orders(order_id)
 );
 
 
 -- Not working currently
-DROP TIGGER IF EXISTS auto_update_date
+DROP TRIGGER IF EXISTS auto_update_date_products;
 
-CREATE TRIGGER auto_update_date
+CREATE TRIGGER auto_update_date_products
 AFTER UPDATE
 on products
 FOR EACH ROW
