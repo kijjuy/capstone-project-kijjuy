@@ -6,7 +6,7 @@ namespace app.Repositories;
 
 public interface IProductsRepository
 {
-    public List<Product> GetAllProducts();
+    public List<ProductDataModel> GetAllProducts();
 }
 
 public class ProductsRepository : IProductsRepository
@@ -22,10 +22,10 @@ public class ProductsRepository : IProductsRepository
         _connString = options.Value.ConnectionString;
     }
 
-    public List<Product> GetAllProducts()
+    public List<ProductDataModel> GetAllProducts()
     {
         _logger.LogDebug("Hit GetAllProducts");
-        List<Product> products = new List<Product>();
+        List<ProductDataModel> products = new List<ProductDataModel>();
 
         using (SqliteConnection db = new SqliteConnection(_connString))
         {
@@ -36,13 +36,16 @@ public class ProductsRepository : IProductsRepository
             using var reader = query.ExecuteReader();
             _logger.LogDebug("reader created");
 
+
             while (reader.Read())
             {
-                ReaderMapper.MapDataToModel<Product>(reader);
+                var product = ReaderMapper.MapDataToModel<ProductDataModel>(reader);
+		products.Add(product);
                 _logger.LogDebug("Reading data...");
             }
         }
+	_logger.LogDebug($"size of products: {products.Count}");
         _logger.LogDebug("Exiting GetAllProducts");
-        throw new NotImplementedException();
+	return products;
     }
 }
