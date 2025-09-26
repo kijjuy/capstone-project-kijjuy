@@ -1,18 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
 using app.Repositories;
+using app.Services;
 
 namespace app.Controllers;
 
 public class ProductsController : ControllerBase
 {
     private readonly ILogger<ProductsController> _logger;
-    private readonly IProductsRepository _products;
+    private readonly IProductsService _productsService;
 
     public ProductsController(ILogger<ProductsController> logger,
-        IProductsRepository productsRepository)
+       IProductsService productsService)
     {
         _logger = logger;
-        _products = productsRepository;
+        _productsService = productsService;
     }
 
     [HttpGet("hello")]
@@ -26,14 +27,15 @@ public class ProductsController : ControllerBase
     public IActionResult GetAllProducts()
     {
         _logger.LogDebug("Hit GetAllProducts method.");
-        var products = _products.GetAllProducts();
+        var products = _productsService.GetAllProducts();
         _logger.LogDebug($"size of products: {products.Count}");
         foreach (var product in products)
         {
             var props = product.GetType().GetProperties();
             foreach (var prop in props)
             {
-		var val = prop.GetValue()
+                var val = prop.GetValue(product);
+                _logger.LogDebug($"product info: {val}");
             }
         }
         return Ok("Product go here\n");
