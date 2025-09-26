@@ -1,4 +1,5 @@
 using app.Repositories;
+using app.Services;
 
 namespace app;
 
@@ -43,6 +44,7 @@ public class Program
         });
 
         builder.Services.AddScoped<IProductsRepository, ProductsRepository>();
+        builder.Services.AddScoped<IProductsService, ProductsService>();
 
         var app = builder.Build();
 
