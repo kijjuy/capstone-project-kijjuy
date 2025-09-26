@@ -14,12 +14,15 @@ public class ProductsRepository : IProductsRepository
 
     private readonly ILogger<ProductsRepository> _logger;
     private readonly String _connString;
+    private readonly ReaderMapper _readerMapper;
 
     public ProductsRepository(ILogger<ProductsRepository> logger,
-       IOptions<RepositoryOptions> options)
+       IOptions<RepositoryOptions> options,
+       ReaderMapper readerMapper)
     {
         _logger = logger;
         _connString = options.Value.ConnectionString;
+        _readerMapper = readerMapper;
     }
 
     public List<ProductDataModel> GetAllProducts()
@@ -39,13 +42,22 @@ public class ProductsRepository : IProductsRepository
 
             while (reader.Read())
             {
-                var product = ReaderMapper.MapDataToModel<ProductDataModel>(reader);
-		products.Add(product);
+                Dictionary<String, object> rowDict = new Dictionary<string, object>();
+
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    String name = reader.GetName(i);
+                    var val = reader.GetValue(i);
+                    rowDict[name] = val;
+                }
+                _logger.LogDebug($"FieldCount: {reader.FieldCount}");
+                var product = _readerMapper.MapDataToModel<ProductDataModel>(rowDict);
+                products.Add(product);
                 _logger.LogDebug("Reading data...");
             }
         }
-	_logger.LogDebug($"size of products: {products.Count}");
+        _logger.LogDebug($"size of products: {products.Count}");
         _logger.LogDebug("Exiting GetAllProducts");
-	return products;
+        return products;
     }
 }
