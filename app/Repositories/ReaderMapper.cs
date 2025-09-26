@@ -48,7 +48,7 @@ public class ReaderMapper
                 }
                 catch (FormatException fe)
                 {
-                    //TODO: inject logger here and log warning
+                    _logger.LogWarning($"Empty/Invalid date in products. Err={fe.Message}");
                     continue;
                 }
                 continue;
