@@ -4,3 +4,4 @@
 ### Current issues: 
 
 - SQL update trigger not working, updates all rows
+- currency value are being read into model as double. May cause rounding errors. May switch to storing currency as either int and dividing by 100, or string and parsing as decimal.
