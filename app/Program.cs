@@ -1,3 +1,5 @@
+using app.Repositories;
+
 namespace app;
 
 public class Program
@@ -26,6 +28,19 @@ public class Program
 
             });
         });
+
+        String? conString = builder.Configuration.GetConnectionString("DefaultConnection");
+        if (conString == null)
+        {
+            throw new ArgumentNullException("Connection string was null.");
+        }
+
+        builder.Services.Configure<RepositoryOptions>(options =>
+        {
+            options.ConnectionString = conString;
+        });
+
+        builder.Services.AddScoped<IProductsRepository, ProductsRepository>();
 
         var app = builder.Build();
 
