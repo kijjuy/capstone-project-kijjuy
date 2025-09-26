@@ -29,6 +29,8 @@ public class Program
             });
         });
 
+        builder.Services.AddSingleton<ReaderMapper>();
+
         String? conString = builder.Configuration.GetConnectionString("DefaultConnection");
         if (conString == null)
         {
