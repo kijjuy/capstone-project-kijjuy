@@ -6,39 +6,58 @@ using System.Reflection;
 namespace app.Repositories;
 
 /***
- * Helper class that maps data from SqlDataReader to models
- * using reflection.
+ * Helper class that maps data from dictionary of
+ * sql row column:value to model using reflection.
  */
-public static class ReaderMapper
+public class ReaderMapper
 {
-    public static T MapDataToModel<T>(SqliteDataReader reader) where T: new()
+
+    private readonly ILogger<ReaderMapper> _logger;
+
+    public ReaderMapper(ILogger<ReaderMapper> logger)
     {
-	var type = typeof(T);
-	var props = type.GetProperties();
-	var obj = new T();
+        _logger = logger;
+    }
 
-	foreach (var prop in props) 
-	{
-	    var colAttr = prop.GetCustomAttribute<ColumnAttribute>();
+    /**
+     *
+     */
+    public T MapDataToModel<T>(Dictionary<String, object> rowDict) where T : new()
+    {
+        var type = typeof(T);
+        var props = type.GetProperties();
+        var obj = new T();
 
-	    int loc = reader.GetOrdinal(colAttr.Name);
-	    var val = reader.GetValue(loc);
+        foreach (var prop in props)
+        {
+            var colAttr = prop.GetCustomAttribute<ColumnAttribute>();
 
-	    Console.WriteLine($"setting value of {colAttr.Name} to {val}.");
-	    Console.WriteLine($"type of current prop: {prop.PropertyType}");
+            var val = rowDict[colAttr.Name];
 
-	    if(prop.PropertyType.Equals(typeof(DateTime))) 
-	    {
-		Console.WriteLine($"parsing DateTime value...");
-		DateTime dateTimeVal = DateTime.Parse((String)val);
-		prop.SetValue(obj, dateTimeVal);
-		continue;
-	    }
+            _logger.LogDebug($"setting value of {colAttr.Name} to {val}.");
+            _logger.LogDebug($"type of current prop: {prop.PropertyType}");
 
-	    prop.SetValue(obj, val);
+            //Have to parse date string to get DateTime Value
+            if (prop.PropertyType.Equals(typeof(DateTime)))
+            {
+                _logger.LogDebug($"parsing date value...");
+                try
+                {
+                    DateTime dateTimeVal = DateTime.Parse((String)val);
+                    prop.SetValue(obj, dateTimeVal);
+                }
+                catch (FormatException fe)
+                {
+                    //TODO: inject logger here and log warning
+                    continue;
+                }
+                continue;
+            }
 
-	}
+            prop.SetValue(obj, val);
 
-	return obj;
+        }
+
+        return obj;
     }
 }
