@@ -1,6 +1,4 @@
-using app.Models;
 using app.Repositories;
-using System.Reflection;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.Extensions.Logging;
 
@@ -9,6 +7,7 @@ namespace tests;
 public class RepositoryTests
 {
     private readonly ReaderMapper _mapper;
+    private const String constDateTimeStr = "2025-10-10T10:12:45.0000000";
 
     public RepositoryTests() 
     {
@@ -19,17 +18,7 @@ public class RepositoryTests
 	_mapper = new ReaderMapper(logger);
     }
 
-
-    //TODO: THings to test:
-    //Model with one prop, with column, should map one prop
-    //Model with one prop, without column, should not map, maybe error (or warning log)?
-    //Model with 0 props (should throw some error?)
-    //Model with multiple props, all with column, should map all
-    //Model with multiple props, some with column (should be valid, no exception/error)
-    //Model with multiple props, no column (should still be valid, maybe log warning?)
-    //Model with columns, but some data doesn't fill those columns (maybe throw exception... not sure yet)
-
-    // Test Models
+    #region test models
 
     //Should map single prop
     public class ModelWithSinglePropHasColumn {
@@ -81,30 +70,112 @@ public class RepositoryTests
 	public float floatProp { get; set; }
     }
 
-    //TODO: THings to test:
-    //Model with one prop, with column, should map one prop
-    //Model with one prop, without column, should not map, maybe error (or warning log)?
-    //Model with 0 props (should throw some error?)
-    //Model with multiple props, all with column, should map all
-    //Model with multiple props, some with column (should be valid, no exception/error)
-    //Model with multiple props, no column (should still be valid, maybe log warning?)
-    //Model with x amount of column attr, data with y amount of fields, x>y all cols map, should map all
+    #endregion test models
 
-
-
+    #region mapper tests
 
     // Mapper tests
 
 
-
+    //Model with 0 props (should throw some error?)
     [Fact]
-    public void MoreColumnsThanDataMapsAllColums() {
+    public void ModelWithNoPropsThrowsError() {
 	//arrange
-	var curDateTime = DateTime.Now;
+	var dataDict = new Dictionary<String, object>();
+
+	//act
+	//assert
+	Assert.Throws<ArgumentException>(() => {
+	    _mapper.MapDataToModel<ModelWithNoProps>(dataDict);
+		});
+    }
+
+    //Model with multiple props, all with column, should map all
+    [Fact]
+    public void MultiplePropsAllHasColumnAllMaps() {
+	//arrange
 	var model = new ModelWithMultiplePropsAllHasColumn {
 	    strProp = "strProp",
 	    intProp = 1,
-	    dateTimeProp = curDateTime,
+	    dateTimeProp = DateTime.Parse(constDateTimeStr),
+	    boolProp = false,
+	    floatProp = 3.14f,
+	};
+
+	var dataDict = new Dictionary<String, object>();
+	dataDict["strProp"] = model.strProp;
+	dataDict["intProp"] = model.intProp;
+	dataDict["dateTimeProp"] = constDateTimeStr;
+	dataDict["boolProp"] = model.boolProp;
+	dataDict["floatProp"] = model.floatProp;
+
+	//act
+	var mappedModel = _mapper.MapDataToModel<ModelWithMultiplePropsAllHasColumn>(dataDict);
+
+	//assert
+	Assert.Equal(mappedModel.strProp, model.strProp);
+	Assert.Equal(mappedModel.intProp, model.intProp);
+	Assert.Equal(mappedModel.dateTimeProp, model.dateTimeProp);
+	Assert.Equal(mappedModel.boolProp, model.boolProp);
+	Assert.Equal(mappedModel.floatProp, model.floatProp);
+    }
+
+    //Model with multiple props, some with column (should be valid, no exception/error)
+    [Fact]
+    public void MultiplePropsSomeHasColumnMapsSome() {
+	//arrange
+	var model = new ModelWithMultiplePropsSomeHasColumn {
+	    strProp = "strProp",
+	    intProp = 1,
+	    dateTimeProp = DateTime.Parse(constDateTimeStr),
+	    boolProp = false,
+	    floatProp = 3.14f,
+	};
+
+	var dataDict = new Dictionary<String, object>();
+	dataDict["intProp"] = model.intProp;
+	dataDict["boolProp"] = model.boolProp;
+
+	//act
+	Console.WriteLine("starting mapping of ModelWithMultiplePropsSomeHasColumn");
+	var mappedModel = _mapper.MapDataToModel<ModelWithMultiplePropsSomeHasColumn>(dataDict);
+	Console.WriteLine("finished mapping of ModelWithMultiplePropsSomeHasColumn");
+
+	//assert
+	Assert.Equal(mappedModel.strProp, null);
+	Assert.Equal(mappedModel.intProp, model.intProp);
+	Assert.Equal(mappedModel.dateTimeProp, new DateTime());
+	Assert.Equal(mappedModel.boolProp, model.boolProp);
+	Assert.Equal(mappedModel.floatProp, 0f);
+    }
+
+    //Model with multiple props, no column (should still be valid, maybe log warning?)
+    [Fact]
+    public void MultiplePropsNoneHasColumnMapsNothing() {
+	//arrange
+
+	var dataDict = new Dictionary<String, object>();
+
+	//act
+	var mappedModel = _mapper.MapDataToModel<ModelWithMultiplePropsNoColumn>(dataDict);
+	
+	//assert
+	Assert.Equal(mappedModel.strProp, null);
+	Assert.Equal(mappedModel.intProp, 0);
+	Assert.Equal(mappedModel.dateTimeProp, new DateTime());
+	Assert.Equal(mappedModel.boolProp, false);
+	Assert.Equal(mappedModel.floatProp, 0f);
+
+    }
+
+    //Model with x amount of column attr, data with y amount of fields, x>y all cols map, should map all
+    [Fact]
+    public void MoreColumnsThanDataMapsAllColums() {
+	//arrange
+	var model = new ModelWithMultiplePropsAllHasColumn {
+	    strProp = "strProp",
+	    intProp = 1,
+	    dateTimeProp = DateTime.Parse(constDateTimeStr),
 	    boolProp = false,
 	    floatProp = 3.14f,
 	};
@@ -112,7 +183,7 @@ public class RepositoryTests
 	var dataDict = new Dictionary<String, object>();
 	dataDict["strProp"] = model.strProp.Clone();
 	dataDict["intProp"] = 1;
-	dataDict["dateTimeProp"] = curDateTime.ToString();
+	dataDict["dateTimeProp"] = constDateTimeStr;
 
 
 	//act
@@ -122,8 +193,6 @@ public class RepositoryTests
 	Assert.Equal(model.strProp, mappedModel.strProp);
 	Assert.Equal(model.intProp, mappedModel.intProp);
 	Assert.Equal(model.dateTimeProp, mappedModel.dateTimeProp);
-	//TODO: refactor ReaderMapper to iterate through dict keys rather than props, this
-	//ensures all sql data is mapped, or an exception is thrown.
     }
 
 
@@ -131,11 +200,10 @@ public class RepositoryTests
     [Fact]
     public void MoreDataThanColumnsThrowsException() {
 	//arrange
-	var curDateTime = DateTime.Now;
 	var model = new ModelWithMultiplePropsAllHasColumn {
 	    strProp = "strProp",
 	    intProp = 1,
-	    dateTimeProp = curDateTime,
+	    dateTimeProp = DateTime.Parse(constDateTimeStr),
 	    boolProp = false,
 	    floatProp = 3.14f,
 	};
@@ -143,7 +211,7 @@ public class RepositoryTests
 	var dataDict = new Dictionary<String, object>();
 	dataDict["strProp"] = model.strProp.Clone();
 	dataDict["intProp"] = 1;
-	dataDict["dateTimeProp"] = curDateTime.ToString();
+	dataDict["dateTimeProp"] = constDateTimeStr;
 	dataDict["boolProp"] = false;
 	dataDict["floatProp"] = model.floatProp;
 	dataDict["extraProp"] = 1;
@@ -164,10 +232,11 @@ public class RepositoryTests
     [Fact]
     public void NotAllDataMapsToColumnsThrowsException() {
 	//arrange
+	
 	var model = new ModelWithMultiplePropsAllHasColumn {
 	    strProp = "strProp",
 	    intProp = 1,
-	    dateTimeProp = DateTime.Now,
+	    dateTimeProp = DateTime.Parse(constDateTimeStr),
 	    boolProp = false,
 	    floatProp = 3.14f,
 	};
@@ -175,99 +244,18 @@ public class RepositoryTests
 	var dataDict = new Dictionary<String, object>();
 	dataDict["strProp"] = model.strProp.Clone();
 	dataDict["unmatchedProp1"] = 1;
-	dataDict["dateTimeProp"] = model.dateTimeProp.ToString();
+	dataDict["dateTimeProp"] = constDateTimeStr;
 	dataDict["unmatchedProp2"] = false;
 	dataDict["floatProp"] = model.floatProp;
 
 	//act
 	//assert
-	Assert.Throws<KeyNotFoundException>(() => {
+	Assert.Throws<ArgumentException>(() => {
 	    var mappedModel = _mapper.MapDataToModel<ModelWithMultiplePropsAllHasColumn>(dataDict);
 	});
 	
 
     }
-
-    //OLD TESTS, Deprecated
-    //[Fact]
-    //public void TestReaderMapper()
-    //{
-    //    //Arrange
-    //    int amountOfTestProducts = 10;
-    //    var sqlData = genBaseProductSqlData(amountOfTestProducts);
-
-    //    //Act
-    //    var models = new List<ProductDataModel>();
-    //    for(int i = 0; i < amountOfTestProducts; i ++) {
-    //        var prodDataModel = _mapper.MapDataToModel<ProductDataModel>(sqlData[i]);
-    //        models.Add(prodDataModel);
-    //    }
-
-    //    //Assert
-    //    for(int i = 0; i < amountOfTestProducts; i++){
-    //            testDictSameAsProduct(sqlData[i], models[i]);
-    //    }
-    //}
-
-
-    //[Fact]
-    //public void TestReaderMapperMissingData()
-    //{
-    //    //Arrange
-    //    var sqlDict = new Dictionary<String, object>();
-    //    sqlDict["product_id"] = (long)1;
-    //    sqlDict["category_id"] = (long)0;
-    //    sqlDict["name"] = "";
-    //    sqlDict["price"] = (double)0;
-    //    sqlDict["description"] = "";
-    //    sqlDict["creation_date"] = "";
-    //    sqlDict["update_date"] = "";
-    //    sqlDict["is_available"] = (long)0;
-
-    //    //Act
-    //    var prodDataModel = _mapper.MapDataToModel<ProductDataModel>(sqlDict);
-
-    //    //Assert
-    //    testDictSameAsProduct(sqlDict, prodDataModel);
-    //}
-
-
-    private List<Dictionary<String, object>> genBaseProductSqlData(int numToGen)
-    {
-        List<Dictionary<String, object>> sqlDataProducts = new List<Dictionary<String, object>>();
-        var props = typeof(Product).GetProperties();
-        for (int i = 0; i < numToGen; i++)
-        {
-            var newDict = new Dictionary<String, object>();
-            newDict["product_id"] = (long)i;
-            newDict["category_id"] = (long)i % 3;
-            newDict["name"] = $"Product{i}";
-            newDict["price"] = 100.00 + i;
-            newDict["description"] = $"description for Product{i}";
-            newDict["creation_date"] = DateTime.Now.ToString();
-            newDict["update_date"] = DateTime.Now.ToString();
-            newDict["is_available"] = (long)1%2;
-	    sqlDataProducts.Add(newDict);
-        }
-	return sqlDataProducts;
-    }
-
-    private void testDictSameAsProduct(Dictionary<String, object> dict, ProductDataModel prod)  
-    {
-	foreach(var prop in typeof(ProductDataModel).GetProperties())
-	{
-	    var colName = prop.GetCustomAttribute<ColumnAttribute>();
-	    var propVal = prop.GetValue(prod);
-	    var dictVal = dict[colName.Name];
-	    if (prop.PropertyType.Equals(typeof(DateTime))) {
-		//ugly, had to do this to get empty sql string to match new DateTime
-		if(dictVal.Equals(String.Empty)) {
-		    dictVal = new DateTime().ToString();
-		}
-		dictVal = DateTime.Parse((String)dictVal);
-	    }
-	    Assert.Equal(prop.GetValue(prod), dictVal);
-	}
-    }
+    #endregion mapper tests
 }
 
