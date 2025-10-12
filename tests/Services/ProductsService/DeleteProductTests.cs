@@ -18,12 +18,6 @@ public class DeleteProductTests
         _serviceLogger = loggerFactory.CreateLogger<ProductsService>();
     }
 
-    //To test: 
-    //Delete with valid id and product exists returns 1
-    //Delete with valid id and products doesn't exist (return 0 from repo) throws BadSqlDataException
-    //Delete with invalid id (0) throws ArgumentException
-
-
     #region DeleteProduct
 
     /**
