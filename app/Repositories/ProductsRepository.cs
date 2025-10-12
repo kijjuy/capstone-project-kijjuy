@@ -7,6 +7,7 @@ namespace app.Repositories;
 public interface IProductsRepository
 {
     public List<ProductDataModel> GetAllProducts();
+    public int DeleteProduct(int productId);
 }
 
 public class ProductsRepository : IProductsRepository
@@ -60,4 +61,23 @@ public class ProductsRepository : IProductsRepository
         _logger.LogDebug("Exiting GetAllProducts");
         return products;
     }
+
+    /**
+     * <summary>
+     * Deletes a product from the database and returns the amount of rows affected.
+     * </summary>
+     */
+    public int DeleteProduct(int productId)
+    {
+        using SqliteConnection db = new SqliteConnection(_connString);
+        SqliteCommand query = new SqliteCommand("DELETE FROM products WHERE product_id = @productId", db);
+        query.Parameters["productId"].Value = productId;
+
+        int result = query.ExecuteNonQuery();
+        _logger.LogDebug($"Delete affected {result} rows.");
+
+        return result;
+
+    }
+
 }
