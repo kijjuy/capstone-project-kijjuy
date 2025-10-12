@@ -64,6 +64,26 @@ public class DeleteProductTests
         Assert.Throws<ArgumentException>(() => service.DeleteProduct(0));
     }
 
+    /**
+     * <summary>
+     * Tests that if the repo returns 0 then a BadSqlResultException is thrown.
+     * </summary>
+     */
+    [Fact]
+    public void NoRowsDeletedThrowsBadSqlDataException()
+    {
+        //arrange
+        var mockRepo = new Mock<IProductsRepository>();
+        mockRepo.Setup(repo => repo.DeleteProduct(1))
+            .Returns(0);
+
+        var service = new ProductsService(_serviceLogger, mockRepo.Object);
+
+        //act
+        //assert
+        Assert.Throws<BadSqlResultException>(() => service.DeleteProduct(1));
+    }
+
     #endregion
 
 }
