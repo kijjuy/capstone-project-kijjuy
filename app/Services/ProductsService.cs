@@ -62,10 +62,10 @@ public class ProductsService : IProductsService
 
     public int CreateProduct(CreateProductModel product)
     {
-        if (product.Name == null ||
+        if (product.Name == null || product.Name.Equals(String.Empty) ||
             product.Price == 0 ||
             product.CategoryId == 0 ||
-            product.Description == null)
+            product.Description == null || product.Description.Equals(String.Empty))
         {
             _logger.LogWarning($"Attempted to create product with null values.");
             throw new ArgumentException("Cannot create product with null values.");
