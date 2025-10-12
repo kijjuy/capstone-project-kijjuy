@@ -27,15 +27,25 @@ public class ProductsRepository : IProductsRepository
         _readerMapper = readerMapper;
     }
 
+    /**
+     * <summary>
+     * Fetches a list of all products from the database and maps them
+     * into ProductDataModels.
+     * </summary>
+     */
     public List<ProductDataModel> GetAllProducts()
     {
         _logger.LogDebug("Hit GetAllProducts");
         List<ProductDataModel> products = new List<ProductDataModel>();
 
-        using (SqliteConnection db = new SqliteConnection(_connString))
+        using SqliteConnection db = new SqliteConnection(_connString);
+
+
+        SqliteCommand query = new SqliteCommand("SELECT * FROM products;", db);
+        _logger.LogDebug("Selected data");
+
+        try
         {
-            SqliteCommand query = new SqliteCommand("SELECT * FROM products;", db);
-            _logger.LogDebug("Selected data");
             query.Connection.Open();
             query.ExecuteNonQuery();
             using var reader = query.ExecuteReader();
@@ -58,6 +68,11 @@ public class ProductsRepository : IProductsRepository
                 _logger.LogDebug("Reading data...");
             }
         }
+        catch (NullReferenceException nle)
+        {
+            _logger.LogError("Database connection null when trying to get products");
+        }
+
         _logger.LogDebug($"size of products: {products.Count}");
         _logger.LogDebug("Exiting GetAllProducts");
         return products;
