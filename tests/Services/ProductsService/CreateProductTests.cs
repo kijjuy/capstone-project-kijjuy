@@ -1,6 +1,5 @@
 using app.Services;
 using app.Repositories;
-using app.Models;
 using Microsoft.Extensions.Logging;
 using Moq;
 
