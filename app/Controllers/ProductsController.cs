@@ -40,5 +40,17 @@ public class ProductsController : ControllerBase
 	return NoContent();
     }
 
+    //TODO: currently not binding to model
+    [HttpPost("products")]
+    public IActionResult CreateProduct([FromForm]CreateProductModel newProduct) {
+	_logger.LogDebug("hit create product endpoint");
+	try {
+	    int newId = _productsService.CreateProduct(newProduct);
+	    return CreatedAtRoute("/products/" + newId, new {id = newId});
+	} catch(ArgumentException e) {
+	    _logger.LogWarning($"Attempted to create product with empty values.");
+	    return BadRequest(new { message = "Must provide valid inputs for name, categoryId, price, and description." });
+	}
+    }
 }
 
