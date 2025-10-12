@@ -1,5 +1,4 @@
 
-
 /**
  * View model class for product containing only
  * info nessecary for frontend
