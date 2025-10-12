@@ -47,6 +47,11 @@ public class DeleteProductTests
         service.DeleteProduct(1);
     }
 
+    /**
+     * <summary>
+     * Tests that passing 0 to the DeleteProduct method throws an ArgumentException
+     * </summary>
+     */
     [Fact]
     public void InvalidProductIdThrowsArgumentException()
     {
