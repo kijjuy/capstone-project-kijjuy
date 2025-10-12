@@ -33,5 +33,12 @@ public class ProductsController : ControllerBase
         string json = JsonSerializer.Serialize(products);
         return Ok(json);
     }
+
+    [HttpDelete("products/{id}")]
+    public IActionResult DeleteProduct(int id) {
+	_productsService.DeleteProduct(id);
+	return NoContent();
+    }
+
 }
 
