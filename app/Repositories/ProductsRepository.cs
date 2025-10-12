@@ -8,6 +8,7 @@ public interface IProductsRepository
 {
     public List<ProductDataModel> GetAllProducts();
     public int DeleteProduct(int productId);
+    public int CreateProduct(CreateProductModel product);
 }
 
 public class ProductsRepository : IProductsRepository
@@ -80,4 +81,28 @@ public class ProductsRepository : IProductsRepository
 
     }
 
+    /**
+     * <summary>
+     * Inserts a new product into the database and returns the id of that new product.
+     * </summary>
+     */
+    public int CreateProduct(CreateProductModel product)
+    {
+        using SqliteConnection db = new SqliteConnection(_connString);
+        SqliteCommand query = new SqliteCommand("INSERT INTO products (name, price, category, description, is_available)" +
+                        " VALUES(@name, @price, @category, @description, @is_available) RETURNING product_id");
+        query.Parameters["name"].Value = product.Name;
+        query.Parameters["price"].Value = product.Price;
+        query.Parameters["category_id"].Value = product.CategoryId;
+        query.Parameters["description"].Value = product.Description;
+        query.Parameters["is_available"].Value = true;
+
+        using var reader = query.ExecuteReader();
+        _logger.LogDebug($"Created {reader.RecordsAffected} new rows.");
+
+        reader.Read();
+        int newId = (int)reader.GetValue(0);
+        _logger.LogInformation($"New product created with id={newId}");
+        return newId;
+    }
 }
