@@ -52,6 +52,12 @@ public class ProductsService : IProductsService
 
     public void DeleteProduct(int productId)
     {
+        if (productId < 1)
+        {
+            _logger.LogError($"Attempted to delete product with id={productId}. Must be greater than zero.");
+            throw new ArgumentException("productId must be greater than zero.");
+        }
+
         int result = _products.DeleteProduct(productId);
         if (result != 1)
         {
