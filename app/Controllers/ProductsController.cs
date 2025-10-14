@@ -42,6 +42,29 @@ public class ProductsController : ControllerBase
 
     /**
      * <summary>
+     * Binds the value id from the url params then finds a product with that matching
+     * id or returns not found.
+     * </summary>
+     */
+    [HttpGet("products/{id}", Name = "GetProductById")]
+    public async Task<IActionResult> GetProductById(int id) {
+	if(!ModelState.IsValid) {
+	    _logger.LogWarning("Invalid id when trying to get product");
+	    return BadRequest(new { message = "Must provide a valid Id when trying to get a product." });
+	}
+
+	_logger.LogDebug("Hit GetProductById");
+	var product = await _productsService.GetProductById(id);
+	
+	if (product == null) {
+	    return NotFound(new { message = $"Product with id={id} could not be found." });
+	}
+
+	return Ok(product);
+    }
+
+    /**
+     * <summary>
      * Binds the value id from the url params then deletes a single product with that matching id.
      * </summary>
      */
