@@ -31,15 +31,17 @@ sleep 5
 echo starting tests to $endpoint
 
 #test creating product
-result=$(curl -s $endpoint/products -X POST -H "Content-Type: x-www-form-urlencoded" \
+result=$(curl -s $endpoint/products -X POST -H "Content-Type: application/x-www-form-urlencoded" \
     -d "Name=NameFromTestScript&CategoryId=1&Price=123.45&Description=test description")
-echo $result | jq .message > /dev/null 2>&1
+jq_result=$(echo $result | jq .message)
 
-# jq returns 0 if it successfully finds .messages key, which is bad.
-if [[ $? == 0 ]]; then
+#if result != null, then .message was found, which is bad
+if [[ "$jq_result" != "null" ]]; then
     print_error "Error adding product to database."
+    echo result=$result
     increment_failed
 else
+    echo added product to database with $result
     increment_passed
 fi
 
@@ -49,6 +51,8 @@ result=$(curl -s $endpoint/products | jq length)
 
 if [[ $result < 1 ]]; then
     print_error "Error getting products from database."
+    echo result is...
+    echo result=$result
     increment_failed
 else
     increment_passed
