@@ -28,7 +28,7 @@ public class SqlMapperTests
         public String prop1 { get; set; }
     }
 
-    //Should log warning that there are no props to map
+    //Should throw exception if there is unmapped sql data
     public class ModelWithSinglePropNoColumn
     {
         public String prop1 { get; set; }
