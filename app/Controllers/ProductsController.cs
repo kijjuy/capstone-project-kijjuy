@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using app.Services;
+using app.Models;
 using System.Text.Json;
 
 namespace app.Controllers;
@@ -23,6 +24,11 @@ public class ProductsController : ControllerBase
         return Ok("Hello\n");
     }
 
+    /**
+     * <summary>
+     * Gets all products from the database.
+     * </summary>
+     */
     [HttpGet("products")]
     public IActionResult GetAllProducts()
     {
