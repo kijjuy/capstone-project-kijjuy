@@ -1,5 +1,10 @@
 #!/bin/bash
 
+#Constants
+RED='\033[0;31m'
+NC='\033[0m'
+endpoint=http://localhost:8080
+
 increment_passed() {
     passed_count=$(($passed_count+1))
 }
@@ -9,13 +14,9 @@ increment_failed() {
 }
 
 print_error() {
-    printf "\n${RED}${1}${NC}\n\n"
+   printf "\n${RED}${1}${NC}\n\n"
 }
 
-RED='\033[0;31m'
-NC='\033[0m'
-
-endpoint=http://localhost:8080
 passed_count=0
 failed_count=0
 
@@ -30,7 +31,8 @@ sleep 5
 echo starting tests to $endpoint
 
 #test creating product
-result=$(curl -s $endpoint/products -X POST -H "Content-Type: x-www-form-urlencoded" -d "Name=NameFromTestScript&CategoryId=1&Price=123.45&Description=test description")
+result=$(curl -s $endpoint/products -X POST -H "Content-Type: x-www-form-urlencoded" \
+    -d "Name=NameFromTestScript&CategoryId=1&Price=123.45&Description=test description")
 echo $result | jq .message > /dev/null 2>&1
 
 # jq returns 0 if it successfully finds .messages key, which is bad.
@@ -40,8 +42,6 @@ if [[ $? == 0 ]]; then
 else
     increment_passed
 fi
-
-
 
 
 #test getting products
