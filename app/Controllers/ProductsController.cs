@@ -40,23 +40,50 @@ public class ProductsController : ControllerBase
         return Ok(json);
     }
 
+    /**
+     * <summary>
+     * Binds the value id from the url params then deletes a single product with that matching id.
+     * </summary>
+     */
     [HttpDelete("products/{id}")]
     public IActionResult DeleteProduct(int id) {
+	if(!ModelState.IsValid) {
+	    _logger.LogWarning("Invalid id when trying to delete product.");
+	    return BadRequest(new { message = "Must provide a valid id when deleting a product." });
+	}
 	_productsService.DeleteProduct(id);
 	return NoContent();
     }
 
-    //TODO: currently not binding to model
+    /**
+     * Binds form data to CreateProductModel then uses that to create a 
+     * new product in the database and returns the location of that new product.
+     */
     [HttpPost("products")]
     public IActionResult CreateProduct([FromForm]CreateProductModel newProduct) {
-	_logger.LogDebug("hit create product endpoint");
-	try {
-	    int newId = _productsService.CreateProduct(newProduct);
-	    return CreatedAtRoute("/products/" + newId, new {id = newId});
-	} catch(ArgumentException e) {
+	if(!ModelState.IsValid) {
+	    LogModelErrors();
 	    _logger.LogWarning($"Attempted to create product with empty values.");
 	    return BadRequest(new { message = "Must provide valid inputs for name, categoryId, price, and description." });
 	}
+
+	_logger.LogDebug("hit create product endpoint");
+	try {
+	    int newId = _productsService.CreateProduct(newProduct);
+	    return CreatedAtRoute(nameof(GetProductById), new {id = newId}, new { id = newId });
+	} catch(Exception e) {
+	    _logger.LogError($"Unhandled Exception thrown when creating product. Err={e.Message}");
+	    return new StatusCodeResult(500);
+	}
+    }
+
+    private void LogModelErrors() {
+	    foreach(var key in ModelState.Keys) {
+		 var errors = ModelState[key].Errors;
+		 foreach(var err in errors) {
+		     _logger.LogWarning($"Model error on key={key}: err={err}; message={err.ErrorMessage}");
+		 }
+	    }
     }
 }
 
