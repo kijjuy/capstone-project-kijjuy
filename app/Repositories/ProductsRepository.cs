@@ -107,7 +107,7 @@ public class ProductsRepository : IProductsRepository
     {
         using SqliteConnection db = new SqliteConnection(_connString);
         SqliteCommand query = new SqliteCommand("DELETE FROM products WHERE product_id = @productId", db);
-        query.Parameters["productId"].Value = productId;
+        query.Parameters.AddWithValue("@productId", productId);
 
         int result = query.ExecuteNonQuery();
         _logger.LogDebug($"Delete affected {result} rows.");

@@ -6,6 +6,7 @@ namespace app.Services;
 public interface IProductsService
 {
     public List<ProductViewModel> GetAllProducts();
+    public Task<ProductViewModel> GetProductById(int id);
     public void DeleteProduct(int productId);
     public int CreateProduct(CreateProductModel product);
 }
@@ -50,6 +51,39 @@ public class ProductsService : IProductsService
         return viewProducts;
     }
 
+    /**
+     * Checks if id is valid, then
+     * Gets a single product from the repository and maps it to ProductViewModel, 
+     * or returns null if the product from the repo was null.
+     */
+    public async Task<ProductViewModel> GetProductById(int id)
+    {
+        if (id < 1)
+        {
+            _logger.LogWarning($"Tried to get product with bad id. id={id}");
+            throw new ArgumentException("Product id must be greater than 0.");
+        }
+        var dataModel = await _products.GetProductById(id);
+        if (dataModel == null)
+        {
+            return null;
+        }
+        var viewProduct = new ProductViewModel
+        {
+            ProductId = dataModel.ProductId,
+            //TODO: Get category name from id here
+            CategoryName = $"Category {dataModel.CategoryId}",
+            ProductName = dataModel.Name,
+            Price = dataModel.Price,
+            Description = dataModel.Description,
+        };
+        return viewProduct;
+    }
+
+    /**
+     * Checks if the productId is valid, then deletes a single product from
+     * the repository. If no products were deleted, throws a BadSqlResultException.
+     */
     public void DeleteProduct(int productId)
     {
         if (productId < 1)
