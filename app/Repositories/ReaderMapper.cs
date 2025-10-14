@@ -4,8 +4,10 @@ using System.Reflection;
 namespace app.Repositories;
 
 /***
+ * <summary>
  * Helper class that maps data from dictionary of
  * sql row column:value to model using reflection.
+ * </summary>
  */
 public class ReaderMapper
 {
@@ -18,7 +20,12 @@ public class ReaderMapper
     }
 
     /**
-     *
+     * <summary>
+     * Creates a new object of type T and iterates through rowDict.Keys.
+     * For each key, attempts for find property of T that has matching ColumnAttribute value.
+     * If found, load value from rowDict[key] into new T object. If not found,
+     * throw ArgumentException.
+     * </summary>
      */
     public T MapDataToModel<T>(Dictionary<String, object> rowDict) where T : new()
     {
