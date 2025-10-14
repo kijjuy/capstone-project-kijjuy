@@ -1,3 +1,5 @@
+namespace app.Models;
+
 public class CreateProductModel
 {
     public required int CategoryId { get; set; }
