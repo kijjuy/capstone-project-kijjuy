@@ -121,9 +121,3 @@ public class ProductsService : IProductsService
     }
 }
 
-public class BadSqlResultException : Exception
-{
-    public BadSqlResultException(String message)
-    : base(message)
-    { }
-}
