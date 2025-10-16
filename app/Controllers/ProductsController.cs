@@ -100,6 +100,11 @@ public class ProductsController : ControllerBase
 	}
     }
 
+    /**
+     * <summary>
+     * Logs any errors for each of the keys within the model state
+     * </summary>
+     */
     private void LogModelErrors() {
 	    foreach(var key in ModelState.Keys) {
 		 var errors = ModelState[key].Errors;
