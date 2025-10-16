@@ -81,6 +81,13 @@ public class ProductsRepository : IProductsRepository
         using SqliteConnection db = new SqliteConnection(_connString);
         SqliteCommand query = new SqliteCommand("SELECT * FROM products WHERE product_id = @id", db);
         query.Parameters.AddWithValue("@id", id);
+
+	if (query.Connection == null) {
+	    var message = "query connection was null when trying to get product by id.";
+	    _logger.LogError(message);
+	    throw new DbConnectionException(message);
+	}
+
         query.Connection.Open();
 
 
@@ -109,8 +116,18 @@ public class ProductsRepository : IProductsRepository
         SqliteCommand query = new SqliteCommand("DELETE FROM products WHERE product_id = @productId", db);
         query.Parameters.AddWithValue("@productId", productId);
 
+	if (query.Connection == null) {
+	    var message = "query connection was null when trying to delete product.";
+	    _logger.LogError(message);
+	    throw new DbConnectionException(message);
+	}
+
+	query.Connection.Open();
+
         int result = query.ExecuteNonQuery();
         _logger.LogDebug($"Delete affected {result} rows.");
+
+	query.Connection.Close();
 
         return result;
 
@@ -131,6 +148,12 @@ public class ProductsRepository : IProductsRepository
         query.Parameters.AddWithValue("@category_id", product.CategoryId);
         query.Parameters.AddWithValue("@description", product.Description);
         query.Parameters.AddWithValue("@is_available", true);
+
+	if (query.Connection == null) {
+	    var message = "query connection was null when trying to create product.";
+	    _logger.LogError(message);
+	    throw new DbConnectionException(message);
+	}
 
         query.Connection.Open();
 
