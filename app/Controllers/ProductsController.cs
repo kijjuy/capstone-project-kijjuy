@@ -47,20 +47,23 @@ public class ProductsController : ControllerBase
      * </summary>
      */
     [HttpGet("products/{id}", Name = "GetProductById")]
-    public async Task<IActionResult> GetProductById(int id) {
-	if(!ModelState.IsValid) {
-	    _logger.LogWarning("Invalid id when trying to get product");
-	    return BadRequest(new { message = "Must provide a valid Id when trying to get a product." });
-	}
+    public async Task<IActionResult> GetProductById(int id)
+    {
+        if (!ModelState.IsValid)
+        {
+            _logger.LogWarning("Invalid id when trying to get product");
+            return BadRequest(new { message = "Must provide a valid Id when trying to get a product." });
+        }
 
-	_logger.LogDebug("Hit GetProductById");
-	var product = await _productsService.GetProductById(id);
-	
-	if (product == null) {
-	    return NotFound(new { message = $"Product with id={id} could not be found." });
-	}
+        _logger.LogDebug("Hit GetProductById");
+        var product = await _productsService.GetProductById(id);
 
-	return Ok(product);
+        if (product == null)
+        {
+            return NotFound(new { message = $"Product with id={id} could not be found." });
+        }
+
+        return Ok(product);
     }
 
     /**
@@ -69,13 +72,15 @@ public class ProductsController : ControllerBase
      * </summary>
      */
     [HttpDelete("products/{id}")]
-    public IActionResult DeleteProduct(int id) {
-	if(!ModelState.IsValid) {
-	    _logger.LogWarning("Invalid id when trying to delete product.");
-	    return BadRequest(new { message = "Must provide a valid id when deleting a product." });
-	}
-	_productsService.DeleteProduct(id);
-	return NoContent();
+    public IActionResult DeleteProduct(int id)
+    {
+        if (!ModelState.IsValid)
+        {
+            _logger.LogWarning("Invalid id when trying to delete product.");
+            return BadRequest(new { message = "Must provide a valid id when deleting a product." });
+        }
+        _productsService.DeleteProduct(id);
+        return NoContent();
     }
 
     /**
@@ -83,21 +88,26 @@ public class ProductsController : ControllerBase
      * new product in the database and returns the location of that new product.
      */
     [HttpPost("products")]
-    public IActionResult CreateProduct([FromForm]CreateProductModel newProduct) {
-	if(!ModelState.IsValid) {
-	    LogModelErrors();
-	    _logger.LogWarning($"Attempted to create product with empty values.");
-	    return BadRequest(new { message = "Must provide valid inputs for name, categoryId, price, and description." });
-	}
+    public IActionResult CreateProduct([FromForm] CreateProductModel newProduct)
+    {
+        if (!ModelState.IsValid)
+        {
+            LogModelErrors();
+            _logger.LogWarning($"Attempted to create product with empty values.");
+            return BadRequest(new { message = "Must provide valid inputs for name, categoryId, price, and description." });
+        }
 
-	_logger.LogDebug("hit create product endpoint");
-	try {
-	    int newId = _productsService.CreateProduct(newProduct);
-	    return CreatedAtRoute(nameof(GetProductById), new {id = newId}, new { id = newId });
-	} catch(Exception e) {
-	    _logger.LogError($"Unhandled Exception thrown when creating product. Err={e.Message}");
-	    return new StatusCodeResult(500);
-	}
+        _logger.LogDebug("hit create product endpoint");
+        try
+        {
+            int newId = _productsService.CreateProduct(newProduct);
+            return CreatedAtRoute(nameof(GetProductById), new { id = newId }, new { id = newId });
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($"Unhandled Exception thrown when creating product. Err={e.Message}");
+            return new StatusCodeResult(500);
+        }
     }
 
     /**
@@ -105,13 +115,16 @@ public class ProductsController : ControllerBase
      * Logs any errors for each of the keys within the model state
      * </summary>
      */
-    private void LogModelErrors() {
-	    foreach(var key in ModelState.Keys) {
-		 var errors = ModelState[key].Errors;
-		 foreach(var err in errors) {
-		     _logger.LogWarning($"Model error on key={key}: err={err}; message={err.ErrorMessage}");
-		 }
-	    }
+    private void LogModelErrors()
+    {
+        foreach (var key in ModelState.Keys)
+        {
+            var errors = ModelState[key].Errors;
+            foreach (var err in errors)
+            {
+                _logger.LogWarning($"Model error on key={key}: err={err}; message={err.ErrorMessage}");
+            }
+        }
     }
 }
 
