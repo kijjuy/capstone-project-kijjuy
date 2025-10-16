@@ -45,26 +45,25 @@ public class ProductsRepository : IProductsRepository
         SqliteCommand query = new SqliteCommand("SELECT * FROM products;", db);
         _logger.LogDebug("Selected data");
 
-        try
-        {
-            query.Connection.Open();
-            query.ExecuteNonQuery();
-            using var reader = query.ExecuteReader();
-            _logger.LogDebug("reader created");
+	if(query.Connection == null) {
+	    var message = "query connection was null when trying to get all products.";
+	    _logger.LogError(message);
+	    throw new DbConnectionException(message);
+	}
+
+        query.Connection.Open();
+        query.ExecuteNonQuery();
+        using var reader = query.ExecuteReader();
+        _logger.LogDebug("reader created");
 
 
-            while (reader.Read())
-            {
-                var rowDict = CreateSqlDictionary(reader);
-                _logger.LogDebug($"FieldCount: {reader.FieldCount}");
-                var product = _readerMapper.MapDataToModel<ProductDataModel>(rowDict);
-                products.Add(product);
-                _logger.LogDebug("Reading data...");
-            }
-        }
-        catch (NullReferenceException nle)
+        while (reader.Read())
         {
-            _logger.LogError("Database connection null when trying to get products");
+            var rowDict = CreateSqlDictionary(reader);
+            _logger.LogDebug($"FieldCount: {reader.FieldCount}");
+            var product = _readerMapper.MapDataToModel<ProductDataModel>(rowDict);
+            products.Add(product);
+            _logger.LogDebug("Reading data...");
         }
 
         _logger.LogDebug($"size of products: {products.Count}");
