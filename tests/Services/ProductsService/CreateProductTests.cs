@@ -1,5 +1,6 @@
 using app.Services;
 using app.Repositories;
+using app.Models;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -31,29 +32,29 @@ public class CreateProductTests
      * </summary>
      */
     [Fact]
-    public void GoodDataReturnsValidProduct() 
+    public void GoodDataReturnsValidProduct()
     {
-	//arrange
-	var mockRepo = new Mock<IProductsRepository>();
-	CreateProductModel cpm = new CreateProductModel
-	{
-	    Name = "TestName",
-	    CategoryId = 1,
-	    Price = (decimal)123.45,
-	    Description = "Test description",
-	};
+        //arrange
+        var mockRepo = new Mock<IProductsRepository>();
+        CreateProductModel cpm = new CreateProductModel
+        {
+            Name = "TestName",
+            CategoryId = 1,
+            Price = (decimal)123.45,
+            Description = "Test description",
+        };
 
-	mockRepo.Setup(repo => repo.CreateProduct(cpm))
-	    .Returns(1);
+        mockRepo.Setup(repo => repo.CreateProduct(cpm))
+            .Returns(1);
 
-	ProductsService service = new ProductsService(_serviceLogger, mockRepo.Object);
+        ProductsService service = new ProductsService(_serviceLogger, mockRepo.Object);
 
-	//act
-	int result = service.CreateProduct(cpm);
-	
-	//assert
-	
-	Assert.Equal(1, result);
+        //act
+        int result = service.CreateProduct(cpm);
+
+        //assert
+
+        Assert.Equal(1, result);
     }
 
     /**
@@ -68,63 +69,63 @@ public class CreateProductTests
      * </summary>
      */
     [Fact]
-    public void MissingModelDataThrowsArgumentException() 
+    public void MissingModelDataThrowsArgumentException()
     {
-	//arrange
-	var mockRepo = new Mock<IProductsRepository>();
+        //arrange
+        var mockRepo = new Mock<IProductsRepository>();
 
-	CreateProductModel cpmEmptyName = new CreateProductModel
-	{
-	    Name = "",
-	    CategoryId = 1,
-	    Price = (decimal)123.45,
-	    Description = "Test description",
-	};
-	CreateProductModel cpmNullName = new CreateProductModel
-	{
-	    Name = null,
-	    CategoryId = 1,
-	    Price = (decimal)123.45,
-	    Description = "Test description",
-	};
-	CreateProductModel cpmEmptyDescription = new CreateProductModel
-	{
-	    Name = "test name",
-	    CategoryId = 1,
-	    Price = (decimal)123.45,
-	    Description = "",
-	};
-	CreateProductModel cpmNullDescription = new CreateProductModel
-	{
-	    Name = "Test name",
-	    CategoryId = 1,
-	    Price = (decimal)123.45,
-	    Description = null,
-	};
-	CreateProductModel cpmCatIdIsZero = new CreateProductModel
-	{
-	    Name = "Test name",
-	    CategoryId = 0,
-	    Price = (decimal)123.45,
-	    Description = "Test description",
-	};
-	CreateProductModel cpmPriceIsZero = new CreateProductModel
-	{
-	    Name = "Test name",
-	    CategoryId = 1,
-	    Price = 0,
-	    Description = "Test Description",
-	};
-	ProductsService service = new ProductsService(_serviceLogger, mockRepo.Object);
+        CreateProductModel cpmEmptyName = new CreateProductModel
+        {
+            Name = "",
+            CategoryId = 1,
+            Price = (decimal)123.45,
+            Description = "Test description",
+        };
+        CreateProductModel cpmNullName = new CreateProductModel
+        {
+            Name = null,
+            CategoryId = 1,
+            Price = (decimal)123.45,
+            Description = "Test description",
+        };
+        CreateProductModel cpmEmptyDescription = new CreateProductModel
+        {
+            Name = "test name",
+            CategoryId = 1,
+            Price = (decimal)123.45,
+            Description = "",
+        };
+        CreateProductModel cpmNullDescription = new CreateProductModel
+        {
+            Name = "Test name",
+            CategoryId = 1,
+            Price = (decimal)123.45,
+            Description = null,
+        };
+        CreateProductModel cpmCatIdIsZero = new CreateProductModel
+        {
+            Name = "Test name",
+            CategoryId = 0,
+            Price = (decimal)123.45,
+            Description = "Test description",
+        };
+        CreateProductModel cpmPriceIsZero = new CreateProductModel
+        {
+            Name = "Test name",
+            CategoryId = 1,
+            Price = 0,
+            Description = "Test Description",
+        };
+        ProductsService service = new ProductsService(_serviceLogger, mockRepo.Object);
 
-	//act
-	//assert
-	Assert.Throws<ArgumentException>(() => service.CreateProduct(cpmEmptyName));
-	Assert.Throws<ArgumentException>(() => service.CreateProduct(cpmEmptyDescription));
-	Assert.Throws<ArgumentException>(() => service.CreateProduct(cpmNullName));
-	Assert.Throws<ArgumentException>(() => service.CreateProduct(cpmNullDescription));
-	Assert.Throws<ArgumentException>(() => service.CreateProduct(cpmCatIdIsZero));
-	Assert.Throws<ArgumentException>(() => service.CreateProduct(cpmPriceIsZero));
+        //act
+        //assert
+        Assert.Throws<ArgumentException>(() => service.CreateProduct(cpmEmptyName));
+        Assert.Throws<ArgumentException>(() => service.CreateProduct(cpmEmptyDescription));
+        Assert.Throws<ArgumentException>(() => service.CreateProduct(cpmNullName));
+        Assert.Throws<ArgumentException>(() => service.CreateProduct(cpmNullDescription));
+        Assert.Throws<ArgumentException>(() => service.CreateProduct(cpmCatIdIsZero));
+        Assert.Throws<ArgumentException>(() => service.CreateProduct(cpmPriceIsZero));
     }
 
     /**
@@ -133,12 +134,12 @@ public class CreateProductTests
      * </summary>
      */
     [Fact]
-    public void BadReturnValueFromRepoThrowsBadSqlDataException() 
+    public void BadReturnValueFromRepoThrowsBadSqlDataException()
     {
         //arrange
         var mockRepo = new Mock<IProductsRepository>();
 
-        CreateProductModel cpm = new CreateProductModel 
+        CreateProductModel cpm = new CreateProductModel
         {
             Name = "Test name",
             CategoryId = 1,
