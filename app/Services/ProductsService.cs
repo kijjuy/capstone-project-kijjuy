@@ -6,7 +6,7 @@ namespace app.Services;
 public interface IProductsService
 {
     public List<ProductViewModel> GetAllProducts();
-    public Task<ProductViewModel> GetProductById(int id);
+    public Task<ProductViewModel?> GetProductById(int id);
     public void DeleteProduct(int productId);
     public int CreateProduct(CreateProductModel product);
 }
@@ -56,7 +56,7 @@ public class ProductsService : IProductsService
      * Gets a single product from the repository and maps it to ProductViewModel, 
      * or returns null if the product from the repo was null.
      */
-    public async Task<ProductViewModel> GetProductById(int id)
+    public async Task<ProductViewModel?> GetProductById(int id)
     {
         if (id < 1)
         {
