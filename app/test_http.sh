@@ -46,10 +46,24 @@ else
 fi
 
 
-#test getting products
-result=$(curl -s $endpoint/products | jq length)
+#test getting new single product
+new_id=$(echo $result | jq .id)
+result=$(curl -s $endpoint/products/$new_id)
+jq_result=$(echo $result | jq .productId)
+if [[ $jq_result != $new_id ]]; then
+    print_error "Error getting new product from database"
+    echo result=$result
+    increment_failed
+else
+    echo got new product successfully
+    increment_passed
+fi
 
-if [[ $result < 1 ]]; then
+
+#test getting products
+result=$(curl -s $endpoint/products)
+jq_result=$(echo $result | jq .[-1].ProductId)
+if [[ $jq_result != $new_id ]]; then
     print_error "Error getting products from database."
     echo result is...
     echo result=$result
@@ -57,6 +71,7 @@ if [[ $result < 1 ]]; then
 else
     increment_passed
 fi
+
 
 
 #kill .net server
