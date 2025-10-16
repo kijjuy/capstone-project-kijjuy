@@ -7,7 +7,7 @@ namespace app.Repositories;
 public interface IProductsRepository
 {
     public List<ProductDataModel> GetAllProducts();
-    public Task<ProductDataModel> GetProductById(int id);
+    public Task<ProductDataModel?> GetProductById(int id);
     public int DeleteProduct(int productId);
     public int CreateProduct(CreateProductModel product);
 }
@@ -76,12 +76,13 @@ public class ProductsRepository : IProductsRepository
      * Returns a single product with a matching id, or null.
      * </summary>
      */
-    public async Task<ProductDataModel> GetProductById(int id)
+    public async Task<ProductDataModel?> GetProductById(int id)
     {
         using SqliteConnection db = new SqliteConnection(_connString);
         SqliteCommand query = new SqliteCommand("SELECT * FROM products WHERE product_id = @id", db);
         query.Parameters.AddWithValue("@id", id);
         query.Connection.Open();
+
 
         using var reader = await query.ExecuteReaderAsync();
         reader.Read();
