@@ -72,6 +72,20 @@ else
     increment_passed
 fi
 
+#test deleting product
+result=$(curl -s $endpoint/products/$new_id -X DELETE)
+jq_result=$(echo $result | jq .message)
+echo jq_result=$jq_result
+if [[ $jq_result != "null" ]]; then
+    print_error "Error deleting product from database."
+    echo result=$result
+    increment_failed
+else
+    echo deleted new product from database
+    increment_passed
+fi
+
+
 
 
 #kill .net server
