@@ -1,4 +1,4 @@
-namespace app.Repositories;
+namespace app.Services;
 
 public class BadSqlResultException : Exception
 {
