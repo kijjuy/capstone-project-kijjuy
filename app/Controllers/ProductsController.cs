@@ -79,7 +79,21 @@ public class ProductsController : ControllerBase
             _logger.LogWarning("Invalid id when trying to delete product.");
             return BadRequest(new { message = "Must provide a valid id when deleting a product." });
         }
-        _productsService.DeleteProduct(id);
+        try
+        {
+            _productsService.DeleteProduct(id);
+        }
+        catch (Exception e)
+        {
+            if (e.GetType().Equals(typeof(BadSqlResultException)))
+            {
+                return NotFound(new { message = $"Product with id={id} could not be found." });
+            }
+            else
+            {
+                return new StatusCodeResult(500);
+            }
+        }
         return NoContent();
     }
 
