@@ -9,7 +9,7 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
         builder.ConfigureAppConfiguration((context, configBuilder) =>
         {
             var testSettings = new Dictionary<String, String?>();
-            testSettings["ConnectionStrings:DefaultConnection"] = "Data Source=test.db";
+            testSettings["ConnectionStrings:DefaultConnection"] = "Data Source=../test.db;Mode=Memory;Cache=Shared";
 
             configBuilder.AddInMemoryCollection(testSettings);
         });

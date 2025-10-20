@@ -7,31 +7,38 @@ namespace tests;
 public class GetAllProductsTest : IClassFixture<CustomWebApplicationFactory<Program>>
 {
     private readonly CustomWebApplicationFactory<Program> _factory;
-    private readonly String _connectionString = "Data Source=test.db";
+    private readonly String _connectionString = "Data Source=../../test.db;Mode=Memory;Cache=Shared";
 
     public GetAllProductsTest(CustomWebApplicationFactory<Program> factory)
     {
         _factory = factory;
     }
 
-    //TODO: Currently not finding database... try to fix this
     private void SeedProducts(int newProductsCount)
     {
         using var db = new SqliteConnection(_connectionString);
         db.Open();
 
-        using var command = new SqliteCommand("DELETE FROM products", db);
-        command.ExecuteNonQuery();
+        using (var command = new SqliteCommand()) {
+	    command.CommandText = "DELETE FROM products";
+	    command.Connection = db;
+            command.ExecuteNonQuery();
+	}
 
         for (int i = 0; i < newProductsCount; i++)
         {
-            command.CommandText = "INSERT INTO products (Name, CategoryId, Price, Description)" +
-        "VALUES(Product@productId, @categoryId, @price, @description);";
-            command.Parameters.AddWithValue("@productId", i);
-            command.Parameters.AddWithValue("@categoryId", i % 3);
-            command.Parameters.AddWithValue("@price", 99.99 + i);
-            command.Parameters.AddWithValue("@description", "Description for product " + i);
-            command.ExecuteNonQuery();
+	    using(var command = new SqliteCommand()) 
+	    {
+		command.Connection = db;
+		command.CommandText = "INSERT INTO products (name, category_id, price, description, is_available)" +
+		    "VALUES(@productName, @categoryId, @price, @description, @isAvailable);";
+            	command.Parameters.AddWithValue("@productName", $"Product {i}");
+            	command.Parameters.AddWithValue("@categoryId", 1);
+            	command.Parameters.AddWithValue("@price", 99.99 + i);
+            	command.Parameters.AddWithValue("@description", "Description for product " + i);
+	    	command.Parameters.AddWithValue("@isAvailable", true);
+            	command.ExecuteNonQuery();
+	    }
         }
     }
 
