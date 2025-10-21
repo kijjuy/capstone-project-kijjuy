@@ -17,7 +17,7 @@ public class ProductsController : ControllerBase
         _productsService = productsService;
     }
 
-    [HttpGet("hello")]
+    [HttpGet("/api/hello")]
     public IActionResult HelloWorld()
     {
         _logger.LogDebug("Hit Hello World method");
@@ -29,7 +29,7 @@ public class ProductsController : ControllerBase
      * Gets all products from the database.
      * </summary>
      */
-    [HttpGet("products")]
+    [HttpGet("/api/products")]
     public async Task<IActionResult> GetAllProducts()
     {
         _logger.LogDebug("Hit GetAllProducts method.");
@@ -46,7 +46,7 @@ public class ProductsController : ControllerBase
      * id or returns not found.
      * </summary>
      */
-    [HttpGet("products/{id}", Name = "GetProductById")]
+    [HttpGet("/api/products/{id}", Name = "GetProductById")]
     public async Task<IActionResult> GetProductById(int id)
     {
         if (!ModelState.IsValid)
@@ -71,7 +71,7 @@ public class ProductsController : ControllerBase
      * Binds the value id from the url params then deletes a single product with that matching id.
      * </summary>
      */
-    [HttpDelete("products/{id}")]
+    [HttpDelete("/api/products/{id}")]
     public IActionResult DeleteProduct(int id)
     {
         if (!ModelState.IsValid)
@@ -101,7 +101,7 @@ public class ProductsController : ControllerBase
      * Binds form data to CreateProductModel then uses that to create a 
      * new product in the database and returns the location of that new product.
      */
-    [HttpPost("products")]
+    [HttpPost("/api/products")]
     public IActionResult CreateProduct([FromForm] CreateProductModel newProduct)
     {
         if (!ModelState.IsValid)

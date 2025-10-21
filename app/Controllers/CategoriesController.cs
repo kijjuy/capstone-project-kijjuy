@@ -15,7 +15,7 @@ public class CategoriesController : ControllerBase
 
     }
 
-    [HttpGet("/categories")]
+    [HttpGet("/api/categories")]
     public async Task<IActionResult> GetAllCategories()
     {
         var categories = await _categoriesService.GetAllCategories();
