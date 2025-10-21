@@ -1,12 +1,15 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace app.Models;
 
 public class Category
 {
     [Key]
-    public required int CategoryId { get; set; }
+    [Column("category_id")]
+    public long CategoryId { get; set; }
 
     [MaxLength(30)]
-    public required String CategoryName { get; set; }
+    [Column("category_name")]
+    public String CategoryName { get; set; }
 }
