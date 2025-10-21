@@ -30,10 +30,10 @@ public class ProductsController : ControllerBase
      * </summary>
      */
     [HttpGet("products")]
-    public IActionResult GetAllProducts()
+    public async Task<IActionResult> GetAllProducts()
     {
         _logger.LogDebug("Hit GetAllProducts method.");
-        var products = _productsService.GetAllProducts();
+        var products = await _productsService.GetAllProducts();
         _logger.LogDebug($"size of products: {products.Count}");
 
         string json = JsonSerializer.Serialize(products);

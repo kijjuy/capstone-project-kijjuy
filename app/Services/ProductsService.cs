@@ -5,7 +5,7 @@ namespace app.Services;
 
 public interface IProductsService
 {
-    public List<ProductViewModel> GetAllProducts();
+    public Task<List<ProductViewModel>> GetAllProducts();
     public Task<ProductViewModel?> GetProductById(int id);
     public void DeleteProduct(int productId);
     public int CreateProduct(CreateProductModel product);
@@ -18,30 +18,33 @@ public class ProductsService : IProductsService
 
     private readonly ILogger<ProductsService> _logger;
     private readonly IProductsRepository _products;
+    private readonly ICategoriesService _categoriesService;
 
     public ProductsService(ILogger<ProductsService> logger,
-        IProductsRepository products)
+        IProductsRepository products,
+    ICategoriesService categoriesService)
     {
         _logger = logger;
         _products = products;
+        _categoriesService = categoriesService;
     }
 
     /**
      * Gets all products from the database and converts 
      * them into ProductViewModels.
      */
-    public List<ProductViewModel> GetAllProducts()
+    public async Task<List<ProductViewModel>> GetAllProducts()
     {
         List<ProductDataModel> dataProducts = _products.GetAllProducts();
         List<ProductViewModel> viewProducts = new List<ProductViewModel>();
 
         foreach (var dataProduct in dataProducts)
         {
-            //TODO: Get categories here from category repository
+            var category = await _categoriesService.GetCategoryById(dataProduct.CategoryId);
             var viewProduct = new ProductViewModel
             {
                 ProductId = dataProduct.ProductId,
-                CategoryName = $"Category {dataProduct.CategoryId}",
+                CategoryName = category.CategoryName,
                 ProductName = dataProduct.Name,
                 Price = dataProduct.Price,
                 Description = dataProduct.Description,
