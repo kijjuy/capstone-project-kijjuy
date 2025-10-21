@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
+using Microsoft.Data.Sqlite;
 
 namespace app.Repositories;
 
@@ -106,5 +107,24 @@ public class ReaderMapper
         }
 
         return obj;
+    }
+
+    /**
+     * <summary>
+     * Creates a dictionary with each key being the column name and value being the column value from the database.
+     * This can be used to map any type T with ColumnAttributes.
+     * </summary>
+     */
+    public static Dictionary<String, object> CreateSqlDictionary(SqliteDataReader reader)
+    {
+        Dictionary<String, object> rowDict = new Dictionary<string, object>();
+
+        for (int i = 0; i < reader.FieldCount; i++)
+        {
+            String name = reader.GetName(i);
+            var val = reader.GetValue(i);
+            rowDict[name] = val;
+        }
+        return rowDict;
     }
 }

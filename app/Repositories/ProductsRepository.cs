@@ -45,11 +45,12 @@ public class ProductsRepository : IProductsRepository
         SqliteCommand query = new SqliteCommand("SELECT * FROM products;", db);
         _logger.LogDebug("Selected data");
 
-	if(query.Connection == null) {
-	    var message = "query connection was null when trying to get all products.";
-	    _logger.LogError(message);
-	    throw new DbConnectionException(message);
-	}
+        if (query.Connection == null)
+        {
+            var message = "query connection was null when trying to get all products.";
+            _logger.LogError(message);
+            throw new DbConnectionException(message);
+        }
 
         query.Connection.Open();
         query.ExecuteNonQuery();
@@ -59,7 +60,7 @@ public class ProductsRepository : IProductsRepository
 
         while (reader.Read())
         {
-            var rowDict = CreateSqlDictionary(reader);
+            var rowDict = ReaderMapper.CreateSqlDictionary(reader);
             _logger.LogDebug($"FieldCount: {reader.FieldCount}");
             var product = _readerMapper.MapDataToModel<ProductDataModel>(rowDict);
             products.Add(product);
@@ -82,11 +83,12 @@ public class ProductsRepository : IProductsRepository
         SqliteCommand query = new SqliteCommand("SELECT * FROM products WHERE product_id = @id", db);
         query.Parameters.AddWithValue("@id", id);
 
-	if (query.Connection == null) {
-	    var message = "query connection was null when trying to get product by id.";
-	    _logger.LogError(message);
-	    throw new DbConnectionException(message);
-	}
+        if (query.Connection == null)
+        {
+            var message = "query connection was null when trying to get product by id.";
+            _logger.LogError(message);
+            throw new DbConnectionException(message);
+        }
 
         query.Connection.Open();
 
@@ -100,7 +102,7 @@ public class ProductsRepository : IProductsRepository
             return null;
         }
 
-        var rowDict = CreateSqlDictionary(reader);
+        var rowDict = ReaderMapper.CreateSqlDictionary(reader);
         return _readerMapper.MapDataToModel<ProductDataModel>(rowDict);
     }
 
@@ -116,18 +118,19 @@ public class ProductsRepository : IProductsRepository
         SqliteCommand query = new SqliteCommand("DELETE FROM products WHERE product_id = @productId", db);
         query.Parameters.AddWithValue("@productId", productId);
 
-	if (query.Connection == null) {
-	    var message = "query connection was null when trying to delete product.";
-	    _logger.LogError(message);
-	    throw new DbConnectionException(message);
-	}
+        if (query.Connection == null)
+        {
+            var message = "query connection was null when trying to delete product.";
+            _logger.LogError(message);
+            throw new DbConnectionException(message);
+        }
 
-	query.Connection.Open();
+        query.Connection.Open();
 
         int result = query.ExecuteNonQuery();
         _logger.LogDebug($"Delete affected {result} rows.");
 
-	query.Connection.Close();
+        query.Connection.Close();
 
         return result;
 
@@ -149,11 +152,12 @@ public class ProductsRepository : IProductsRepository
         query.Parameters.AddWithValue("@description", product.Description);
         query.Parameters.AddWithValue("@is_available", true);
 
-	if (query.Connection == null) {
-	    var message = "query connection was null when trying to create product.";
-	    _logger.LogError(message);
-	    throw new DbConnectionException(message);
-	}
+        if (query.Connection == null)
+        {
+            var message = "query connection was null when trying to create product.";
+            _logger.LogError(message);
+            throw new DbConnectionException(message);
+        }
 
         query.Connection.Open();
 
@@ -166,22 +170,4 @@ public class ProductsRepository : IProductsRepository
         return (int)newId;
     }
 
-    /**
-     * <summary>
-     * Creates a dictionary with each key being the column name and value being the column value from the database.
-     * This can be used to map any type T with ColumnAttributes.
-     * </summary>
-     */
-    private Dictionary<String, object> CreateSqlDictionary(SqliteDataReader reader)
-    {
-        Dictionary<String, object> rowDict = new Dictionary<string, object>();
-
-        for (int i = 0; i < reader.FieldCount; i++)
-        {
-            String name = reader.GetName(i);
-            var val = reader.GetValue(i);
-            rowDict[name] = val;
-        }
-        return rowDict;
-    }
 }
