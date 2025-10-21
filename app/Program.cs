@@ -63,6 +63,8 @@ public class Program
 
         app.MapControllers();
 
+	app.UseStaticFiles();
+
         app.Run();
     }
 }
