@@ -44,7 +44,10 @@ public class Program
         });
 
         builder.Services.AddScoped<IProductsRepository, ProductsRepository>();
+        builder.Services.AddScoped<ICategoriesRepository, CategoriesRepository>();
+
         builder.Services.AddScoped<IProductsService, ProductsService>();
+        builder.Services.AddScoped<ICategoriesService, CategoriesService>();
 
         var app = builder.Build();
 
