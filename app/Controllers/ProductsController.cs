@@ -149,16 +149,16 @@ public class ProductsController : Controller
     }
 
     [HttpGet("/products/create")]
-    public async Task<IActionResult> Create() {
-
+    public async Task<IActionResult> Create() 
+    {
 	var categories = await _categoriesService.GetAllCategories();
-	ViewData["categories"] = new SelectList(categories, "CategoryId", "CategoryName");
+	ViewData["Categories"] = new SelectList(categories, "CategoryId", "CategoryName");
 
 	return View();
     }
 
     [HttpPost("/products/create")]
-    public async Task<IActionResult> Create(CreateProductModel cpm) 
+    public async Task<IActionResult> Create(CreateProductModel product) 
     {
 	if(!ModelState.IsValid) 
 	{
