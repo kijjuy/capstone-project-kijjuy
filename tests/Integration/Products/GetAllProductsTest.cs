@@ -14,13 +14,13 @@ public class GetAllProductsTest : IClassFixture<CustomWebApplicationFactory<Prog
         _factory = factory;
     }
 
-    private void initDb() 
+    private void initDb()
     {
-	Console.WriteLine("---------------------------------------------------- hit initDb ---------------------------------------------------------");
-	using var db = new SqliteConnection(_connectionString);
-	db.Open();
+        Console.WriteLine("---------------------------------------------------- hit initDb ---------------------------------------------------------");
+        using var db = new SqliteConnection(_connectionString);
+        db.Open();
 
-	using var command = new SqliteCommand(@"
+        using var command = new SqliteCommand(@"
 		-- First database migration
 
 	    DROP TABLE IF EXISTS users;
@@ -109,16 +109,16 @@ public class GetAllProductsTest : IClassFixture<CustomWebApplicationFactory<Prog
 
 
 		", db);
-		command.ExecuteNonQuery();
+        command.ExecuteNonQuery();
 
-		command.CommandText = @"
+        command.CommandText = @"
 		    INSERT INTO categories (category_name) VALUES('category0');
 		    INSERT INTO categories (category_name) VALUES('category1');
 		    INSERT INTO categories (category_name) VALUES('category2');
 		    ";
-		
-		Console.WriteLine("finished init dbing");
-		command.ExecuteNonQuery();
+
+        Console.WriteLine("finished init dbing");
+        command.ExecuteNonQuery();
 
     }
 
@@ -127,37 +127,39 @@ public class GetAllProductsTest : IClassFixture<CustomWebApplicationFactory<Prog
         using var db = new SqliteConnection(_connectionString);
         db.Open();
 
-        using (var command = new SqliteCommand()) {
-	    command.CommandText = "DELETE FROM products";
-	    command.Connection = db;
+        using (var command = new SqliteCommand())
+        {
+            command.CommandText = "DELETE FROM products";
+            command.Connection = db;
             command.ExecuteNonQuery();
-	}
+        }
 
         for (int i = 0; i < newProductsCount; i++)
         {
-	    using(var command = new SqliteCommand()) 
-	    {
-		command.Connection = db;
-		command.CommandText = "INSERT INTO products (name, category_id, price, description, is_available)" +
-		    "VALUES(@productName, @categoryId, @price, @description, @isAvailable);";
-            	command.Parameters.AddWithValue("@productName", $"Product {i}");
-            	command.Parameters.AddWithValue("@categoryId", 1);
-            	command.Parameters.AddWithValue("@price", 99.99 + i);
-            	command.Parameters.AddWithValue("@description", "Description for product " + i);
-	    	command.Parameters.AddWithValue("@isAvailable", true);
-            	command.ExecuteNonQuery();
-	    }
+            using (var command = new SqliteCommand())
+            {
+                command.Connection = db;
+                command.CommandText = "INSERT INTO products (name, category_id, price, description, is_available)" +
+                    "VALUES(@productName, @categoryId, @price, @description, @isAvailable);";
+                command.Parameters.AddWithValue("@productName", $"Product {i}");
+                command.Parameters.AddWithValue("@categoryId", 1);
+                command.Parameters.AddWithValue("@price", 99.99 + i);
+                command.Parameters.AddWithValue("@description", "Description for product " + i);
+                command.Parameters.AddWithValue("@isAvailable", true);
+                command.ExecuteNonQuery();
+            }
         }
     }
 
     #region GetProductsIntegration
 
+    //TODO: currently repo is not using the same database as the seeded one... 
     [Fact]
     public async Task ProductsEndpointReturnsAllProducts()
     {
         //arrange
-	initDb();
-	Console.WriteLine("Now starting tests");
+        initDb();
+        Console.WriteLine("Now starting tests");
         SeedProducts(10);
         var client = _factory.CreateClient();
 
