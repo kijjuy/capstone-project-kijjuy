@@ -9,6 +9,7 @@ public interface IProductsService
     public Task<ProductViewModel?> GetProductById(int id);
     public void DeleteProduct(int productId);
     public int CreateProduct(CreateProductModel product);
+    public Task UpdateProduct(UpdateProductModel product, int id);
 }
 
 /**
@@ -121,6 +122,11 @@ public class ProductsService : IProductsService
             throw new BadSqlResultException($"Error inserting new product. Expected newId >= 1, got newId={result}.");
         }
         return result;
+    }
+
+    public async Task UpdateProduct(UpdateProductModel product, int id)
+    {
+        await _products.UpdateProduct(product, id);
     }
 }
 
