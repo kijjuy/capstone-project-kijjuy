@@ -10,6 +10,7 @@ public interface IProductsRepository
     public Task<ProductDataModel?> GetProductById(int id);
     public int DeleteProduct(int productId);
     public int CreateProduct(CreateProductModel product);
+    public Task UpdateProduct(UpdateProductModel product, int id);
 }
 
 public class ProductsRepository : IProductsRepository
@@ -170,4 +171,35 @@ public class ProductsRepository : IProductsRepository
         return (int)newId;
     }
 
+    public async Task UpdateProduct(UpdateProductModel product, int id)
+    {
+        using SqliteConnection db = new SqliteConnection(_connString);
+        SqliteCommand query = new SqliteCommand(@"
+	    UPDATE products SET 
+	    name = @name,
+	    price = @price,
+	    category_id = @category_id,
+	    description = @description,
+	    is_available = @is_available
+	    WHERE product_id = @product_id;
+		", db);
+
+        query.Parameters.AddWithValue("@name", product.Name);
+        query.Parameters.AddWithValue("@price", product.Price);
+        query.Parameters.AddWithValue("@category_id", product.CategoryId);
+        query.Parameters.AddWithValue("@description", product.Description);
+        query.Parameters.AddWithValue("@is_available", product.IsAvailable);
+        query.Parameters.AddWithValue("@product_id", id);
+
+        if (query.Connection == null)
+        {
+            var message = "query connection was null when trying to update product.";
+            _logger.LogError(message);
+            throw new DbConnectionException(message);
+        }
+
+        await query.Connection.OpenAsync();
+        var result = query.ExecuteNonQuery();
+        _logger.LogInformation($"updated product with id={id} and got result={result}");
+    }
 }
