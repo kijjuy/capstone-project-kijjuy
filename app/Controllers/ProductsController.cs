@@ -162,10 +162,14 @@ public class ProductsController : Controller
     {
 	if(!ModelState.IsValid) 
 	{
+	    _logger.LogWarning($"Error with model state when creating new product from form.");
+	    LogModelErrors();
 	    return View("Create");
 	}
 
-	throw new NotImplementedException("TODO: Implement creating from form");
+	long newId = _productsService.CreateProduct(cpm);
+	_logger.LogInformation($"Created new product with id={newId}");
+	return RedirectToAction("Details", new { id = newId });
     }
 
 
