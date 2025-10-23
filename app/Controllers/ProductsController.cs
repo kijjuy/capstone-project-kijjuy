@@ -44,6 +44,14 @@ public class ProductsController : Controller
         return Ok(json);
     }
 
+    [HttpGet("/products")]
+    public async Task<IActionResult> Index()
+    {
+	var products = await _productsService.GetAllProducts();
+
+	return View("Index", products);
+    }
+
     /**
      * <summary>
      * Binds the value id from the url params then finds a product with that matching
@@ -68,6 +76,18 @@ public class ProductsController : Controller
         }
 
         return Ok(product);
+    }
+
+    [HttpGet("/products/{id}")]
+    public async Task<IActionResult> Details(int id) {
+	var product = await _productsService.GetProductById(id);
+
+	if (product == null) 
+	{
+	    return NotFound();
+	}
+
+	return View("Details", product);
     }
 
     /**
@@ -127,6 +147,27 @@ public class ProductsController : Controller
             return new StatusCodeResult(500);
         }
     }
+
+    [HttpGet("/products/create")]
+    public async Task<IActionResult> Create() {
+
+	var categories = await _categoriesService.GetAllCategories();
+	ViewData["categories"] = new SelectList(categories, "CategoryId", "CategoryName");
+
+	return View();
+    }
+
+    [HttpPost("/products/create")]
+    public async Task<IActionResult> Create(CreateProductModel cpm) 
+    {
+	if(!ModelState.IsValid) 
+	{
+	    return View("Create");
+	}
+
+	throw new NotImplementedException("TODO: Implement creating from form");
+    }
+
 
     /**
      * <summary>
