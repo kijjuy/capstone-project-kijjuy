@@ -151,6 +151,7 @@ public class ProductsController : Controller
     }
 
 
+    [Authorize]
     [HttpGet("/products/create")]
     public async Task<IActionResult> Create()
     {
@@ -160,6 +161,7 @@ public class ProductsController : Controller
         return View();
     }
 
+    [Authorize]
     [HttpPost("/products/create")]
     public async Task<IActionResult> Create(CreateProductModel product)
     {
