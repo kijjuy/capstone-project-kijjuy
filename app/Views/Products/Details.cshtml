@@ -1,16 +1,10 @@
+@{
+    Layout = "_Layout";
+}
+
 @model app.Models.ProductViewModel 
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>@Model.ProductName</title>
-</head>
-<body>
     <h1>Name: @Model.ProductName</h1>
     <h3>Category: @Model.CategoryName</h3>
     <h3>Price: @Model.Price</h3>
     <p>@Model.Description</p>
-</body>
-</html>
