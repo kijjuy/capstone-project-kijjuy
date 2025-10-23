@@ -19,7 +19,7 @@ public class ProductsController : Controller
     {
         _logger = logger;
         _productsService = productsService;
-	_categoriesService = categoriesService;
+        _categoriesService = categoriesService;
     }
 
     [HttpGet("/api/hello")]
@@ -48,9 +48,9 @@ public class ProductsController : Controller
     [HttpGet("/products")]
     public async Task<IActionResult> Index()
     {
-	var products = await _productsService.GetAllProducts();
+        var products = await _productsService.GetAllProducts();
 
-	return View("Index", products);
+        return View("Index", products);
     }
 
     /**
@@ -80,15 +80,16 @@ public class ProductsController : Controller
     }
 
     [HttpGet("/products/{id}")]
-    public async Task<IActionResult> Details(int id) {
-	var product = await _productsService.GetProductById(id);
+    public async Task<IActionResult> Details(int id)
+    {
+        var product = await _productsService.GetProductById(id);
 
-	if (product == null) 
-	{
-	    return NotFound();
-	}
+        if (product == null)
+        {
+            return NotFound();
+        }
 
-	return View("Details", product);
+        return View("Details", product);
     }
 
     /**
@@ -149,55 +150,56 @@ public class ProductsController : Controller
         }
     }
 
-    [HttpGet("/products/create")]
-    public async Task<IActionResult> Create() 
-    {
-	var categories = await _categoriesService.GetAllCategories();
-	ViewData["Categories"] = new SelectList(categories, "CategoryId", "CategoryName");
 
-	return View();
+    [HttpGet("/products/create")]
+    public async Task<IActionResult> Create()
+    {
+        var categories = await _categoriesService.GetAllCategories();
+        ViewData["Categories"] = new SelectList(categories, "CategoryId", "CategoryName");
+
+        return View();
     }
 
     [HttpPost("/products/create")]
-    public async Task<IActionResult> Create(CreateProductModel product) 
+    public async Task<IActionResult> Create(CreateProductModel product)
     {
-	if(!ModelState.IsValid) 
-	{
-	    _logger.LogWarning($"Error with model state when creating new product from form.");
-	    LogModelErrors();
-	    return View("Create");
-	}
+        if (!ModelState.IsValid)
+        {
+            _logger.LogWarning($"Error with model state when creating new product from form.");
+            LogModelErrors();
+            return View("Create");
+        }
 
-	long newId = _productsService.CreateProduct(product);
-	_logger.LogInformation($"Created new product with id={newId}");
-	return RedirectToAction("Details", new { id = newId });
+        long newId = _productsService.CreateProduct(product);
+        _logger.LogInformation($"Created new product with id={newId}");
+        return RedirectToAction("Details", new { id = newId });
     }
 
     [HttpGet("/products/update/{id}")]
-    public async Task<IActionResult> Update(int id) 
+    public async Task<IActionResult> Update(int id)
     {
-	var categories = await _categoriesService.GetAllCategories();
-	ViewData["Categories"] = new SelectList(categories, "CategoryId", "CategoryName");
+        var categories = await _categoriesService.GetAllCategories();
+        ViewData["Categories"] = new SelectList(categories, "CategoryId", "CategoryName");
 
-	var product = await _productsService.GetProductById(id);
-	ViewData["CurrentProduct"] = product;
-	return View();
+        var product = await _productsService.GetProductById(id);
+        ViewData["CurrentProduct"] = product;
+        return View();
     }
 
     [HttpPost("/products/update/{id}")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Update(UpdateProductModel product, int id)
     {
-	_logger.LogDebug("Hit update put endpoint");
-	if(!ModelState.IsValid)
-	{
-	    _logger.LogWarning($"Error with model state when updating product with id={id}");
-	    LogModelErrors();
-	    return View();
-	}
+        _logger.LogDebug("Hit update put endpoint");
+        if (!ModelState.IsValid)
+        {
+            _logger.LogWarning($"Error with model state when updating product with id={id}");
+            LogModelErrors();
+            return View();
+        }
 
-	await _productsService.UpdateProduct(product, id);
-	return RedirectToAction("Details", new { id = id });
+        await _productsService.UpdateProduct(product, id);
+        return RedirectToAction("Details", new { id = id });
     }
 
 
