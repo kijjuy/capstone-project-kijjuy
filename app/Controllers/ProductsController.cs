@@ -167,9 +167,36 @@ public class ProductsController : Controller
 	    return View("Create");
 	}
 
-	long newId = _productsService.CreateProduct(cpm);
+	long newId = _productsService.CreateProduct(product);
 	_logger.LogInformation($"Created new product with id={newId}");
 	return RedirectToAction("Details", new { id = newId });
+    }
+
+    [HttpGet("/products/update/{id}")]
+    public async Task<IActionResult> Update(int id) 
+    {
+	var categories = await _categoriesService.GetAllCategories();
+	ViewData["Categories"] = new SelectList(categories, "CategoryId", "CategoryName");
+
+	var product = await _productsService.GetProductById(id);
+	ViewData["CurrentProduct"] = product;
+	return View();
+    }
+
+    [HttpPost("/products/update/{id}")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Update(UpdateProductModel product, int id)
+    {
+	_logger.LogDebug("Hit update put endpoint");
+	if(!ModelState.IsValid)
+	{
+	    _logger.LogWarning($"Error with model state when updating product with id={id}");
+	    LogModelErrors();
+	    return View();
+	}
+
+	await _productsService.UpdateProduct(product, id);
+	return RedirectToAction("Details", new { id = id });
     }
 
 
