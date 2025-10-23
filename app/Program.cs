@@ -17,7 +17,7 @@ public class Program
 
         builder.Logging.AddConsole();
 
-        builder.Services.AddControllers();
+        builder.Services.AddControllersWithViews();
 
         //Setup kestral to host on port 8080
         builder.WebHost.ConfigureKestrel((context, serverOptions) =>
@@ -62,8 +62,6 @@ public class Program
         app.UseAuthorization();
 
         app.MapControllers();
-
-	app.UseStaticFiles();
 
         app.Run();
     }
