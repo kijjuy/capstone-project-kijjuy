@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using app.Services;
 using app.Models;
 using System.Text.Json;
 
 namespace app.Controllers;
 
-public class ProductsController : ControllerBase
+public class ProductsController : Controller
 {
     private readonly ILogger<ProductsController> _logger;
     private readonly IProductsService _productsService;
