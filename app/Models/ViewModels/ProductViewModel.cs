@@ -1,3 +1,4 @@
+namespace app.Models;
 
 /**
  * View model class for product containing only
