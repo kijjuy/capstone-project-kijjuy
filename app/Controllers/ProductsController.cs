@@ -9,12 +9,15 @@ public class ProductsController : ControllerBase
 {
     private readonly ILogger<ProductsController> _logger;
     private readonly IProductsService _productsService;
+    private readonly ICategoriesService _categoriesService;
 
     public ProductsController(ILogger<ProductsController> logger,
-       IProductsService productsService)
+       IProductsService productsService,
+       ICategoriesService categoriesService)
     {
         _logger = logger;
         _productsService = productsService;
+	_categoriesService = categoriesService;
     }
 
     [HttpGet("/api/hello")]
