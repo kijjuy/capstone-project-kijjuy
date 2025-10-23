@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
+using System.Text.Json;
 using app.Services;
 using app.Models;
-using System.Text.Json;
 
 namespace app.Controllers;
 

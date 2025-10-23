@@ -1,5 +1,7 @@
 using app.Repositories;
 using app.Services;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace app;
 
@@ -9,17 +11,22 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
-        builder.Services.AddAuthorization();
+        builder.Services.AddDbContext<IdentityContext>(options =>
+            options.UseSqlite(builder.Configuration.GetConnectionString("IdentityConnection"))
+        );
 
-        // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-        builder.Services.AddOpenApi();
+        builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+        {
+            options.SignIn.RequireConfirmedAccount = false;
+        })
+        .AddEntityFrameworkStores<IdentityContext>();
+
+        builder.Services.AddAuthorization();
 
         builder.Logging.AddConsole();
 
         builder.Services.AddControllersWithViews();
 
-        //Setup kestral to host on port 8080
         builder.WebHost.ConfigureKestrel((context, serverOptions) =>
         {
             var kestralSection = context.Configuration.GetSection("Kestral");
@@ -59,6 +66,7 @@ public class Program
 
         app.UseHttpsRedirection();
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllers();
