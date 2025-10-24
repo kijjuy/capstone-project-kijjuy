@@ -11,4 +11,6 @@
     <a asp-controller="Products" asp-action="Details" asp-route-id="@product.ProductId">@product.ProductName</a>
     <br />
     }
+} else {
+    <h5>No products found. Check back later!</h5>
 }
