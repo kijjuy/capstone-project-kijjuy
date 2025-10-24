@@ -1,7 +1,8 @@
 using app.Repositories;
 using app.Services;
-using Microsoft.AspNetCore.Identity;
+using app.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace app;
 
@@ -15,7 +16,7 @@ public class Program
             options.UseSqlite(builder.Configuration.GetConnectionString("IdentityConnection"))
         );
 
-        builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+        builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
         {
             options.SignIn.RequireConfirmedAccount = false;
         })
@@ -70,6 +71,7 @@ public class Program
         app.UseAuthorization();
 
         app.MapControllers();
+        app.MapRazorPages();
 
         app.Run();
     }
