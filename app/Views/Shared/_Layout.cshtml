@@ -21,10 +21,12 @@
               <a class="nav-link" href="/products">Products</a>
             </li>
           </ul>
+	  <partial name="_LoginPartial" />
         </div>
       </div>
     </nav>
     
     @RenderBody()
 </body>
+@RenderSection("Scripts", required: false)
 </html>
