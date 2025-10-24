@@ -82,14 +82,29 @@ public class ProductsController : Controller
     [HttpGet("/products/{id}")]
     public async Task<IActionResult> Details(int id)
     {
-        var product = await _productsService.GetProductById(id);
-
-        if (product == null)
+        if (id < 1)
         {
-            return NotFound();
+            return BadRequest(new { message = "Product id must be above 0." });
         }
 
-        return View("Details", product);
+        ProductViewModel product;
+        try
+        {
+            product = await _productsService.GetProductById(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View("Details", product);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($"Unhandled exception when trying to get product by id. Error={e.Message}\n" +
+            $"{e.StackTrace}");
+            return new StatusCodeResult(500);
+        }
+
     }
 
     /**
