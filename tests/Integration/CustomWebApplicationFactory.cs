@@ -1,17 +1,24 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.DependencyInjection;
+using app.Repositories;
 
 public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram> where TProgram : class
 {
+
+    public static readonly String dbPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "test.db"));
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureAppConfiguration((context, configBuilder) =>
+        builder.ConfigureServices(services =>
         {
-            var testSettings = new Dictionary<String, String?>();
-            testSettings["ConnectionStrings:DefaultConnection"] = "Data Source=../test.db;Mode=Memory;Cache=Shared";
-
-            configBuilder.AddInMemoryCollection(testSettings);
+            services.RemoveAll<RepositoryOptions>();
+            services.Configure<RepositoryOptions>(options =>
+            {
+                options.ConnectionString = $"Data Source={dbPath}";
+            });
         });
     }
 }

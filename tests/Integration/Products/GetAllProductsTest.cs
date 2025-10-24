@@ -7,10 +7,12 @@ namespace tests;
 public class GetAllProductsTest : IClassFixture<CustomWebApplicationFactory<Program>>
 {
     private readonly CustomWebApplicationFactory<Program> _factory;
-    private readonly String _connectionString = "Data Source=../../test.db;Mode=Memory;Cache=Shared";
+    private readonly String _connectionString;
 
     public GetAllProductsTest(CustomWebApplicationFactory<Program> factory)
     {
+        String dbPath = CustomWebApplicationFactory<Program>.dbPath;
+        _connectionString = $"Data Source={dbPath}";
         _factory = factory;
     }
 
