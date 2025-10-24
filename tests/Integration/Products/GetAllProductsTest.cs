@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Microsoft.Data.Sqlite;
 using app;
 
@@ -166,14 +165,13 @@ public class GetAllProductsTest : IClassFixture<CustomWebApplicationFactory<Prog
         var client = _factory.CreateClient();
 
         //act
-        var response = await client.GetAsync("/Products");
+        var response = await client.GetAsync("/products");
+        var body = await response.Content.ReadAsStringAsync();
 
         //assert
         response.EnsureSuccessStatusCode();
-        var body = response.Content.ReadAsStream();
-        List<ProductViewModel> products = new List<ProductViewModel>();
-        JsonSerializer.Serialize<List<ProductViewModel>>(body, products);
-        Console.WriteLine($"size of products = {products.Count}");
+
+        Assert.Contains("No products", body);
     }
     #endregion
 }
