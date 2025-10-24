@@ -8,7 +8,14 @@ using app.Repositories;
 public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram> where TProgram : class
 {
 
-    public static readonly String dbPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "test.db"));
+    public CustomWebApplicationFactory()
+    : base()
+    {
+        String dbPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "test.db"));
+        connectionString = $"Data Source={dbPath}";
+    }
+
+    public String connectionString;
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -17,8 +24,9 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
             services.RemoveAll<RepositoryOptions>();
             services.Configure<RepositoryOptions>(options =>
             {
-                options.ConnectionString = $"Data Source={dbPath}";
+                options.ConnectionString = connectionString;
             });
         });
     }
 }
+
