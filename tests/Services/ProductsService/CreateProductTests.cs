@@ -9,6 +9,7 @@ namespace tests;
 public class CreateProductTests
 {
     private readonly ILogger<ProductsService> _serviceLogger;
+    private readonly Mock<ICategoriesService> _mockCategoriesService;
 
     public CreateProductTests()
     {
@@ -18,6 +19,7 @@ public class CreateProductTests
         });
         _serviceLogger = loggerFactory.CreateLogger<ProductsService>();
 
+        _mockCategoriesService = new Mock<ICategoriesService>();
     }
 
     //To test:
@@ -47,7 +49,7 @@ public class CreateProductTests
         mockRepo.Setup(repo => repo.CreateProduct(cpm))
             .Returns(1);
 
-        ProductsService service = new ProductsService(_serviceLogger, mockRepo.Object);
+        ProductsService service = new ProductsService(_serviceLogger, mockRepo.Object, _mockCategoriesService.Object);
 
         //act
         int result = service.CreateProduct(cpm);
@@ -116,7 +118,7 @@ public class CreateProductTests
             Price = 0,
             Description = "Test Description",
         };
-        ProductsService service = new ProductsService(_serviceLogger, mockRepo.Object);
+        ProductsService service = new ProductsService(_serviceLogger, mockRepo.Object, _mockCategoriesService.Object);
 
         //act
         //assert
@@ -150,7 +152,7 @@ public class CreateProductTests
         mockRepo.Setup(repo => repo.CreateProduct(cpm))
             .Returns(0);
 
-        ProductsService service = new ProductsService(_serviceLogger, mockRepo.Object);
+        ProductsService service = new ProductsService(_serviceLogger, mockRepo.Object, _mockCategoriesService.Object);
 
         //act
         //assert

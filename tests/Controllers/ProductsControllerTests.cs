@@ -8,6 +8,7 @@ namespace tests;
 public class ProductsControllerTests
 {
     private readonly ILogger<ProductsController> _controllerLogger;
+    private readonly Mock<ICategoriesService> _mockCategoriesService;
 
     public ProductsControllerTests()
     {
@@ -16,23 +17,25 @@ public class ProductsControllerTests
             builder.AddConsole();
         });
         _controllerLogger = loggerFactory.CreateLogger<ProductsController>();
+
+        _mockCategoriesService = new Mock<ICategoriesService>();
     }
 
     [Fact]
-    public void GetAllProducts_HasMultipleProducts_ReturnsAllProducts()
+    public async Task GetAllProducts_HasMultipleProducts_ReturnsAllProducts()
     {
-	//arrange
+        //arrange
         var mockService = new Mock<IProductsService>();
-	var products = CreateMockProducts.CreateProductViewModels(10);
+        var products = CreateMockProducts.CreateProductViewModels(10);
         mockService.Setup(service => service.GetAllProducts())
-	    .Returns(products);
+        .ReturnsAsync(products);
 
-	var controller = new ProductsController(_controllerLogger, mockService.Object);
+        var controller = new ProductsController(_controllerLogger, mockService.Object, _mockCategoriesService.Object);
 
-	//act
-	var result = controller.GetAllProducts();
+        //act
+        var result = controller.GetAllProducts();
 
-	//TODO: what to do with the result...
-	Console.WriteLine("--------------------------------- result of GetAllProducts_HasMultipleProducts_ReturnsAllProducts: " + result.ToString());
+        //TODO: what to do with the result...
+        Console.WriteLine("--------------------------------- result of GetAllProducts_HasMultipleProducts_ReturnsAllProducts: " + result.ToString());
     }
 }

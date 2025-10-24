@@ -8,6 +8,7 @@ namespace tests;
 public class DeleteProductTests
 {
     private readonly ILogger<ProductsService> _serviceLogger;
+    private readonly Mock<ICategoriesService> _mockCategoryService;
 
     public DeleteProductTests()
     {
@@ -16,6 +17,8 @@ public class DeleteProductTests
             builder.AddConsole();
         });
         _serviceLogger = loggerFactory.CreateLogger<ProductsService>();
+
+        _mockCategoryService = new Mock<ICategoriesService>();
     }
 
     #region DeleteProduct
@@ -34,7 +37,7 @@ public class DeleteProductTests
         mockRepo.Setup(repo => repo.DeleteProduct(1))
             .Returns(1);
 
-        var service = new ProductsService(_serviceLogger, mockRepo.Object);
+        var service = new ProductsService(_serviceLogger, mockRepo.Object, _mockCategoryService.Object);
 
         //act
         //assert
@@ -51,7 +54,7 @@ public class DeleteProductTests
     {
         //arrange
         var mockRepo = new Mock<IProductsRepository>();
-        var service = new ProductsService(_serviceLogger, mockRepo.Object);
+        var service = new ProductsService(_serviceLogger, mockRepo.Object, _mockCategoryService.Object);
 
         //act
         //assert
@@ -71,7 +74,7 @@ public class DeleteProductTests
         mockRepo.Setup(repo => repo.DeleteProduct(1))
             .Returns(0);
 
-        var service = new ProductsService(_serviceLogger, mockRepo.Object);
+        var service = new ProductsService(_serviceLogger, mockRepo.Object, _mockCategoryService.Object);
 
         //act
         //assert
