@@ -27,6 +27,7 @@ public class ProductsRepository : IProductsRepository
         _logger = logger;
         _connString = options.Value.ConnectionString;
         _readerMapper = readerMapper;
+        _logger.LogDebug($"---------------- conn string in reposisotry: {_connString}");
     }
 
     /**
