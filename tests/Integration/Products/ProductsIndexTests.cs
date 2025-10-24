@@ -1,19 +1,12 @@
-using Microsoft.Data.Sqlite;
 using app;
-using app.Models;
 
 namespace tests;
 
-public class GetAllProductsTest : IClassFixture<CustomWebApplicationFactory<Program>>
+public class ProductsIndexTests : IClassFixture<CustomWebApplicationFactory<Program>>
 {
-    private readonly CustomWebApplicationFactory<Program> _factory;
-    private readonly String _connectionString;
 
-    public GetAllProductsTest(CustomWebApplicationFactory<Program> factory)
+    public ProductsIndexTests(CustomWebApplicationFactory<Program> factory)
     {
-        String dbPath = CustomWebApplicationFactory<Program>.dbPath;
-        _connectionString = $"Data Source={dbPath}";
-        _factory = factory;
     }
 
     #region GetProductsIntegration
@@ -22,9 +15,10 @@ public class GetAllProductsTest : IClassFixture<CustomWebApplicationFactory<Prog
     public async Task ProductsEndpoint_HasProducts_ReturnsAllProducts()
     {
         //arrange
-        DbHelper.initDb(_connectionString);
-        var products = DbHelper.SeedProducts(10, _connectionString);
-        var client = _factory.CreateClient();
+        var factory = new CustomWebApplicationFactory<Program>();
+        var client = factory.CreateDefaultClient();
+        DbHelper.initDb(factory.connectionString);
+        var products = DbHelper.SeedProducts(10, factory.connectionString);
 
         //act
         var response = await client.GetAsync("/products");
@@ -45,8 +39,9 @@ public class GetAllProductsTest : IClassFixture<CustomWebApplicationFactory<Prog
     public async Task ProductsEndpoint_HasNoProducts_ReturnsNotFoundInfo()
     {
         //arrange
-        DbHelper.initDb(_connectionString);
-        var client = _factory.CreateClient();
+        var factory = new CustomWebApplicationFactory<Program>();
+        var client = factory.CreateDefaultClient();
+        DbHelper.initDb(factory.connectionString);
 
         //act
         var response = await client.GetAsync("/products");
