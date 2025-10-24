@@ -20,6 +20,7 @@ public class Program
         {
             options.SignIn.RequireConfirmedAccount = false;
         })
+	.AddRoles<IdentityRole>()
         .AddEntityFrameworkStores<IdentityContext>();
 
         builder.Services.AddAuthorization();
