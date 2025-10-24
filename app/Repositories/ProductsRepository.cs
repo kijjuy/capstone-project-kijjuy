@@ -98,7 +98,9 @@ public class ProductsRepository : IProductsRepository
         using var reader = await query.ExecuteReaderAsync();
         reader.Read();
 
-        if (reader.FieldCount == 0)
+        _logger.LogDebug($"FieldCount of reader={reader.FieldCount}");
+        _logger.LogDebug($"Reader.HasRows={reader.HasRows}");
+        if (!reader.HasRows)
         {
             _logger.LogWarning($"Could not find product with id={id}. Returning null.");
             return null;
