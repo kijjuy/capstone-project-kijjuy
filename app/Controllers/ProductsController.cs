@@ -29,21 +29,6 @@ public class ProductsController : Controller
         return Ok("Hello\n");
     }
 
-    /**
-     * <summary>
-     * Gets all products from the database.
-     * </summary>
-     */
-    [HttpGet("/api/products")]
-    public async Task<IActionResult> GetAllProducts()
-    {
-        _logger.LogDebug("Hit GetAllProducts method.");
-        var products = await _productsService.GetAllProducts();
-        _logger.LogDebug($"size of products: {products.Count}");
-
-        string json = JsonSerializer.Serialize(products);
-        return Ok(json);
-    }
 
     [HttpGet("/products")]
     public async Task<IActionResult> Index()
@@ -51,32 +36,6 @@ public class ProductsController : Controller
         var products = await _productsService.GetAllProducts();
 
         return View("Index", products);
-    }
-
-    /**
-     * <summary>
-     * Binds the value id from the url params then finds a product with that matching
-     * id or returns not found.
-     * </summary>
-     */
-    [HttpGet("/api/products/{id}", Name = "GetProductById")]
-    public async Task<IActionResult> GetProductById(int id)
-    {
-        if (!ModelState.IsValid)
-        {
-            _logger.LogWarning("Invalid id when trying to get product");
-            return BadRequest(new { message = "Must provide a valid Id when trying to get a product." });
-        }
-
-        _logger.LogDebug("Hit GetProductById");
-        var product = await _productsService.GetProductById(id);
-
-        if (product == null)
-        {
-            return NotFound(new { message = $"Product with id={id} could not be found." });
-        }
-
-        return Ok(product);
     }
 
     [HttpGet("/products/{id}")]
@@ -137,33 +96,6 @@ public class ProductsController : Controller
             }
         }
         return NoContent();
-    }
-
-    /**
-     * Binds form data to CreateProductModel then uses that to create a 
-     * new product in the database and returns the location of that new product.
-     */
-    [HttpPost("/api/products")]
-    public IActionResult CreateProduct([FromForm] CreateProductModel newProduct)
-    {
-        if (!ModelState.IsValid)
-        {
-            LogModelErrors();
-            _logger.LogWarning($"Attempted to create product with empty values.");
-            return BadRequest(new { message = "Must provide valid inputs for name, categoryId, price, and description." });
-        }
-
-        _logger.LogDebug("hit create product endpoint");
-        try
-        {
-            int newId = _productsService.CreateProduct(newProduct);
-            return CreatedAtRoute(nameof(GetProductById), new { id = newId }, new { id = newId });
-        }
-        catch (Exception e)
-        {
-            _logger.LogError($"Unhandled Exception thrown when creating product. Err={e.Message}");
-            return new StatusCodeResult(500);
-        }
     }
 
 
