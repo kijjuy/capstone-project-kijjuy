@@ -4,7 +4,7 @@ namespace app.Models;
 
 public class ApplicationUser : IdentityUser
 {
-    public required List<long> Cart { get; set; }
+    public List<long> Cart { get; set; }
 
     public ApplicationUser()
     : base()
