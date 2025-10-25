@@ -22,18 +22,6 @@ public class ProductsController : Controller
         _categoriesService = categoriesService;
     }
 
-    /**
-     * <summary>
-     *
-     * </summary>
-     */
-    [HttpGet("/api/hello")]
-    public IActionResult HelloWorld()
-    {
-        _logger.LogDebug("Hit Hello World method");
-        return Ok("Hello\n");
-    }
-
 
     /**
      * <summary>
