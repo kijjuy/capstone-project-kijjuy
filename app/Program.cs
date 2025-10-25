@@ -60,6 +60,16 @@ public class Program
 
         var app = builder.Build();
 
+        using (var scope = app.Services.CreateScope())
+        {
+            String adminPass = builder.Configuration["SeededUsers:Admin"];
+            DbInitializer.SetAdminPass(adminPass);
+            Console.WriteLine($"admin passowrd = {adminPass}");
+            DbInitializer.SeedUsersAndRoles(scope.ServiceProvider).Wait();
+        }
+
+
+
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
