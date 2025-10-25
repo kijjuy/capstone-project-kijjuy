@@ -12,6 +12,7 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+
         builder.Services.AddDbContext<IdentityContext>(options =>
             options.UseSqlite(builder.Configuration.GetConnectionString("IdentityConnection"))
         );

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.Authentication;
-using System.Net.Http.Headers;
 using System.Net;
 using Microsoft.Extensions.DependencyInjection;
 using app;
@@ -29,26 +28,12 @@ public class ProductsCreateTests
     }
 
     [Fact]
-    public async Task LoggedIn_GetsCreatePage()
+    public async Task AdminLoggedIn_GetsCreatePage()
     {
         //arrange
+	var client = AuthClientBuilder.BuildAdminAuthClient<TestAdminUserAuthHandler>();
         var factory = new CustomWebApplicationFactory<Program>();
-        var client = factory.WithWebHostBuilder(builder =>
-        {
-            builder.ConfigureServices(services =>
-            {
-                services.AddAuthentication(defaultScheme: "TestScheme")
-            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
-                "TestScheme", options => { });
-            });
-        })
-        .CreateClient(new WebApplicationFactoryClientOptions
-        {
-            AllowAutoRedirect = false
-        });
 
-        client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue(scheme: "TestScheme");
 
         DbHelper.initDb(factory.connectionString);
 
@@ -58,8 +43,15 @@ public class ProductsCreateTests
         var body = await response.Content.ReadAsStringAsync();
 
         //assert
-        response.EnsureSuccessStatusCode();
+	response.EnsureSuccessStatusCode();
 
-        Assert.Contains("Create", body);
+        Assert.Contains("Create Product", body);
+    }
+
+    //[Fact]
+    public async Task RegularUserLoggedIn_GetsUnauthorizedRedirect()
+    {
+	var factory = new CustomWebApplicationFactory<Program>();
+	var client = AuthClientBuilder.BuildAdminAuthClient<TestRegularUserAuthHandler>();
     }
 }
