@@ -112,6 +112,7 @@ public class ProductsController : Controller
      * Binds the value id from the url params then deletes a single product with that matching id.
      * </summary>
      */
+    [Authorize(Roles = "Admin")]
     [HttpDelete("/api/products/{id}")]
     public IActionResult DeleteProduct(int id)
     {
@@ -166,7 +167,7 @@ public class ProductsController : Controller
     }
 
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpGet("/products/create")]
     public async Task<IActionResult> Create()
     {
@@ -176,7 +177,7 @@ public class ProductsController : Controller
         return View();
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPost("/products/create")]
     public async Task<IActionResult> Create(CreateProductModel product)
     {
@@ -192,6 +193,7 @@ public class ProductsController : Controller
         return RedirectToAction("Details", new { id = newId });
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpGet("/products/update/{id}")]
     public async Task<IActionResult> Update(int id)
     {
@@ -203,6 +205,7 @@ public class ProductsController : Controller
         return View();
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost("/products/update/{id}")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Update(UpdateProductModel product, int id)
