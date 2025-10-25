@@ -174,6 +174,12 @@ public class ProductsRepository : IProductsRepository
         return (int)newId;
     }
 
+
+    /**
+     * <summary>
+     * Sets all values of product with product_id=<paramref name="id"/> to new values in <paramref name="product"/>
+     * </summary>
+     */
     public async Task UpdateProduct(UpdateProductModel product, int id)
     {
         using SqliteConnection db = new SqliteConnection(_connString);

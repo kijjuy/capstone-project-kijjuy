@@ -28,6 +28,11 @@ public class CategoriesRepository : ICategoriesRepository
         _mapper = mapper;
     }
 
+    /**
+     * <summary>
+     * Gets all categories from the categories table in the database.
+     * </summary>
+     */
     public async Task<List<Category>> GetAllCategories()
     {
         _logger.LogDebug("Hit GetAllCategories");
@@ -53,6 +58,11 @@ public class CategoriesRepository : ICategoriesRepository
         return categories;
     }
 
+    /**
+     * <summary>
+     * Returns a single category where category_id matches the passed in id, or null if not found.
+     * </summary>
+     */
     public async Task<Category> GetCategoryById(long id)
     {
         using SqliteConnection db = new SqliteConnection(_connString);
@@ -62,6 +72,11 @@ public class CategoriesRepository : ICategoriesRepository
         await query.Connection.OpenAsync();
         var reader = await query.ExecuteReaderAsync();
         await reader.ReadAsync();
+
+        if (!reader.HasRows)
+        {
+            return null;
+        }
 
         var sqlDict = ReaderMapper.CreateSqlDictionary(reader);
         var category = _mapper.MapDataToModel<Category>(sqlDict);

@@ -12,8 +12,6 @@ public interface IProductsService
     public Task UpdateProduct(UpdateProductModel product, int id);
 }
 
-/**
- */
 public class ProductsService : IProductsService
 {
 
@@ -31,8 +29,10 @@ public class ProductsService : IProductsService
     }
 
     /**
+     * <summary>
      * Gets all products from the database and converts 
      * them into ProductViewModels.
+     * </summary>
      */
     public async Task<List<ProductViewModel>> GetAllProducts()
     {
@@ -56,9 +56,11 @@ public class ProductsService : IProductsService
     }
 
     /**
+     * <summary>
      * Checks if id is valid, then
      * Gets a single product from the repository and maps it to ProductViewModel, 
      * or returns null if the product from the repo was null.
+     * </summary>
      */
     public async Task<ProductViewModel?> GetProductById(int id)
     {
@@ -85,8 +87,10 @@ public class ProductsService : IProductsService
     }
 
     /**
+     * <summary>
      * Checks if the productId is valid, then deletes a single product from
      * the repository. If no products were deleted, throws a BadSqlResultException.
+     * </summary>
      */
     public void DeleteProduct(int productId)
     {
@@ -104,6 +108,12 @@ public class ProductsService : IProductsService
         }
     }
 
+    /**
+     * <summary>
+     * Checks that all model properties are valid, then passes the create model to the
+     * repository. Returns the result, which is the id of the new product.
+     * </summary>
+     */
     public int CreateProduct(CreateProductModel product)
     {
         if (product.Name == null || product.Name.Equals(String.Empty) ||
@@ -124,6 +134,11 @@ public class ProductsService : IProductsService
         return result;
     }
 
+    /**
+     * <summary>
+     * updated a product that has id=<paramref name="id"/> with new values from <paramref name="product"/>.
+     * </summary>
+     */
     public async Task UpdateProduct(UpdateProductModel product, int id)
     {
         await _products.UpdateProduct(product, id);

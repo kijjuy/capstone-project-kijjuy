@@ -22,6 +22,11 @@ public class ProductsController : Controller
         _categoriesService = categoriesService;
     }
 
+    /**
+     * <summary>
+     *
+     * </summary>
+     */
     [HttpGet("/api/hello")]
     public IActionResult HelloWorld()
     {
@@ -30,6 +35,11 @@ public class ProductsController : Controller
     }
 
 
+    /**
+     * <summary>
+     * Returns the products Index razor view that contains a list of all products
+     * </summary>
+     */
     [HttpGet("/products")]
     public async Task<IActionResult> Index()
     {
@@ -38,6 +48,12 @@ public class ProductsController : Controller
         return View("Index", products);
     }
 
+    /**
+     * <summary>
+     * Returns the datails razor View with the product matching the id. If id is invalid,
+     * return BadRequest result. If product is not found, return NotFound result.
+     * </summary>
+     */
     [HttpGet("/products/{id}")]
     public async Task<IActionResult> Details(int id)
     {
@@ -69,6 +85,7 @@ public class ProductsController : Controller
     /**
      * <summary>
      * Binds the value id from the url params then deletes a single product with that matching id.
+     * Requires user to have admin role.
      * </summary>
      */
     [Authorize(Roles = "Admin")]
@@ -99,6 +116,13 @@ public class ProductsController : Controller
     }
 
 
+    /**
+     * <summary>
+     * Returns the Create razor view.
+     *
+     * Requires the user to have admin role.
+     * </summary>
+     */
     [Authorize(Roles = "Admin")]
     [HttpGet("/products/create")]
     public async Task<IActionResult> Create()
@@ -109,6 +133,15 @@ public class ProductsController : Controller
         return View();
     }
 
+    /**
+     * <summary>
+     * Gets product details from Create razor page and uses them to add a new product 
+     * to the database. If the model state is invalid, return to the create page. 
+     * If successful, redirect to the new product.
+     *
+     * Requires the user to have Admin role.
+     * </summary>
+     */
     [Authorize(Roles = "Admin")]
     [HttpPost("/products/create")]
     public async Task<IActionResult> Create(CreateProductModel product)
@@ -125,6 +158,13 @@ public class ProductsController : Controller
         return RedirectToAction("Details", new { id = newId });
     }
 
+    /**
+     * <summary>
+     * Returns the Update razor view.
+     *
+     * Requires te user to have admin role.
+     * </summary>
+     */
     [Authorize(Roles = "Admin")]
     [HttpGet("/products/update/{id}")]
     public async Task<IActionResult> Update(int id)
@@ -137,6 +177,14 @@ public class ProductsController : Controller
         return View();
     }
 
+    /**
+     * <summary>
+     * Gets product details from the Update razor page and uses them to update 
+     * the product with the Id in the route param.
+     *
+     * Requires the user to have Admin role.
+     * </summary>
+     */
     [Authorize(Roles = "Admin")]
     [HttpPost("/products/update/{id}")]
     [ValidateAntiForgeryToken]

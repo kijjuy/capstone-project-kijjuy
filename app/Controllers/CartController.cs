@@ -21,6 +21,13 @@ public class CartController : Controller
         _productsSercice = productsSercice;
     }
 
+    /**
+     * <summary>
+     * Returns the cart Index razor view.
+     *
+     * User must be logged in.
+     * </summary>
+     */
     [Authorize]
     [HttpGet("/cart")]
     public IActionResult Index()
@@ -28,6 +35,13 @@ public class CartController : Controller
         return View();
     }
 
+    /**
+     * <summary>
+     * Adds a product with id=productId to the user's cart.
+     *
+     * User must be logged in.
+     * </summary>
+     */
     [Authorize]
     [HttpPost("/api/cart/{id}")]
     public async Task<IActionResult> AddToCart(int productId)

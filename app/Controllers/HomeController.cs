@@ -11,6 +11,11 @@ public class HomeController : Controller
         _logger = logger;
     }
 
+    /**
+     * <summary>
+     * Returns the index homepage view.
+     * </summary>
+     */
     [HttpGet("/")]
     public IActionResult Index()
     {
