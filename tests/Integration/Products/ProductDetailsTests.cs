@@ -33,30 +33,30 @@ public class ProductDetailsTests : IClassFixture<CustomWebApplicationFactory<Pro
     [Fact]
     public async Task ProductNotExists_ReturnsNotFound()
     {
-	//arrange
-	var factory = new CustomWebApplicationFactory<Program>();
-	var client = factory.CreateDefaultClient();
-	DbHelper.initDb(factory.connectionString);
+        //arrange
+        var factory = new CustomWebApplicationFactory<Program>();
+        var client = factory.CreateDefaultClient();
+        DbHelper.initDb(factory.connectionString);
 
-	//act
-	var response = await client.GetAsync("/products/1");
+        //act
+        var response = await client.GetAsync("/products/1");
 
-	//assert
-	Assert.Equal(response.StatusCode, HttpStatusCode.NotFound);
+        //assert
+        Assert.Equal(response.StatusCode, HttpStatusCode.NotFound);
     }
 
     [Fact]
     public async Task InvalidProductId_ReturnsBadRequest()
     {
-	//arrange
-	var factory = new CustomWebApplicationFactory<Program>();
-	var client = factory.CreateDefaultClient();
-	DbHelper.initDb(factory.connectionString);
+        //arrange
+        var factory = new CustomWebApplicationFactory<Program>();
+        var client = factory.CreateDefaultClient();
+        DbHelper.initDb(factory.connectionString);
 
-	//act
-	var response = await client.GetAsync("/products/0");
+        //act
+        var response = await client.GetAsync("/products/0");
 
-	//
-	Assert.Equal(response.StatusCode, HttpStatusCode.BadRequest);
+        //
+        Assert.Equal(response.StatusCode, HttpStatusCode.BadRequest);
     }
 }
