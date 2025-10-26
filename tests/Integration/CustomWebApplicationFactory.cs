@@ -10,7 +10,7 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
     public CustomWebApplicationFactory()
     : base()
     {
-        String dbPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "test.db"));
+        String dbPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, $"test_{Guid.NewGuid()}.db"));
         connectionString = $"Data Source={dbPath}";
     }
 
