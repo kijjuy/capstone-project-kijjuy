@@ -15,10 +15,9 @@ public static class AuthClientBuilder
      * The authentication scheme is determined by <typeparamref name="TAuthHandler"/>.
      * </summary>
      */
-    public static HttpClient BuildAdminAuthClient<TAuthHandler>()
+    public static HttpClient BuildAdminAuthClient<TAuthHandler>(CustomWebApplicationFactory<Program> factory)
     where TAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        var factory = new CustomWebApplicationFactory<Program>();
         var client = factory.WithWebHostBuilder(builder =>
         {
             builder.ConfigureServices(services =>

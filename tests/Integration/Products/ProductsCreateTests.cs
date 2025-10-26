@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.Authentication;
 using System.Net;
-using Microsoft.Extensions.DependencyInjection;
 using app;
 
 namespace tests;
@@ -9,7 +7,7 @@ namespace tests;
 public class ProductsCreateTests
 {
     [Fact]
-    public async Task LoggedOut_RedirectsToLogin()
+    public async Task CreateGet_LoggedOut_RedirectsToLogin()
     {
         //arrange
         var factory = new CustomWebApplicationFactory<Program>();
@@ -28,11 +26,11 @@ public class ProductsCreateTests
     }
 
     [Fact]
-    public async Task AdminLoggedIn_GetsCreatePage()
+    public async Task CreateGet_AdminLoggedIn_GetsCreatePage()
     {
         //arrange
-	var client = AuthClientBuilder.BuildAdminAuthClient<TestAdminUserAuthHandler>();
         var factory = new CustomWebApplicationFactory<Program>();
+	var client = AuthClientBuilder.BuildAdminAuthClient<TestAdminUserAuthHandler>(factory);
 
 
         DbHelper.initDb(factory.connectionString);
@@ -49,9 +47,12 @@ public class ProductsCreateTests
     }
 
     //[Fact]
-    public async Task RegularUserLoggedIn_GetsUnauthorizedRedirect()
+    public async Task CreateGet_RegularUserLoggedIn_GetsUnauthorizedRedirect()
     {
 	var factory = new CustomWebApplicationFactory<Program>();
-	var client = AuthClientBuilder.BuildAdminAuthClient<TestRegularUserAuthHandler>();
+	var client = AuthClientBuilder.BuildAdminAuthClient<TestRegularUserAuthHandler>(factory);
+
+	DbHelper.initDb(factory.connectionString);
+
     }
 }
