@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using app.Repositories;
 
 public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram> where TProgram : class
@@ -25,6 +26,12 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
             {
                 options.ConnectionString = connectionString;
             });
+        });
+
+        builder.ConfigureLogging(logger =>
+        {
+            logger.ClearProviders();
+            logger.SetMinimumLevel(LogLevel.Error);
         });
     }
 }
