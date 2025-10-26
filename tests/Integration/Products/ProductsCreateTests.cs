@@ -69,6 +69,7 @@ public class ProductsCreateTests
     [Fact]
     public async Task CreateNewProduct_ValidInfo_CreatesProduct()
     {
+	//arrange
 	var factory = new CustomWebApplicationFactory<Program>();
 	var client = AuthClientBuilder.BuildAdminAuthClient<TestAdminUserAuthHandler>(factory);
 
@@ -81,10 +82,13 @@ public class ProductsCreateTests
 	formData["Description"] = "Test description";
 
 	var content = new FormUrlEncodedContent(formData);
+
+	//act
 	var response = await client.PostAsync("/products/create", content);
 
 	var body = await response.Content.ReadAsStringAsync();
 
+	//assert
 	Assert.Equal(HttpStatusCode.Found, response.StatusCode);
 	Assert.Equal("/products/1", response.Headers.Location.ToString());
     }
@@ -93,16 +97,20 @@ public class ProductsCreateTests
     [MemberData(nameof(BadProductData))]
     public async Task CreateNewProduct_BadInfo_ReturnsError(String caseName, object badData)
     {
+	//arrange
 	var factory = new CustomWebApplicationFactory<Program>();
 	var client = AuthClientBuilder.BuildAdminAuthClient<TestAdminUserAuthHandler>(factory);
 
 	DbHelper.initDb(factory.connectionString);
 
 	var content = ToFormContent(badData);
+
+	//act
 	var response = await client.PostAsync("/products/create", content);
 
 	var body = await response.Content.ReadAsStringAsync();
 
+	//assert
 	Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 	Assert.Contains("Create Product", body);
     }
@@ -157,7 +165,7 @@ public class ProductsCreateTests
 	    }},
 	    new object[] { "Bad Name - High", () => {
 		var formData = new Dictionary<String, String>();
-		formData["Name"] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"; //101 chars
+		formData["Name"] = new String('a', 101);
 		formData["CategoryId"] = "1";
 		formData["Price"] = "123.45";
 		formData["Description"] = "test description";
@@ -171,12 +179,68 @@ public class ProductsCreateTests
 		formData["Description"] = "test description";
 		return formData;
 	    }},
+	    new object[] { "Bad CategoryId - Negative", () => {
+		var formData = new Dictionary<String, String>();
+		formData["Name"] = "Test";
+		formData["CategoryId"] = "-1";
+		formData["Price"] = "123.45";
+		formData["Description"] = "test description";
+		return formData;
+	    }},
 	    new object[] { "Bad CategoryId - High", () => {
 		var formData = new Dictionary<String, String>();
 		formData["Name"] = "Test";
 		formData["CategoryId"] = "21";
 		formData["Price"] = "123.45";
 		formData["Description"] = "test description";
+		return formData;
+	    }},
+	    new object[] { "Bad Price - Low", () => {
+		var formData = new Dictionary<String, String>();
+		formData["Name"] = "Test";
+		formData["CategoryId"] = "1";
+		formData["Price"] = "1";
+		formData["Description"] = "test description";
+		return formData;
+	    }},
+	    new object[] { "Bad Price - Zero", () => {
+		var formData = new Dictionary<String, String>();
+		formData["Name"] = "Test";
+		formData["CategoryId"] = "0";
+		formData["Price"] = "1";
+		formData["Description"] = "test description";
+		return formData;
+	    }},
+	    new object[] { "Bad Price - Negative", () => {
+		var formData = new Dictionary<String, String>();
+		formData["Name"] = "Test";
+		formData["CategoryId"] = "-1";
+		formData["Price"] = "1";
+		formData["Description"] = "test description";
+		return formData;
+	    }},
+	    new object[] { "Bad Price - High", () => {
+		var formData = new Dictionary<String, String>();
+		formData["Name"] = "Test";
+		formData["CategoryId"] = "1001";
+		formData["Price"] = "1";
+		formData["Description"] = "test description";
+		return formData;
+	    }},
+	    new object[] { "Bad Description - Low", () => {
+		var formData = new Dictionary<String, String>();
+		formData["Name"] = "Test";
+		formData["CategoryId"] = "123.45";
+		formData["Price"] = "1";
+		formData["Description"] = "test";
+		return formData;
+	    }},
+	    new object[] { "Bad Description - High", () => {
+		var formData = new Dictionary<String, String>();
+		formData["Name"] = "Test";
+		formData["CategoryId"] = "123.45";
+		formData["Price"] = "1";
+		formData["Description"] = new String('a', 1001);
 		return formData;
 	    }},
 	};
