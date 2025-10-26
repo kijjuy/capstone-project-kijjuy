@@ -46,13 +46,22 @@ public class ProductsCreateTests
         Assert.Contains("Create Product", body);
     }
 
-    //[Fact]
-    public async Task CreateGet_RegularUserLoggedIn_GetsUnauthorizedRedirect()
+    [Fact]
+    public async Task CreateGet_RegularUserLoggedIn_RequestForbidden()
     {
+	//arrange
 	var factory = new CustomWebApplicationFactory<Program>();
 	var client = AuthClientBuilder.BuildAdminAuthClient<TestRegularUserAuthHandler>(factory);
 
 	DbHelper.initDb(factory.connectionString);
+
+	//act
+	var response = await client.GetAsync("/products/create");
+	var body = await response.Content.ReadAsStringAsync();
+
+	//assert
+	Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
 
     }
 }
