@@ -89,88 +89,98 @@ public class ProductsCreateTests
 	Assert.Equal("/products/1", response.Headers.Location.ToString());
     }
 
-    [Fact]
-    public async Task CreateNewProduct_BadInfo_ReturnsError()
+    [Theory(DisplayName = "CreateNewProduct_BadInfo_ReturnsError")]
+    [MemberData(nameof(BadProductData))]
+    public async Task CreateNewProduct_BadInfo_ReturnsError(String caseName, object badData)
     {
 	var factory = new CustomWebApplicationFactory<Program>();
 	var client = AuthClientBuilder.BuildAdminAuthClient<TestAdminUserAuthHandler>(factory);
 
 	DbHelper.initDb(factory.connectionString);
 
-	var badTestData = new List<Dictionary<String,String>>();
+	var content = ToFormContent(badData);
+	var response = await client.PostAsync("/products/create", content);
 
-	{ // No Description
-	    var formData = new Dictionary<String, String>();
-	    formData["Name"] = "test";
-	    formData["CategoryId"] = "1";
-	    formData["Price"] = "123.45";
-	    badTestData.Add(formData);
-	}
-	{ // No Price
-	    var formData = new Dictionary<String, String>();
-	    formData["Name"] = "test";
-	    formData["CategoryId"] = "1";
-	    formData["Description"] = "test description";
-	    badTestData.Add(formData);
-	}
-	{ // No CategoryId
-	    var formData = new Dictionary<String, String>();
-	    formData["Name"] = "test";
-	    formData["Price"] = "123.45";
-	    formData["Description"] = "test description";
-	    badTestData.Add(formData);
-	}
-	{ // No Name
-	    var formData = new Dictionary<String, String>();
-	    formData["CategoryId"] = "1";
-	    formData["Price"] = "123.45";
-	    formData["Description"] = "test description";
-	    badTestData.Add(formData);
-	}
-	{ // Bad Name - Low
-	    var formData = new Dictionary<String, String>();
-	    formData["Name"] = "aa";
-	    formData["CategoryId"] = "1";
-	    formData["Price"] = "123.45";
-	    formData["Description"] = "test description";
-	    badTestData.Add(formData);
-	}
-	{ // Bad Name - High
-	    var formData = new Dictionary<String, String>();
-	    formData["Name"] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"; //101 chars
-	    formData["CategoryId"] = "1";
-	    formData["Price"] = "123.45";
-	    formData["Description"] = "test description";
-	    badTestData.Add(formData);
-	}
-	{ // Bad categoryId - Low
-	    var formData = new Dictionary<String, String>();
-	    formData["Name"] = "Test";
-	    formData["CategoryId"] = "0";
-	    formData["Price"] = "123.45";
-	    formData["Description"] = "test description";
-	    badTestData.Add(formData);
-	}
-	{ // Bad categoryId - High
-	    var formData = new Dictionary<String, String>();
-	    formData["Name"] = "Test";
-	    formData["CategoryId"] = "21";
-	    formData["Price"] = "123.45";
-	    formData["Description"] = "test description";
-	    badTestData.Add(formData);
-	}
+	var body = await response.Content.ReadAsStringAsync();
 
-	foreach(var formData in badTestData) {
-	    var content = new FormUrlEncodedContent(formData);
-	    var response = await client.PostAsync("/products/create", content);
-
-	    var body = await response.Content.ReadAsStringAsync();
-
-	    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-	    Assert.Contains("Create Product", body);
-	}
+	Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+	Assert.Contains("Create Product", body);
     }
 
-#endregion
+    public static FormUrlEncodedContent ToFormContent(object formData)
+    {
+	var dict = formData.GetType()
+	    .GetProperties()
+	    .ToDictionary(p => p.Name, p => p.GetValue(formData).ToString());
+	return new FormUrlEncodedContent(dict);
+    }
+
+    public static IEnumerable<object[]> BadProductData => 
+
+	new List<object[]>
+	{
+	    new object[] { "No Description", () => {
+		var formData = new Dictionary<String, String>();
+		formData["Name"] = "test";
+		formData["CategoryId"] = "1";
+		formData["Price"] = "123.45";
+		return formData;
+	    }},
+	    new object[] { "No Price", () => {
+		var formData = new Dictionary<String, String>();
+		formData["Name"] = "test";
+		formData["CategoryId"] = "1";
+		formData["Description"] = "test description";
+		return formData;
+	    }},
+	    new object[] { "No CategoryId", () => {
+		var formData = new Dictionary<String, String>();
+		formData["Name"] = "test";
+		formData["Price"] = "123.45";
+		formData["Description"] = "test description";
+		return formData;
+	    }},
+	    new object[] { "No Name", () => {
+		var formData = new Dictionary<String, String>();
+		formData["CategoryId"] = "1";
+		formData["Price"] = "123.45";
+		formData["Description"] = "test description";
+		return formData;
+	    }},
+	    new object[] { "Bad Name - Low", () => {
+		var formData = new Dictionary<String, String>();
+		formData["Name"] = "aa";
+		formData["CategoryId"] = "1";
+		formData["Price"] = "123.45";
+		formData["Description"] = "test description";
+		return formData;
+	    }},
+	    new object[] { "Bad Name - High", () => {
+		var formData = new Dictionary<String, String>();
+		formData["Name"] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"; //101 chars
+		formData["CategoryId"] = "1";
+		formData["Price"] = "123.45";
+		formData["Description"] = "test description";
+		return formData;
+	    }},
+	    new object[] { "Bad CategoryId - Low", () => {
+		var formData = new Dictionary<String, String>();
+		formData["Name"] = "Test";
+		formData["CategoryId"] = "0";
+		formData["Price"] = "123.45";
+		formData["Description"] = "test description";
+		return formData;
+	    }},
+	    new object[] { "Bad CategoryId - High", () => {
+		var formData = new Dictionary<String, String>();
+		formData["Name"] = "Test";
+		formData["CategoryId"] = "21";
+		formData["Price"] = "123.45";
+		formData["Description"] = "test description";
+		return formData;
+	    }},
+	};
+
+    #endregion
 
 }
