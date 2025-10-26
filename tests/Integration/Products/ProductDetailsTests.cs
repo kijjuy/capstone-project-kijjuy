@@ -42,7 +42,7 @@ public class ProductDetailsTests : IClassFixture<CustomWebApplicationFactory<Pro
         var response = await client.GetAsync("/products/1");
 
         //assert
-        Assert.Equal(response.StatusCode, HttpStatusCode.NotFound);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
     [Fact]
