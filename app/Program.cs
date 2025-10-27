@@ -65,7 +65,6 @@ public class Program
         {
             String adminPass = builder.Configuration["SeededUsers:Admin"];
             DbInitializer.SetAdminPass(adminPass);
-            Console.WriteLine($"admin passowrd = {adminPass}");
             DbInitializer.SeedUsersAndRoles(scope.ServiceProvider).Wait();
         }
 
