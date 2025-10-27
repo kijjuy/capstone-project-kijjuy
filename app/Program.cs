@@ -61,12 +61,6 @@ public class Program
 
 	var app = builder.Build();
 
-	using (var scope = app.Services.CreateScope())
-	{
-	    String adminPass = builder.Configuration["SeededUsers:Admin"];
-	    DbInitializer.SetAdminPass(adminPass);
-	    DbInitializer.SeedUsersAndRoles(scope.ServiceProvider).Wait();
-	}
 
 
 
@@ -74,6 +68,12 @@ public class Program
 	if (app.Environment.IsDevelopment())
 	{
 	    app.MapOpenApi();
+	    using (var scope = app.Services.CreateScope())
+	    {
+	        String adminPass = builder.Configuration["SeededUsers:Admin"];
+	        DbInitializer.SetAdminPass(adminPass);
+	        DbInitializer.SeedUsersAndRoles(scope.ServiceProvider).Wait();
+	    }
 	}
 
 	app.UseHttpsRedirection();
