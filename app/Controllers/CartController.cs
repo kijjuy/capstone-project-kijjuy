@@ -30,9 +30,12 @@ public class CartController : Controller
      */
     [Authorize]
     [HttpGet("/cart")]
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return View();
+	var user = await _userManager.FindByNameAsync(User.Identity.Name);
+	List<ProductViewModel> products = await _productsSercice.GetProductsFromCart(user.Cart);
+
+        return View("Index", products);
     }
 
     /**
