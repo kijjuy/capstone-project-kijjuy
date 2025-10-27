@@ -1,0 +1,55 @@
+@{
+Layout = "_Layout";
+}
+
+@using app.Models;
+@model IEnumerable<ProductViewModel>
+
+<h1>Admin Panel</h1>
+
+@if(Model.Any()) 
+{
+<table>
+    <tr>
+	<td><b>Product Name</b></td>
+	<td><b>Product Price</b></td>
+	<td><b>Update</b></td>
+	<td><b>Delete</b></td>
+    </tr>
+    @foreach(var product in Model) 
+    {
+    <tr>
+	<td>@product.ProductName</td>
+	<td>@product.Price</td>
+	<td>
+	    <a asp-controller="Products" asp-action="Update" asp-route-id="@product.ProductId" class="btn btn-primary">Update</a>
+	</td>
+	<td>
+	    <a onClick="deleteProduct(@product.ProductId)" class="btn btn-danger">Delete</a>
+	</td>
+    </tr>
+    }
+</table>
+
+} else {
+<h5>No products found. Check back later!</h5>
+}
+
+<script>
+    async function deleteProduct(productId) {
+	console.log("Delete item hit with value " + productId);
+	let shouldDelete = confirm(`Are you sure you want to delete product with id=${productId}?`);
+	if(!shouldDelete) {
+	    return;
+	}
+
+	let res = await fetch("/api/products/" + productId, {
+	    method: "DELETE"
+	});
+	if(res.status != 204) {
+	    alert("Error deleting product. Please check application logs.");
+	    return;
+	}
+	window.location.reload();
+    }
+</script>
