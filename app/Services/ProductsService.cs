@@ -10,6 +10,8 @@ public interface IProductsService
     public void DeleteProduct(int productId);
     public int CreateProduct(CreateProductModel product);
     public Task UpdateProduct(UpdateProductModel product, int id);
+    public Task<List<ProductViewModel>> GetProductsFromCart(IEnumerable<long> cart);
+    public Task<bool> AddProductToCart(List<long> cart, int productId);
 }
 
 public class ProductsService : IProductsService
@@ -133,6 +135,50 @@ public class ProductsService : IProductsService
         }
         return result;
     }
+
+    /**
+     * <summary>
+     * Loops through product ids in <paramref name="cart"/> and gets each product, adding them to
+     * a list. Returns the list of those products.
+     * </summary>
+     */
+    public async Task<List<ProductViewModel>> GetProductsFromCart(IEnumerable<long> cart)
+    {
+        var products = new List<ProductViewModel>();
+        foreach (int productId in cart)
+        {
+            var product = await GetProductById(productId);
+            if (product == null)
+            {
+                continue;
+            }
+            products.Add(product);
+        }
+        return products;
+    }
+
+    /**
+     * <summary>
+     * Takes in <paramref name="cart"/>, checks if the product exists, then adds it to <paramref name="cart"/>.
+     * <see langword="return"/> <see langword="true"/> if product is added. 
+     * <see langword="return"/> <see langword="false"/> if product was not added.
+     * </summary>
+     */
+    public async Task<bool> AddProductToCart(List<long> cart, int productId)
+    {
+        _logger.LogDebug($"Count of cart before adding: ${cart.Count()}");
+        var product = GetProductById(productId);
+        if (product == null)
+        {
+            _logger.LogWarning($"Cound not find product with id={productId}. Returning same cart.");
+            return false;
+        }
+
+        cart.Add(productId);
+        _logger.LogDebug($"Count of cart after adding: ${cart.Count()}");
+        return true;
+    }
+
 
     /**
      * <summary>
