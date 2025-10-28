@@ -66,18 +66,18 @@ public class CartController : Controller
     {
         _logger.LogDebug($"Hit AddToCart method with productId={productId}");
 
-	if(productId < 1)
-	{
-	    _logger.LogWarning($"Error adding product because Id was less than 1.");
-	    return BadRequest(new { message = "ProductId must be greater than 0" });
-	}
+        if (productId < 1)
+        {
+            _logger.LogWarning($"Error adding product because Id was less than 1.");
+            return BadRequest(new { message = "ProductId must be greater than 0" });
+        }
 
         var user = await _userManager.FindByNameAsync(User.Identity.Name);
         _logger.LogDebug($"user cart length before adding: {user.Cart.Count()}");
 
         if (user.Cart.Contains(productId))
         {
-	    _logger.LogInformation("Product already in cart.");
+            _logger.LogInformation("Product already in cart.");
             return BadRequest(new { message = "Product is already in your cart." });
         }
 
@@ -85,7 +85,7 @@ public class CartController : Controller
 
         if (!isAdded)
         {
-	    _logger.LogWarning($"Error adding to cart with productId={productId}");
+            _logger.LogWarning($"Error adding to cart with productId={productId}");
             return new StatusCodeResult(500);
         }
 
@@ -101,9 +101,9 @@ public class CartController : Controller
      * Resets the user's cart with a new empty cart.
      * </summary>
      */
-    private async Task FixCart(ApplicationUser user) 
+    private async Task FixCart(ApplicationUser user)
     {
-	user.Cart = new List<long>();
-	await _userManager.UpdateAsync(user);
+        user.Cart = new List<long>();
+        await _userManager.UpdateAsync(user);
     }
 }
