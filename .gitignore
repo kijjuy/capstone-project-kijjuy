@@ -484,4 +484,5 @@ $RECYCLE.BIN/
 *.swp
 
 #custom
-sql/test.db
+*.db
+
