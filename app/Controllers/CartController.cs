@@ -58,19 +58,49 @@ public class CartController : Controller
      * </summary>
      */
     [Authorize]
-    [HttpPost("/api/cart/{id}")]
+    [HttpPost("/api/cart/{productId}")]
     public async Task<IActionResult> AddToCart(int productId)
     {
-        _logger.LogDebug("Hit AddToCart method");
-        var product = await _productsSercice.GetProductById(productId);
+        _logger.LogDebug($"Hit AddToCart method with productId={productId}");
 
-        if (product == null)
+	if(productId < 1)
+	{
+	    _logger.LogWarning($"Error adding product because Id was less than 1.");
+	    return BadRequest(new { message = "ProductId must be greater than 0" });
+	}
+
+        var user = await _userManager.FindByNameAsync(User.Identity.Name);
+        _logger.LogDebug($"user cart length before adding: {user.Cart.Count()}");
+
+        if (user.Cart.Contains(productId))
         {
-            var user = await _userManager.FindByNameAsync(User.Identity.Name);
-
-            _logger.LogWarning($"user with id={user.Id} tried to add product with id={productId}. Product not found.");
-            return NotFound(new { message = $"Count not find product with id={productId}" });
+	    _logger.LogInformation("Product already in cart.");
+            return BadRequest(new { message = "Product is already in your cart." });
         }
-        throw new NotImplementedException("Adding to cart not implemented");
+
+        bool isAdded = await _productsSercice.AddProductToCart(user.Cart, productId);
+
+        if (!isAdded)
+        {
+	    _logger.LogWarning($"Error adding to cart with productId={productId}");
+            return new StatusCodeResult(500);
+        }
+
+        _logger.LogDebug($"user cart length after adding: {user.Cart.Count()}");
+
+        await _userManager.UpdateAsync(user);
+
+        return Ok();
+    }
+
+    /**
+     * <summary>
+     * Resets the user's cart with a new empty cart.
+     * </summary>
+     */
+    private async Task FixCart(ApplicationUser user) 
+    {
+	user.Cart = new List<long>();
+	await _userManager.UpdateAsync(user);
     }
 }
