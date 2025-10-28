@@ -5,22 +5,41 @@
 @using app.Models
 @model IEnumerable<ProductViewModel>
 
+@if(Model.Any()) {
 <table>
-@foreach(var product in Model)
-{
+
+    @foreach(var product in Model)
+    {
     <tr>
 	<td>@product.ProductName</td>
 	<td>@product.Price</td>
 	<td>
-	    <a onClick="() => { console.log(`asdf`) }" class="btn btn-danger">Remove</a>
+	    <a onClick="deleteFromCart(@product.ProductId, this)" class="btn btn-danger">Remove</a>
 	</td>
     </tr>
-}
+    }
 </table>
+} else 
+{
+    <h3>No items in cart.</h3>
+}
 
 <script>
-    async function deleteFromCart(productId, obj) {
-	console.log(`got productId=${productId}`);
-	console.log(`got e=${obj}`);
+    async function deleteFromCart(productId, callingElement) {
+	var res = await fetch("/api/cart/" + productId, {
+	    method: "DELETE"
+	});
+
+	if(res.status == 400) {
+	    alert("Error removing item from cart.");
+	    return;
+	}
+
+	////remove 2 nodes up, which is the table row.
+	//callingElement.parentNode.parentNode.remove();
+	//return;
+	window.location.reload();
     }
+
+
 </script>
