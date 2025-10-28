@@ -98,6 +98,31 @@ public class CartController : Controller
 
     /**
      * <summary>
+     * Attempts to remove an item with value of <paramref name="productId"/> from the user's cart.
+     * If not deleted, <see langword="return"/> BadRequest (400).
+     * If deleted, <see langword="return"/> Ok (200).
+     * </summary>
+     */
+    [Authorize]
+    [HttpDelete("/api/cart/{productId}")]
+    public async Task<IActionResult> RemoveFromCart(int productId)
+    {
+        var user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+        bool isRemoved = _productsSercice.RemoveFromCart(user.Cart, productId);
+        if (!isRemoved)
+        {
+            _logger.LogWarning($"User tried to remove cart item with id={productId}. Item was not in cart.");
+            return BadRequest(new { message = "Could not remove item from cart. Item not found." });
+        }
+
+        await _userManager.UpdateAsync(user);
+        _logger.LogDebug($"removed item from cart with id={productId}");
+        return Ok();
+    }
+
+    /**
+     * <summary>
      * Resets the user's cart with a new empty cart.
      * </summary>
      */

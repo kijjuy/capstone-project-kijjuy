@@ -12,6 +12,7 @@ public interface IProductsService
     public Task UpdateProduct(UpdateProductModel product, int id);
     public Task<List<ProductViewModel>> GetProductsFromCart(IEnumerable<long> cart);
     public Task<bool> AddProductToCart(List<long> cart, int productId);
+    public bool RemoveFromCart(List<long> cart, int productId);
 }
 
 public class ProductsService : IProductsService
@@ -177,6 +178,17 @@ public class ProductsService : IProductsService
         cart.Add(productId);
         _logger.LogDebug($"Count of cart after adding: ${cart.Count()}");
         return true;
+    }
+
+    /**
+     * <summary>
+     * Checks if <paramref name="productId"/> is inside of <paramref name="cart"/>. If not, <see langword="return"/>
+     * <see langword="false"/>. If yes, <see langword="return"/> <see langword="true"/>
+     * </summary>
+     */
+    public bool RemoveFromCart(List<long> cart, int productId)
+    {
+        return cart.Remove(productId);
     }
 
 
