@@ -2,4 +2,25 @@
     Layout = "_Layout";
 }
 
-<h1>Cart goes here</h1>
+@using app.Models
+@model IEnumerable<ProductViewModel>
+
+<table>
+@foreach(var product in Model)
+{
+    <tr>
+	<td>@product.ProductName</td>
+	<td>@product.Price</td>
+	<td>
+	    <a onClick="() => { console.log(`asdf`) }" class="btn btn-danger">Remove</a>
+	</td>
+    </tr>
+}
+</table>
+
+<script>
+    async function deleteFromCart(productId, obj) {
+	console.log(`got productId=${productId}`);
+	console.log(`got e=${obj}`);
+    }
+</script>
