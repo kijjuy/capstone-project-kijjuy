@@ -32,9 +32,21 @@ public class CartController : Controller
     [HttpGet("/cart")]
     public async Task<IActionResult> Index()
     {
-	var user = await _userManager.FindByNameAsync(User.Identity.Name);
-	List<ProductViewModel> products = await _productsSercice.GetProductsFromCart(user.Cart);
+        var user = await _userManager.FindByNameAsync(User.Identity.Name);
+	_logger.LogDebug("cart items:");
+	foreach(long item in user.Cart)
+	{
+	    _logger.LogDebug($"{item}");
+	}
 
+	var products = new List<ProductViewModel>();
+	try {
+	    products = await _productsSercice.GetProductsFromCart(user.Cart);
+	} catch(Exception e) {
+	    _logger.LogWarning($"Error getting items from cart. Fixing cart.\n{e.StackTrace}");
+	    FixCart(user);
+
+	}
         return View("Index", products);
     }
 
