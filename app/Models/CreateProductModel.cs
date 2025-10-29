@@ -15,4 +15,8 @@ public class CreateProductModel
 
     [Length(minimumLength: 10, maximumLength: 1000)]
     public required String Description { get; set; }
+
+    [MinLength(1)]
+    [MaxLength(20)]
+    public required List<IFormFile> Files { get; set; }
 }
