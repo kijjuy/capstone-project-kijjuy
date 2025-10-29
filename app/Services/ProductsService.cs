@@ -131,10 +131,14 @@ public class ProductsService : IProductsService
 
         foreach (var file in product.Files)
         {
-            bool saved = await SaveFile(file);
-            if (!saved)
+            try
             {
-                throw new ArgumentException("Bad image data when trying to save image to disk.");
+                await SaveFile(file);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($@"Error when saving image to disk. Error={e.Message}.");
+                throw e;
             }
         }
 
@@ -156,13 +160,15 @@ public class ProductsService : IProductsService
      * <see langword="return"/> <see langword="true"/> if image creation succeeded.
      * </summary>
      */
-    private async Task<bool> SaveFile(IFormFile image)
+    private async Task SaveFile(IFormFile image)
     {
         if (!(image.ContentType == "image/jpg" ||
                 image.ContentType == "image/png" ||
                 image.ContentType == "image/jpeg"))
         {
-            return false;
+            String message = $"Filetype was not an allowed type. Filetype was {image.ContentType}";
+            _logger.LogError(message);
+            throw new FileTypeException(message);
         }
 
 
@@ -179,7 +185,7 @@ public class ProductsService : IProductsService
         {
             _logger.LogError($@"Error when creating/getting directory. Error={e.Message}.\n
 		    {e.StackTrace}");
-            return false;
+            throw e;
         }
 
         FileStream newFile;
@@ -191,12 +197,10 @@ public class ProductsService : IProductsService
         {
             _logger.LogError($@"Error when creating new file for image. Error={e.Message}.\n
 		    {e.StackTrace}");
-            return false;
+            throw e;
         }
 
         await image.CopyToAsync(newFile);
-
-        return true;
     }
 
     /**
