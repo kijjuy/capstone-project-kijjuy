@@ -485,4 +485,6 @@ $RECYCLE.BIN/
 
 #custom
 *.db
-
+*.jpeg
+*.png
+*.jpg
