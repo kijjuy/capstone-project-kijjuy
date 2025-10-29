@@ -1,3 +1,4 @@
+using System.IO;
 using app.Repositories;
 using app.Models;
 
@@ -128,6 +129,15 @@ public class ProductsService : IProductsService
             throw new ArgumentException("Cannot create product with null values.");
         }
 
+        foreach (var file in product.Files)
+        {
+            bool saved = await SaveFile(file);
+            if (!saved)
+            {
+                throw new ArgumentException("Bad image data when trying to save image to disk.");
+            }
+        }
+
         int result = _products.CreateProduct(product);
         if (result < 1)
         {
@@ -135,6 +145,58 @@ public class ProductsService : IProductsService
             throw new BadSqlResultException($"Error inserting new product. Expected newId >= 1, got newId={result}.");
         }
         return result;
+    }
+
+    /**
+     * <summary>
+     * Tries to create a new file in the Images directory. Creates that directory if it doesn't exist.
+     * Copies <paramref name="image"/> stream to the newly created file.
+     *
+     * <see langword="return"/> <see langword="false"/> if image creation failed.
+     * <see langword="return"/> <see langword="true"/> if image creation succeeded.
+     * </summary>
+     */
+    private async Task<bool> SaveFile(IFormFile image)
+    {
+        if (!(image.ContentType == "image/jpg" ||
+                image.ContentType == "image/png" ||
+                image.ContentType == "image/jpeg"))
+        {
+            return false;
+        }
+
+
+        var filetype = image.ContentType.Split("/")[1];
+        _logger.LogDebug($"Got filetype of ${filetype} when creating image.");
+        var imageId = Guid.NewGuid();
+        var imagePath = AppContext.BaseDirectory + "/Images/" + imageId + "." + filetype;
+
+        try
+        {
+            Directory.CreateDirectory(AppContext.BaseDirectory + "/Images/");
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($@"Error when creating/getting directory. Error={e.Message}.\n
+		    {e.StackTrace}");
+            return false;
+        }
+
+        FileStream newFile;
+        try
+        {
+            newFile = File.Create(imagePath);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($@"Error when creating new file for image. Error={e.Message}.\n
+		    {e.StackTrace}");
+            return false;
+        }
+
+        await image.CopyToAsync(newFile);
+
+        return true;
     }
 
     /**
