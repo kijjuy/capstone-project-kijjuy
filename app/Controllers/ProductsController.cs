@@ -141,7 +141,7 @@ public class ProductsController : Controller
             return View("Create");
         }
 
-        long newId = _productsService.CreateProduct(product);
+        long newId = await _productsService.CreateProduct(product);
         _logger.LogInformation($"Created new product with id={newId}");
         return RedirectToAction("Details", new { id = newId });
     }

@@ -8,7 +8,7 @@ public interface IProductsService
     public Task<List<ProductViewModel>> GetAllProducts();
     public Task<ProductViewModel?> GetProductById(int id);
     public void DeleteProduct(int productId);
-    public int CreateProduct(CreateProductModel product);
+    public Task<int> CreateProduct(CreateProductModel product);
     public Task UpdateProduct(UpdateProductModel product, int id);
     public Task<List<ProductViewModel>> GetProductsFromCart(IEnumerable<long> cart);
     public Task<bool> AddProductToCart(List<long> cart, int productId);
@@ -117,7 +117,7 @@ public class ProductsService : IProductsService
      * repository. Returns the result, which is the id of the new product.
      * </summary>
      */
-    public int CreateProduct(CreateProductModel product)
+    public async Task<int> CreateProduct(CreateProductModel product)
     {
         if (product.Name == null || product.Name.Equals(String.Empty) ||
             product.Price == 0 ||
