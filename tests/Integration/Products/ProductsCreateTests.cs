@@ -89,14 +89,15 @@ public class ProductsCreateTests
 
         formData.Add(fileContent, "Files", "image.jpeg");
 
-	//act
 
-	var body = await response.Content.ReadAsStringAsync();
+        //act
         var response = await client.PostAsync("/products/create", formData);
 
-	//assert
-	Assert.Equal(HttpStatusCode.Found, response.StatusCode);
-	Assert.Equal("/products/1", response.Headers.Location.ToString());
+        var body = await response.Content.ReadAsStringAsync();
+
+        //assert
+        Assert.Equal(HttpStatusCode.Found, response.StatusCode);
+        Assert.Equal("/products/1", response.Headers.Location.ToString());
     }
 
     [Theory(DisplayName = "CreateNewProduct_BadInfo_ReturnsError")]
