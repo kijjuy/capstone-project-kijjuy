@@ -11,6 +11,7 @@ public interface IProductsRepository
     public int DeleteProduct(int productId);
     public int CreateProduct(CreateProductModel product);
     public Task UpdateProduct(UpdateProductModel product, int id);
+    public Task CreateImage(int productId, Guid imageId);
 }
 
 public class ProductsRepository : IProductsRepository
@@ -210,5 +211,35 @@ public class ProductsRepository : IProductsRepository
         await query.Connection.OpenAsync();
         var result = query.ExecuteNonQuery();
         _logger.LogInformation($"updated product with id={id} and got result={result}");
+    }
+
+    /**
+     * <summary>
+     * Creates image entry with <paramref name="productId"/> and <paramref name="imageId"/>.
+     * </summary>
+     */
+    public async Task CreateImage(int productId, Guid imageId)
+    {
+        using SqliteConnection db = new SqliteConnection(_connString);
+        SqliteCommand query = new SqliteCommand(@"
+		INSERT INTO images (product_id, file_path) VALUES(@product_id, @file_path) RETURNING image_id;
+		", db);
+
+        query.Parameters.AddWithValue("@product_id", productId);
+        query.Parameters.AddWithValue("@file_path", imageId);
+
+        if (query.Connection == null)
+        {
+            var message = "query connection was null when trying to create image data.";
+            _logger.LogError(message);
+            throw new DbConnectionException(message);
+        }
+
+        await query.Connection.OpenAsync();
+        var reader = await query.ExecuteReaderAsync();
+        reader.Read();
+        long id = (long)reader.GetValue(0);
+
+        _logger.LogInformation($"Created new image data entry with id={id}.");
     }
 }
