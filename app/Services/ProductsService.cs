@@ -130,11 +130,14 @@ public class ProductsService : IProductsService
             throw new ArgumentException("Cannot create product with null values.");
         }
 
+	List<Guid> imageIds = new List<Guid>();
+
         foreach (var file in product.Files)
         {
             try
             {
-                await SaveFile(file);
+                var imageId = await SaveFile(file);
+		imageIds.Add(imageId);
             }
             catch (Exception e)
             {
@@ -143,13 +146,32 @@ public class ProductsService : IProductsService
             }
         }
 
-        int result = _products.CreateProduct(product);
-        if (result < 1)
+	int newId;
+	try {
+	    newId = _products.CreateProduct(product);
+	} catch(Exception e)
+	{
+	    _logger.LogError($"Exception thrown when creating product. Error={e.Message}.\n{e.StackTrace}");
+	    throw e;
+	}
+
+        if (newId < 1)
         {
-            _logger.LogError($"Error inserting new product. Expected newId >= 1, got newId={result}.");
-            throw new BadSqlResultException($"Error inserting new product. Expected newId >= 1, got newId={result}.");
+            _logger.LogError($"Error inserting new product. Expected newId >= 1, got newId={newId}.");
+            throw new BadSqlResultException($"Error inserting new product. Expected newId >= 1, got newId={newId}.");
         }
-        return result;
+
+	foreach(var imageId in imageIds)
+	{
+	    try {
+		await _products.CreateImage(newId, imageId);
+	    } catch(Exception e)
+	    {
+		_logger.LogError($"Error when creating image db entry. Error={e.Message}.\n{e.StackTrace}");
+		throw e;
+	    }
+	}
+        return newId;
     }
 
     /**
@@ -161,7 +183,7 @@ public class ProductsService : IProductsService
      * <see langword="return"/> <see langword="true"/> if image creation succeeded.
      * </summary>
      */
-    private async Task SaveFile(IFormFile image)
+    private async Task<Guid> SaveFile(IFormFile image)
     {
         if (!(image.ContentType == "image/jpg" ||
                 image.ContentType == "image/png" ||
@@ -202,6 +224,7 @@ public class ProductsService : IProductsService
         }
 
         await image.CopyToAsync(newFile);
+	return imageId;
     }
 
     /**
