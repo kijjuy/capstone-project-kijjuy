@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
+using System.Net.Http.Headers;
+using System.Text;
 using app;
 
 namespace tests;
@@ -69,19 +71,23 @@ public class ProductsCreateTests
     [Fact]
     public async Task CreateNewProduct_ValidInfo_CreatesProduct()
     {
-	//arrange
-	var factory = new CustomWebApplicationFactory<Program>();
-	var client = AuthClientBuilder.BuildAdminAuthClient<TestAdminUserAuthHandler>(factory);
+        //arrange
+        var factory = new CustomWebApplicationFactory<Program>();
+        var client = AuthClientBuilder.BuildAdminAuthClient<TestAdminUserAuthHandler>(factory);
 
-	DbHelper.initDb(factory.connectionString);
+        DbHelper.initDb(factory.connectionString);
 
-	var formData = new Dictionary<String, String>();
-	formData["Name"] = "test";
-	formData["CategoryId"] = "1";
-	formData["Price"] = "123.45";
-	formData["Description"] = "Test description";
+        var formData = new MultipartFormDataContent();
 
-	var content = new FormUrlEncodedContent(formData);
+        formData.Add(new StringContent("test"), "Name");
+        formData.Add(new StringContent("1"), "CategoryId");
+        formData.Add(new StringContent("123.45"), "Price");
+        formData.Add(new StringContent("Test description"), "Description");
+
+        var fileContent = new ByteArrayContent(Encoding.UTF8.GetBytes("Fake file content"));
+        fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
+
+        formData.Add(fileContent, "Files", "image.jpeg");
 
 	//act
 	var response = await client.PostAsync("/products/create", content);
