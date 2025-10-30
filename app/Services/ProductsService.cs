@@ -114,8 +114,9 @@ public class ProductsService : IProductsService
 
     /**
      * <summary>
-     * Checks that all model properties are valid, then passes the create model to the
-     * repository. Returns the result, which is the id of the new product.
+     * Creates a new product from data in <paramref name="product"/>. Once product is 
+     * created, uses productId to insert image data into images table.
+     * <see langword="return"/> new product Id.
      * </summary>
      */
     public async Task<int> CreateProduct(CreateProductModel product)
