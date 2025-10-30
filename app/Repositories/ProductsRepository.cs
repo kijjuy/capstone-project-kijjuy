@@ -12,6 +12,7 @@ public interface IProductsRepository
     public int CreateProduct(CreateProductModel product);
     public Task UpdateProduct(UpdateProductModel product, int id);
     public Task CreateImage(int productId, String imageName);
+    public Task<List<ImageDataModel>> GetImageDataByProductId(int productId);
 }
 
 public class ProductsRepository : IProductsRepository
@@ -242,4 +243,31 @@ public class ProductsRepository : IProductsRepository
 
         _logger.LogInformation($"Created new image data entry with id={id}.");
     }
+
+    public async Task<List<ImageDataModel>> GetImageDataByProductId(int productId)
+    {
+        using SqliteConnection db = new SqliteConnection(_connString);
+        SqliteCommand query = new SqliteCommand(@"
+		SELECT file_path FROM images WHERE product_id = @product_id;
+		", db);
+        query.Parameters.AddWithValue("@product_id", productId);
+
+        await query.Connection!.OpenAsync();
+
+        var reader = await query.ExecuteReaderAsync();
+
+        var imagesData = new List<ImageDataModel>();
+
+        while (await reader.ReadAsync())
+        {
+            var rowDict = ReaderMapper.CreateSqlDictionary(reader);
+            var imageData = _readerMapper.MapDataToModel<ImageDataModel>(rowDict);
+            imagesData.Add(imageData);
+        }
+
+        _logger.LogDebug($"Got {imagesData.Count} images for product with id={productId}.");
+        return imagesData;
+    }
+
 }
+

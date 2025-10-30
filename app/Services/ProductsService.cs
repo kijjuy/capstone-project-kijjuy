@@ -8,6 +8,7 @@ public interface IProductsService
 {
     public Task<List<ProductViewModel>> GetAllProducts();
     public Task<ProductViewModel?> GetProductById(int id);
+    public Task<ProductViewModelWithImages> GetProductByIdWithImages(int id);
     public void DeleteProduct(int productId);
     public Task<int> CreateProduct(CreateProductModel product);
     public Task UpdateProduct(UpdateProductModel product, int id);
@@ -88,6 +89,25 @@ public class ProductsService : IProductsService
             Description = dataModel.Description,
         };
         return viewProduct;
+    }
+
+    public async Task<ProductViewModelWithImages> GetProductByIdWithImages(int productId)
+    {
+        var internalModel = await GetProductById(productId);
+        var imageNameData = await _products.GetImageDataByProductId(productId);
+        var imageNames = new List<String>();
+
+
+        foreach (var imageData in imageNameData)
+        {
+            imageNames.Add(imageData.ImageName);
+        }
+
+        return new ProductViewModelWithImages
+        {
+            InternalModel = internalModel,
+            ImageNames = imageNames
+        };
     }
 
     /**
