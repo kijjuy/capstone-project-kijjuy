@@ -2,13 +2,18 @@
     Layout = "_Layout";
 }
 
-@model app.Models.ProductViewModel 
+@model app.Models.ProductViewModelWithImages
 
-<h1>Name: @Model.ProductName</h1>
-<h3>Category: @Model.CategoryName</h3>
-<h3>Price: @Model.Price</h3>
-<a onClick="addToCart(@Model.ProductId)" class="btn btn-primary">Add To Cart</a>
-<p>@Model.Description</p>
+<h1>Name: @Model.InternalModel.ProductName</h1>
+<h3>Category: @Model.InternalModel.CategoryName</h3>
+<h3>Price: @Model.InternalModel.Price</h3>
+<a onClick="addToCart(@Model.InternalModel.ProductId)" class="btn btn-primary">Add To Cart</a>
+<p>@Model.InternalModel.Description</p>
+
+@foreach(var imageName in @Model.ImageNames)
+{
+<img src="/images/@imageName" alt="">
+}
 
 <script>
     async function addToCart(productId) {
