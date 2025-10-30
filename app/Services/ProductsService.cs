@@ -130,30 +130,32 @@ public class ProductsService : IProductsService
             throw new ArgumentException("Cannot create product with null values.");
         }
 
-	List<Guid> imageIds = new List<Guid>();
+        List<Guid> imageIds = new List<Guid>();
 
         foreach (var file in product.Files)
         {
             try
             {
                 var imageId = await SaveFile(file);
-		imageIds.Add(imageId);
+                imageIds.Add(imageId);
             }
             catch (Exception e)
             {
                 _logger.LogError($@"Error when saving image to disk. Error={e.Message}.");
-                throw e;
+                throw;
             }
         }
 
-	int newId;
-	try {
-	    newId = _products.CreateProduct(product);
-	} catch(Exception e)
-	{
-	    _logger.LogError($"Exception thrown when creating product. Error={e.Message}.\n{e.StackTrace}");
-	    throw e;
-	}
+        int newId;
+        try
+        {
+            newId = _products.CreateProduct(product);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($"Exception thrown when creating product. Error={e.Message}.\n{e.StackTrace}");
+            throw;
+        }
 
         if (newId < 1)
         {
@@ -161,16 +163,18 @@ public class ProductsService : IProductsService
             throw new BadSqlResultException($"Error inserting new product. Expected newId >= 1, got newId={newId}.");
         }
 
-	foreach(var imageId in imageIds)
-	{
-	    try {
-		await _products.CreateImage(newId, imageId);
-	    } catch(Exception e)
-	    {
-		_logger.LogError($"Error when creating image db entry. Error={e.Message}.\n{e.StackTrace}");
-		throw e;
-	    }
-	}
+        foreach (var imageId in imageIds)
+        {
+            try
+            {
+                await _products.CreateImage(newId, imageId);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error when creating image db entry. Error={e.Message}.\n{e.StackTrace}");
+                throw;
+            }
+        }
         return newId;
     }
 
@@ -208,7 +212,7 @@ public class ProductsService : IProductsService
         {
             _logger.LogError($@"Error when creating/getting directory. Error={e.Message}.\n
 		    {e.StackTrace}");
-            throw e;
+            throw;
         }
 
         FileStream newFile;
@@ -220,11 +224,11 @@ public class ProductsService : IProductsService
         {
             _logger.LogError($@"Error when creating new file for image. Error={e.Message}.\n
 		    {e.StackTrace}");
-            throw e;
+            throw;
         }
 
         await image.CopyToAsync(newFile);
-	return imageId;
+        return imageId;
     }
 
     /**
