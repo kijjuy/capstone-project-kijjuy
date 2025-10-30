@@ -17,8 +17,8 @@ public class ProductDetailsTests : IClassFixture<CustomWebApplicationFactory<Pro
         var factory = new CustomWebApplicationFactory<Program>();
         var client = factory.CreateDefaultClient();
         DbHelper.initDb(factory.connectionString);
-        var product = DbHelper.SeedProducts(1, factory.connectionString)
-            .FirstOrDefault();
+        var products = await DbHelper.SeedProducts(1, factory.connectionString);
+        var product = products.FirstOrDefault();
 
         //act
         var response = await client.GetAsync("/products/" + 1);
