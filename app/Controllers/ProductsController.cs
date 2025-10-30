@@ -53,7 +53,7 @@ public class ProductsController : Controller
         try
         {
             product = await _productsService.GetProductByIdWithImages(id);
-            if (product == null)
+            if (product == null || product.InternalModel == null)
             {
                 return NotFound();
             }
