@@ -130,32 +130,9 @@ public class ProductsService : IProductsService
             throw new ArgumentException("Cannot create product with null values.");
         }
 
-        List<Guid> imageIds = new List<Guid>();
+        List<Guid> imageIds = await SaveImages(product);
 
-        foreach (var file in product.Files)
-        {
-            try
-            {
-                var imageId = await SaveFile(file);
-                imageIds.Add(imageId);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($@"Error when saving image to disk. Error={e.Message}.");
-                throw;
-            }
-        }
-
-        int newId;
-        try
-        {
-            newId = _products.CreateProduct(product);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError($"Exception thrown when creating product. Error={e.Message}.\n{e.StackTrace}");
-            throw;
-        }
+        int newId = _products.CreateProduct(product);
 
         if (newId < 1)
         {
@@ -165,17 +142,21 @@ public class ProductsService : IProductsService
 
         foreach (var imageId in imageIds)
         {
-            try
-            {
-                await _products.CreateImage(newId, imageId);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Error when creating image db entry. Error={e.Message}.\n{e.StackTrace}");
-                throw;
-            }
+            await _products.CreateImage(newId, imageId);
         }
+
         return newId;
+    }
+
+    private async Task<List<Guid>> SaveImages(CreateProductModel product)
+    {
+        List<Guid> imageIds = new List<Guid>();
+        foreach (var file in product.Files)
+        {
+            var imageId = await SaveFile(file);
+            imageIds.Add(imageId);
+        }
+        return imageIds;
     }
 
     /**
