@@ -202,7 +202,7 @@ public class ProductsService : IProductsService
 
         var filetype = image.ContentType.Split("/")[1];
         _logger.LogDebug($"Got filetype of ${filetype} when creating image.");
-        var imageName = Guid.NewGuid() + filetype;
+        var imageName = Guid.NewGuid() + "." + filetype;
         var imagePath = AppContext.BaseDirectory + "/Images/" + imageName;
 
         try
