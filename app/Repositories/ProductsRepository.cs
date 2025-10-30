@@ -11,7 +11,7 @@ public interface IProductsRepository
     public int DeleteProduct(int productId);
     public int CreateProduct(CreateProductModel product);
     public Task UpdateProduct(UpdateProductModel product, int id);
-    public Task CreateImage(int productId, Guid imageId);
+    public Task CreateImage(int productId, String imageName);
 }
 
 public class ProductsRepository : IProductsRepository
@@ -218,7 +218,7 @@ public class ProductsRepository : IProductsRepository
      * Creates image entry with <paramref name="productId"/> and <paramref name="imageId"/>.
      * </summary>
      */
-    public async Task CreateImage(int productId, Guid imageId)
+    public async Task CreateImage(int productId, String imageName)
     {
         using SqliteConnection db = new SqliteConnection(_connString);
         SqliteCommand query = new SqliteCommand(@"
@@ -226,7 +226,7 @@ public class ProductsRepository : IProductsRepository
 		", db);
 
         query.Parameters.AddWithValue("@product_id", productId);
-        query.Parameters.AddWithValue("@file_path", imageId);
+        query.Parameters.AddWithValue("@file_path", imageName);
 
         if (query.Connection == null)
         {

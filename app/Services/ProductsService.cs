@@ -130,7 +130,7 @@ public class ProductsService : IProductsService
             throw new ArgumentException("Cannot create product with null values.");
         }
 
-        List<Guid> imageIds = await SaveImages(product);
+        List<String> imageNames = await SaveImages(product);
 
         int newId = _products.CreateProduct(product);
 
@@ -140,17 +140,17 @@ public class ProductsService : IProductsService
             throw new BadSqlResultException($"Error inserting new product. Expected newId >= 1, got newId={newId}.");
         }
 
-        foreach (var imageId in imageIds)
+        foreach (var imageName in imageNames)
         {
-            await _products.CreateImage(newId, imageId);
+            await _products.CreateImage(newId, imageName);
         }
 
         return newId;
     }
 
-    private async Task<List<Guid>> SaveImages(CreateProductModel product)
+    private async Task<List<String>> SaveImages(CreateProductModel product)
     {
-        List<Guid> imageIds = new List<Guid>();
+        List<String> imageIds = new List<String>();
         foreach (var file in product.Files)
         {
             var imageId = await SaveFile(file);
@@ -168,7 +168,7 @@ public class ProductsService : IProductsService
      * <see langword="return"/> <see langword="true"/> if image creation succeeded.
      * </summary>
      */
-    private async Task<Guid> SaveFile(IFormFile image)
+    private async Task<String> SaveFile(IFormFile image)
     {
         if (!(image.ContentType == "image/jpg" ||
                 image.ContentType == "image/png" ||
@@ -182,8 +182,8 @@ public class ProductsService : IProductsService
 
         var filetype = image.ContentType.Split("/")[1];
         _logger.LogDebug($"Got filetype of ${filetype} when creating image.");
-        var imageId = Guid.NewGuid();
-        var imagePath = AppContext.BaseDirectory + "/Images/" + imageId + "." + filetype;
+        var imageName = Guid.NewGuid() + filetype;
+        var imagePath = AppContext.BaseDirectory + "/Images/" + imageName;
 
         try
         {
@@ -209,7 +209,7 @@ public class ProductsService : IProductsService
         }
 
         await image.CopyToAsync(newFile);
-        return imageId;
+        return imageName;
     }
 
     /**
