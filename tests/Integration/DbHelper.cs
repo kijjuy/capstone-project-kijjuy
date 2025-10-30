@@ -112,7 +112,7 @@ public static class DbHelper
     }
 
 
-    public static List<CreateProductModel> SeedProducts(int newProductsCount, String connectionString)
+    public static async Task<List<CreateProductModel>> SeedProducts(int newProductsCount, String connectionString)
     {
         using var db = new SqliteConnection(connectionString);
         db.Open();
@@ -133,6 +133,7 @@ public static class DbHelper
                 CategoryId = (i % 3) + 1,
                 Price = (decimal)99.99 + i,
                 Description = "Description for product " + (i + i),
+                Files = await ImageHelper.CreateFakeImages(1)
             };
 
             products.Add(product);
