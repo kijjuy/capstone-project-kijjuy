@@ -34,7 +34,7 @@ public class CreateProductTests
      * </summary>
      */
     [Fact]
-    public void GoodDataReturnsValidProduct()
+    public async Task GoodDataReturnsValidProduct()
     {
         //arrange
         var mockRepo = new Mock<IProductsRepository>();
@@ -44,6 +44,7 @@ public class CreateProductTests
             CategoryId = 1,
             Price = (decimal)123.45,
             Description = "Test description",
+            Files = await ImageHelper.CreateFakeImages(1),
         };
 
         mockRepo.Setup(repo => repo.CreateProduct(cpm))
@@ -52,7 +53,7 @@ public class CreateProductTests
         ProductsService service = new ProductsService(_serviceLogger, mockRepo.Object, _mockCategoriesService.Object);
 
         //act
-        int result = service.CreateProduct(cpm);
+        int result = await service.CreateProduct(cpm);
 
         //assert
 
@@ -71,7 +72,7 @@ public class CreateProductTests
      * </summary>
      */
     [Fact]
-    public void MissingModelDataThrowsArgumentException()
+    public async Task MissingModelDataThrowsArgumentException()
     {
         //arrange
         var mockRepo = new Mock<IProductsRepository>();
@@ -82,6 +83,7 @@ public class CreateProductTests
             CategoryId = 1,
             Price = (decimal)123.45,
             Description = "Test description",
+            Files = await ImageHelper.CreateFakeImages(1),
         };
         CreateProductModel cpmNullName = new CreateProductModel
         {
@@ -89,6 +91,7 @@ public class CreateProductTests
             CategoryId = 1,
             Price = (decimal)123.45,
             Description = "Test description",
+            Files = await ImageHelper.CreateFakeImages(1),
         };
         CreateProductModel cpmEmptyDescription = new CreateProductModel
         {
@@ -96,6 +99,7 @@ public class CreateProductTests
             CategoryId = 1,
             Price = (decimal)123.45,
             Description = "",
+            Files = await ImageHelper.CreateFakeImages(1),
         };
         CreateProductModel cpmNullDescription = new CreateProductModel
         {
@@ -103,6 +107,7 @@ public class CreateProductTests
             CategoryId = 1,
             Price = (decimal)123.45,
             Description = null,
+            Files = await ImageHelper.CreateFakeImages(1),
         };
         CreateProductModel cpmCatIdIsZero = new CreateProductModel
         {
@@ -110,6 +115,7 @@ public class CreateProductTests
             CategoryId = 0,
             Price = (decimal)123.45,
             Description = "Test description",
+            Files = await ImageHelper.CreateFakeImages(1),
         };
         CreateProductModel cpmPriceIsZero = new CreateProductModel
         {
@@ -117,17 +123,18 @@ public class CreateProductTests
             CategoryId = 1,
             Price = 0,
             Description = "Test Description",
+            Files = await ImageHelper.CreateFakeImages(1),
         };
         ProductsService service = new ProductsService(_serviceLogger, mockRepo.Object, _mockCategoriesService.Object);
 
         //act
         //assert
-        Assert.Throws<ArgumentException>(() => service.CreateProduct(cpmEmptyName));
-        Assert.Throws<ArgumentException>(() => service.CreateProduct(cpmEmptyDescription));
-        Assert.Throws<ArgumentException>(() => service.CreateProduct(cpmNullName));
-        Assert.Throws<ArgumentException>(() => service.CreateProduct(cpmNullDescription));
-        Assert.Throws<ArgumentException>(() => service.CreateProduct(cpmCatIdIsZero));
-        Assert.Throws<ArgumentException>(() => service.CreateProduct(cpmPriceIsZero));
+        await Assert.ThrowsAsync<ArgumentException>(() => service.CreateProduct(cpmEmptyName));
+        await Assert.ThrowsAsync<ArgumentException>(() => service.CreateProduct(cpmEmptyDescription));
+        await Assert.ThrowsAsync<ArgumentException>(() => service.CreateProduct(cpmNullName));
+        await Assert.ThrowsAsync<ArgumentException>(() => service.CreateProduct(cpmNullDescription));
+        await Assert.ThrowsAsync<ArgumentException>(() => service.CreateProduct(cpmCatIdIsZero));
+        await Assert.ThrowsAsync<ArgumentException>(() => service.CreateProduct(cpmPriceIsZero));
     }
 
     /**
@@ -136,7 +143,7 @@ public class CreateProductTests
      * </summary>
      */
     [Fact]
-    public void BadReturnValueFromRepoThrowsBadSqlDataException()
+    public async Task BadReturnValueFromRepoThrowsBadSqlDataException()
     {
         //arrange
         var mockRepo = new Mock<IProductsRepository>();
@@ -147,6 +154,7 @@ public class CreateProductTests
             CategoryId = 1,
             Price = (decimal)123.45,
             Description = "Test Description",
+            Files = await ImageHelper.CreateFakeImages(1)
         };
 
         mockRepo.Setup(repo => repo.CreateProduct(cpm))
@@ -156,8 +164,10 @@ public class CreateProductTests
 
         //act
         //assert
-        Assert.Throws<BadSqlResultException>(() => service.CreateProduct(cpm));
+        await Assert.ThrowsAsync<BadSqlResultException>(() => service.CreateProduct(cpm));
     }
 
     #endregion
+
+
 }

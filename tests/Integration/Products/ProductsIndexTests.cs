@@ -18,7 +18,7 @@ public class ProductsIndexTests : IClassFixture<CustomWebApplicationFactory<Prog
         var factory = new CustomWebApplicationFactory<Program>();
         var client = factory.CreateDefaultClient();
         DbHelper.initDb(factory.connectionString);
-        var products = DbHelper.SeedProducts(10, factory.connectionString);
+        var products = await DbHelper.SeedProducts(10, factory.connectionString);
 
         //act
         var response = await client.GetAsync("/products");
