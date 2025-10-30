@@ -90,9 +90,9 @@ public class ProductsCreateTests
         formData.Add(fileContent, "Files", "image.jpeg");
 
 	//act
-	var response = await client.PostAsync("/products/create", content);
 
 	var body = await response.Content.ReadAsStringAsync();
+        var response = await client.PostAsync("/products/create", formData);
 
 	//assert
 	Assert.Equal(HttpStatusCode.Found, response.StatusCode);
