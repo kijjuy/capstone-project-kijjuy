@@ -49,10 +49,10 @@ public class ProductsController : Controller
             return BadRequest(new { message = "Product id must be above 0." });
         }
 
-        ProductViewModel product;
+        ProductViewModelWithImages product;
         try
         {
-            product = await _productsService.GetProductById(id);
+            product = await _productsService.GetProductByIdWithImages(id);
             if (product == null)
             {
                 return NotFound();
