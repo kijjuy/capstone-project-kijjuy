@@ -69,6 +69,15 @@ public class ProductsController : Controller
 
     }
 
+    [HttpGet("/images/{imageName}")]
+    public async Task<IActionResult> GetImageByName(String imageName)
+    {
+	//Change to image service
+	var filePath = AppContext.BaseDirectory + "Images/" + imageName;
+	var fileContent = await System.IO.File.ReadAllBytesAsync(filePath);
+	return File(fileContent, "image/jpeg");
+    }
+
     /**
      * <summary>
      * Binds the value id from the url params then deletes a single product with that matching id.
