@@ -69,14 +69,6 @@ public class ProductsController : Controller
 
     }
 
-    [HttpGet("/images/{imageName}")]
-    public async Task<IActionResult> GetImageByName(String imageName)
-    {
-	//TODO: Change to image service, move this code to new images controller
-	var filePath = AppContext.BaseDirectory + "Images/" + imageName;
-	var fileContent = await System.IO.File.ReadAllBytesAsync(filePath);
-	return File(fileContent, "image/jpeg");
-    }
 
     /**
      * <summary>
