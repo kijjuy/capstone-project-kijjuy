@@ -58,6 +58,8 @@ public class Program
 
 	builder.Services.AddScoped<IProductsService, ProductsService>();
 	builder.Services.AddScoped<ICategoriesService, CategoriesService>();
+        builder.Services.AddScoped<IImagesService, LocalImagesService>();
+        builder.Services.AddScoped<ICheckoutService, CheckoutService>();
 
 	var app = builder.Build();
 
