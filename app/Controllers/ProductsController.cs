@@ -141,13 +141,16 @@ public class ProductsController : Controller
             return View("Create");
         }
 
-	long newId;
-	try {
-	    newId = await _productsService.CreateProduct(product);
-	} catch(Exception e) {
-	    _logger.LogError($"Error when creating product. Error={e.Message}.\n{e.StackTrace}");
-	    return new StatusCodeResult(500);
-	}
+        long newId;
+        try
+        {
+            newId = await _productsService.CreateProduct(product);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($"Error when creating product. Error={e.Message}.\n{e.StackTrace}");
+            return new StatusCodeResult(500);
+        }
         _logger.LogInformation($"Created new product with id={newId}");
         return RedirectToAction("Details", new { id = newId });
     }
