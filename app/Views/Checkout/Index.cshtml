@@ -1,0 +1,10 @@
+@{
+    Layout = "_Layout";
+}
+
+@using app.Models
+@model CheckoutSummaryViewModel
+
+<h1>Subtotal: @Model.Subtotal</h1>
+<h1>Tax: @Model.Tax</h1>
+<h1>Total: @Model.Total</h1>
