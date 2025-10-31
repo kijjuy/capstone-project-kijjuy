@@ -21,6 +21,12 @@ public class CheckoutController : Controller
         _userManager = userManager;
     }
 
+    /**
+     * <summary>
+     * Gets the user's cart and returns a viewmodel containing subtotal, tax,
+     * and total. This is rendered in an mvc view.
+     * </summary>
+     */
     [HttpGet("/checkout")]
     [Authorize]
     public async Task<IActionResult> Index()
