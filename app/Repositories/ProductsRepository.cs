@@ -13,6 +13,7 @@ public interface IProductsRepository
     public Task UpdateProduct(UpdateProductModel product, int id);
     public Task CreateImage(int productId, String imageName);
     public Task<List<ImageDataModel>> GetImageDataByProductId(int productId);
+    public Task MarkProductUnavailable(long productId);
 }
 
 public class ProductsRepository : IProductsRepository
@@ -269,5 +270,19 @@ public class ProductsRepository : IProductsRepository
         return imagesData;
     }
 
+    public async Task MarkProductUnavailable(long productId)
+    {
+        using SqliteConnection db = new SqliteConnection(_connString);
+        var query = new SqliteCommand(@"
+		UPDATE products SET is_available = 0 WHERE product_id = @product_id
+		", db);
+
+        query.Parameters.AddWithValue("@product_id", productId);
+
+        await query.Connection!.OpenAsync();
+
+        var result = await query.ExecuteNonQueryAsync();
+        _logger.LogInformation($"Set product with id={productId} to not available.");
+    }
 }
 

@@ -35,4 +35,23 @@ public class CheckoutController : Controller
         var checkoutSummary = await _checkoutService.GetCheckoutSummaryFromCart(user!.Cart);
         return View("Index", checkoutSummary);
     }
+
+    /**
+     * <summary>
+     * Completes the checkout and marks all of the products from the cart as 
+     * not available.
+     * </summary>
+     */
+    [HttpGet("/checkout/complete")]
+    [Authorize]
+    public async Task<IActionResult> CompleteCheckout()
+    {
+	//TODO: wait for stripe webhook here to confirm purchase
+	var user = await _userManager.FindByNameAsync(User.Identity!.Name!);
+	await _checkoutService.MarkCartItemsUnavailable(user!.Cart);
+	user.Cart = new List<long>();
+	await _userManager.UpdateAsync(user);
+
+	return RedirectToAction(controllerName: "Home", actionName: "Index");
+    }
 }

@@ -1,23 +1,28 @@
 using app.Models;
+using app.Repositories;
 
 namespace app.Services;
 
 public interface ICheckoutService
 {
     public Task<CheckoutSummaryViewModel> GetCheckoutSummaryFromCart(List<long> cart);
+    public Task MarkCartItemsUnavailable(List<long> cart);
 }
 
 public class CheckoutService : ICheckoutService
 {
     private readonly ILogger<ICheckoutService> _logger;
     private readonly IProductsService _productsService;
+    private readonly IProductsRepository _productsRepo;
     private const double TAX_RATE = 0.13;
 
     public CheckoutService(ILogger<ICheckoutService> logger,
-        IProductsService productsService)
+        IProductsService productsService,
+        IProductsRepository productsRepository)
     {
         _logger = logger;
         _productsService = productsService;
+        _productsRepo = productsRepository;
     }
 
     /**
@@ -45,5 +50,13 @@ public class CheckoutService : ICheckoutService
             Tax = String.Format("{0:C2}", taxAmount),
             Total = String.Format("{0:C2}", total)
         };
+    }
+
+    public async Task MarkCartItemsUnavailable(List<long> cart)
+    {
+        foreach (long productId in cart)
+        {
+            await _productsRepo.MarkProductUnavailable(productId);
+        }
     }
 }
