@@ -246,6 +246,8 @@ public class ProductsService : IProductsService
             var product = await GetProductById(productId);
             if (product == null)
             {
+                _logger.LogWarning($"Cart item with productId={productId} was not found. Now removing it from the cart.");
+                cart.Remove(productId);
                 continue;
             }
             products.Add(product);
