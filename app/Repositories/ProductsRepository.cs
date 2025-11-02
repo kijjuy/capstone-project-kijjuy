@@ -47,7 +47,7 @@ public class ProductsRepository : IProductsRepository
         using SqliteConnection db = new SqliteConnection(_connString);
 
 
-        SqliteCommand query = new SqliteCommand("SELECT * FROM products;", db);
+        SqliteCommand query = new SqliteCommand("SELECT * FROM products WHERE is_available = 1;", db);
         _logger.LogDebug("Selected data");
 
         if (query.Connection == null)
@@ -85,7 +85,7 @@ public class ProductsRepository : IProductsRepository
     public async Task<ProductDataModel?> GetProductById(int id)
     {
         using SqliteConnection db = new SqliteConnection(_connString);
-        SqliteCommand query = new SqliteCommand("SELECT * FROM products WHERE product_id = @id", db);
+        SqliteCommand query = new SqliteCommand("SELECT * FROM products WHERE product_id = @id AND is_available = 1", db);
         query.Parameters.AddWithValue("@id", id);
 
         if (query.Connection == null)
