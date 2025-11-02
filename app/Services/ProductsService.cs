@@ -12,7 +12,7 @@ public interface IProductsService
     public void DeleteProduct(int productId);
     public Task<int> CreateProduct(CreateProductModel product);
     public Task UpdateProduct(UpdateProductModel product, int id);
-    public Task<List<ProductViewModel>> GetProductsFromCart(IEnumerable<long> cart);
+    public Task<List<ProductViewModel>> GetProductsFromCart(List<long> cart);
     public Task<bool> AddProductToCart(List<long> cart, int productId);
     public bool RemoveFromCart(List<long> cart, int productId);
 }
@@ -238,7 +238,7 @@ public class ProductsService : IProductsService
      * a list. Returns the list of those products.
      * </summary>
      */
-    public async Task<List<ProductViewModel>> GetProductsFromCart(IEnumerable<long> cart)
+    public async Task<List<ProductViewModel>> GetProductsFromCart(List<long> cart)
     {
         var products = new List<ProductViewModel>();
         foreach (int productId in cart)
