@@ -59,7 +59,7 @@ public class ReaderMapper
             }
         }
 
-        _logger.LogDebug($"Count of propsWithCols = {propsWithCols.Count}");
+        //_logger.LogDebug($"Count of propsWithCols = {propsWithCols.Count}");
 
         if (propsWithCols.Count() == 0)
         {
@@ -74,7 +74,7 @@ public class ReaderMapper
 
         foreach (String key in rowDict.Keys)
         {
-            _logger.LogDebug($"checking for key={key}");
+            //_logger.LogDebug($"checking for key={key}");
             var matchingProp = propsWithCols.Where(p => p.GetCustomAttribute<ColumnAttribute>().Name
                 .Equals(key)).FirstOrDefault();
 
@@ -85,11 +85,11 @@ public class ReaderMapper
                 throw new ArgumentException($"No matching property for sql column with name={key}");
             }
 
-            _logger.LogDebug($"Got prop with name={matchingProp.Name}");
+            //_logger.LogDebug($"Got prop with name={matchingProp.Name}");
 
             if (matchingProp.PropertyType.Equals(typeof(DateTime)))
             {
-                _logger.LogDebug($"parsing date value...");
+                //_logger.LogDebug($"parsing date value...");
                 try
                 {
                     DateTime dateTimeVal = DateTime.Parse((String)rowDict[key]);

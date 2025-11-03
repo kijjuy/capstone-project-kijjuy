@@ -66,10 +66,10 @@ public class ProductsRepository : IProductsRepository
         while (reader.Read())
         {
             var rowDict = ReaderMapper.CreateSqlDictionary(reader);
-            _logger.LogDebug($"FieldCount: {reader.FieldCount}");
+            //_logger.LogDebug($"FieldCount: {reader.FieldCount}");
             var product = _readerMapper.MapDataToModel<ProductDataModel>(rowDict);
             products.Add(product);
-            _logger.LogDebug("Reading data...");
+            //_logger.LogDebug("Reading data...");
         }
 
         _logger.LogDebug($"size of products: {products.Count}");
