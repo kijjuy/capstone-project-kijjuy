@@ -82,12 +82,6 @@ public class ProductsController : Controller
         try
         {
             product = await _productsService.GetProductByIdWithImages(id);
-            if (product == null || product.InternalModel == null)
-            {
-                return NotFound();
-            }
-
-            return View("Details", product);
         }
         catch (Exception e)
         {
@@ -95,6 +89,13 @@ public class ProductsController : Controller
             $"{e.StackTrace}");
             return new StatusCodeResult(500);
         }
+
+        if (product == null || product.InternalModel == null)
+        {
+            return NotFound();
+        }
+
+        return View("Details", product);
 
     }
 
