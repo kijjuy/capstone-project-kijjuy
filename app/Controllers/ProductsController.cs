@@ -28,9 +28,38 @@ public class ProductsController : Controller
      * </summary>
      */
     [HttpGet("/products")]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index([FromQuery] String nameFilter, 
+	    String categoryNameFilter, 
+	    double priceMin, 
+	    double priceMax)
     {
+	_logger.LogDebug($"nameFilter: {nameFilter}");
+	_logger.LogDebug($"categoryNameFilter: {categoryNameFilter}");
+	_logger.LogDebug($"priceMin: {priceMin}");
+	_logger.LogDebug($"priceMax: {priceMax}");
+
         var products = await _productsService.GetAllProducts();
+
+	if(nameFilter != null && !nameFilter.Equals(String.Empty))
+	{
+	    products = products.Where(p => p.ProductName.Contains(nameFilter))
+		.ToList();
+	}
+	if(categoryNameFilter != null && !categoryNameFilter.Equals(String.Empty))
+	{
+	    products = products.Where(p => p.CategoryName.Contains(categoryNameFilter))
+		.ToList();
+	}
+	if(priceMin != 0)
+	{
+	    products = products.Where(p => p.Price > priceMin)
+		.ToList();
+	}
+	if(priceMax != 0)
+	{
+	    products = products.Where(p => p.Price < priceMax)
+		.ToList();
+	}
 
         return View("Index", products);
     }
