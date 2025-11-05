@@ -28,7 +28,12 @@ public class Program
 
 	builder.Logging.AddConsole();
 
+	#if DEBUG
+	builder.Services.AddControllersWithViews()
+	    .AddRazorRuntimeCompilation();
+	#else
 	builder.Services.AddControllersWithViews();
+	#endif
 
 	builder.WebHost.ConfigureKestrel((context, serverOptions) =>
 	    {
