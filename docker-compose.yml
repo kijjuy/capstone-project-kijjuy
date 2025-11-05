@@ -1,0 +1,11 @@
+services:
+  app:
+    build: ./app/
+    image: w4w:latest
+    container_name: app
+    ports: 
+      - 8080:8080
+    environment: 
+      - ASPNETCORE_URLS=http://+:8080
+    volumes:
+      - ./db:/db
