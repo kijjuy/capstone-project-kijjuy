@@ -1,4 +1,3 @@
-using System.IO;
 using app.Repositories;
 using app.Models;
 
@@ -7,6 +6,7 @@ namespace app.Services;
 public interface IProductsService
 {
     public Task<List<ProductViewModel>> GetAllProducts();
+    public Task<List<ProductViewModelWithImages>> GetAllProductsWithImages();
     public Task<ProductViewModel?> GetProductById(int id);
     public Task<ProductViewModelWithImages> GetProductByIdWithImages(int id);
     public void DeleteProduct(int productId);
@@ -58,6 +58,36 @@ public class ProductsService : IProductsService
             viewProducts.Add(viewProduct);
         }
         return viewProducts;
+    }
+
+    /**
+     * <summary>
+     * Gets all of the images from the database along with image data and
+     * turns them into a list of ProductViewModelWithImages
+     * </summary>
+     */
+    public async Task<List<ProductViewModelWithImages>> GetAllProductsWithImages()
+    {
+        var viewProducts = await GetAllProducts();
+
+        var modelsWithImages = new List<ProductViewModelWithImages>();
+        foreach (var viewModel in viewProducts)
+        {
+            var imagesData = await _products.GetImageDataByProductId((int)viewModel.ProductId);
+	    var imageNames = new List<String>();
+	    foreach(var imageData in imagesData) 
+	    {
+		imageNames.Add(imageData.ImageName);
+	    }
+
+            var modelWithImage = new ProductViewModelWithImages
+            {
+                InternalModel = viewModel,
+		ImageNames = imageNames
+            };
+	    modelsWithImages.Add(modelWithImage);
+        }
+	return modelsWithImages;
     }
 
     /**

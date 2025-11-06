@@ -28,38 +28,39 @@ public class ProductsController : Controller
      * </summary>
      */
     [HttpGet("/products")]
-    public async Task<IActionResult> Index([FromQuery] String nameFilter, 
-	    String categoryNameFilter, 
-	    double priceMin, 
-	    double priceMax)
+    public async Task<IActionResult> Index(
+        [FromQuery] String nameFilter,
+        [FromQuery] String categoryNameFilter,
+        [FromQuery] double priceMin,
+        [FromQuery] double priceMax)
     {
-	_logger.LogDebug($"nameFilter: {nameFilter}");
-	_logger.LogDebug($"categoryNameFilter: {categoryNameFilter}");
-	_logger.LogDebug($"priceMin: {priceMin}");
-	_logger.LogDebug($"priceMax: {priceMax}");
+        _logger.LogDebug($"nameFilter: {nameFilter}");
+        _logger.LogDebug($"categoryNameFilter: {categoryNameFilter}");
+        _logger.LogDebug($"priceMin: {priceMin}");
+        _logger.LogDebug($"priceMax: {priceMax}");
 
-        var products = await _productsService.GetAllProducts();
+        var products = await _productsService.GetAllProductsWithImages();
 
-	if(nameFilter != null && !nameFilter.Equals(String.Empty))
-	{
-	    products = products.Where(p => p.ProductName.Contains(nameFilter))
-		.ToList();
-	}
-	if(categoryNameFilter != null && !categoryNameFilter.Equals(String.Empty))
-	{
-	    products = products.Where(p => p.CategoryName.Contains(categoryNameFilter))
-		.ToList();
-	}
-	if(priceMin != 0)
-	{
-	    products = products.Where(p => p.Price > priceMin)
-		.ToList();
-	}
-	if(priceMax != 0)
-	{
-	    products = products.Where(p => p.Price < priceMax)
-		.ToList();
-	}
+        if (nameFilter != null && !nameFilter.Equals(String.Empty))
+        {
+            products = products.Where(p => p.InternalModel.ProductName.Contains(nameFilter))
+            .ToList();
+        }
+        if (categoryNameFilter != null && !categoryNameFilter.Equals(String.Empty))
+        {
+            products = products.Where(p => p.InternalModel.CategoryName.Contains(categoryNameFilter))
+            .ToList();
+        }
+        if (priceMin != 0)
+        {
+            products = products.Where(p => p.InternalModel.Price > priceMin)
+            .ToList();
+        }
+        if (priceMax != 0)
+        {
+            products = products.Where(p => p.InternalModel.Price < priceMax)
+            .ToList();
+        }
 
         return View("Index", products);
     }
