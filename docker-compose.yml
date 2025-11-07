@@ -9,6 +9,7 @@ services:
       - ASPNETCORE_URLS=http://+:8080
     volumes:
       - ./db:/db
+      - ./Images:/App/Images
     networks:
       - app
 
