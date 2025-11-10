@@ -14,15 +14,18 @@ public class CheckoutService : ICheckoutService
     private readonly ILogger<ICheckoutService> _logger;
     private readonly IProductsService _productsService;
     private readonly IProductsRepository _productsRepo;
+    private readonly ICartService _cartService;
     private const double TAX_RATE = 0.13;
 
     public CheckoutService(ILogger<ICheckoutService> logger,
         IProductsService productsService,
-        IProductsRepository productsRepository)
+        IProductsRepository productsRepository,
+	ICartService cartService)
     {
         _logger = logger;
         _productsService = productsService;
         _productsRepo = productsRepository;
+	_cartService = cartService;
     }
 
     /**
@@ -34,7 +37,7 @@ public class CheckoutService : ICheckoutService
      */
     public async Task<CheckoutSummaryViewModel> GetCheckoutSummaryFromCart(List<long> cart)
     {
-        var products = await _productsService.GetProductsFromCart(cart);
+        var products = await _cartService.GetProductsFromCart(cart);
         double subtotal = 0;
         foreach (var product in products)
         {
