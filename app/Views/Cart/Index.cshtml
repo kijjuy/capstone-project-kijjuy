@@ -3,22 +3,37 @@
 }
 
 @using app.Models
-@model IEnumerable<ProductViewModel>
+@model CartViewModel
 
-@if(Model.Any()) {
-<table>
+@if(Model.Products.Any()) {
+<div class="border p-3 btn btn-primary w-100 h-100" id="checkout-button" onClick="navToCheckout()">
+    <h5 class="text-center">Checkout Now</h5>
+    <h5 class="text-center">Subtotal: @Model.Subtotal</h5>
+</div>
+<div class="container">
 
-    @foreach(var product in Model)
+    @for(int i = 0; i < Model.Products.Count(); i++)
     {
-    <tr>
-	<td>@product.ProductName</td>
-	<td>@product.Price</td>
-	<td>
-	    <a onClick="deleteFromCart(@product.ProductId, this)" class="btn btn-danger">Remove</a>
-	</td>
-    </tr>
+
+
+    <div class="row p-1 @(@i % 2 == 0 ? "" : "bg-dark-subtle")">
+	<div class="col-3 p-0 m-0">
+	    @if(Model.Products[i].ImageNames.Any()) 
+	    {
+	    <img class="w-50" src="/Images/@Model.Products[i].ImageNames[0]" alt="@Model.Products[i].InternalModel.ProductName primary image">
+	    } else 
+	    {
+	    <img class="w-50" src="/Images/placeholder.jpg" alt="placeholder image">
+	    }
+	</div>
+	<div class="col-7">
+	    <p class="">@Model.Products[i].InternalModel.ProductName</p>
+	    <p class="">@Model.Products[i].InternalModel.Price</p>
+	</div>
+	<img onClick="deleteFromCart(@Model.Products[i].InternalModel.ProductId, this)" class="btn col-2" src="Images/delete.png">
+    </div>
     }
-</table>
+</div>
 } else 
 {
     <h3>No items in cart.</h3>
@@ -39,6 +54,10 @@
 	//callingElement.parentNode.parentNode.remove();
 	//return;
 	window.location.reload();
+    }
+
+    function navToCheckout() {
+	console.log("nav to checkout");
     }
 
 
