@@ -36,14 +36,14 @@
     	    <div class="row">
     	    @foreach(var product in Model) 
     	    {
-    	    <div class="col">
+    	    <div class="col-sm-12 col-xl-6">
     		<a class="card bg-dark-subtle pb-0 link-underline link-underline-opacity-0" asp-controller="Products" asp-action="Details" asp-route-id="@product.InternalModel.ProductId">
     		    @if(product.ImageNames.Any()) {
     		    <img src="/Images/@product.ImageNames.FirstOrDefault()" alt="Image for @product.InternalModel.ProductName">
     		    } else {
-    		    <img class="w-50" src="/Images/placeholder.jpg" alt="Image for @product.InternalModel.ProductName">
+    		    <img src="/Images/placeholder.jpg" alt="Image for @product.InternalModel.ProductName">
     		    }
-    		    <h5 class="p-1">@product.InternalModel.ProductName - @product.InternalModel.Price</h5>
+		    <h5 class="p-1">@product.InternalModel.ProductName - @String.Format("{0:C2}", product.InternalModel.Price)</h5>
     		</a>
     		
     	    	<br />
