@@ -38,7 +38,7 @@ public class CheckoutService : ICheckoutService
         double subtotal = 0;
         foreach (var product in products)
         {
-            subtotal += product.Price;
+            subtotal += product.InternalModel.Price;
         }
         _logger.LogDebug($"Summed up products subtotal and got subtotal={subtotal}");
 
