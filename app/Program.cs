@@ -10,84 +10,85 @@ public class Program
 {
     public static void Main(string[] args)
     {
-	var builder = WebApplication.CreateBuilder(args);
+        var builder = WebApplication.CreateBuilder(args);
 
 
-	builder.Services.AddDbContext<IdentityContext>(options =>
-	    options.UseSqlite(builder.Configuration.GetConnectionString("IdentityConnection"))
-	);
+        builder.Services.AddDbContext<IdentityContext>(options =>
+            options.UseSqlite(builder.Configuration.GetConnectionString("IdentityConnection"))
+        );
 
-	builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
-	    {
-	    options.SignIn.RequireConfirmedAccount = false;
-	    })
-	    .AddRoles<IdentityRole>()
-	    .AddEntityFrameworkStores<IdentityContext>();
+        builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = false;
+            })
+            .AddRoles<IdentityRole>()
+            .AddEntityFrameworkStores<IdentityContext>();
 
-	builder.Services.AddAuthorization();
+        builder.Services.AddAuthorization();
 
-	builder.Logging.AddConsole();
+        builder.Logging.AddConsole();
 
-	#if DEBUG
-	builder.Services.AddControllersWithViews()
-	    .AddRazorRuntimeCompilation();
-	#else
+#if DEBUG
+        builder.Services.AddControllersWithViews()
+            .AddRazorRuntimeCompilation();
+#else
 	builder.Services.AddControllersWithViews();
-	#endif
+#endif
 
-	builder.WebHost.ConfigureKestrel((context, serverOptions) =>
-	    {
-		var kestralSection = context.Configuration.GetSection("Kestral");
-		serverOptions.Configure(kestralSection)
-		.Endpoint("HTTP", listenOptions =>
-		    {
+        builder.WebHost.ConfigureKestrel((context, serverOptions) =>
+            {
+                var kestralSection = context.Configuration.GetSection("Kestral");
+                serverOptions.Configure(kestralSection)
+            .Endpoint("HTTP", listenOptions =>
+                {
 
-		});
-	    });
+                });
+            });
 
-	builder.Services.AddSingleton<ReaderMapper>();
+        builder.Services.AddSingleton<ReaderMapper>();
 
-	String? conString = builder.Configuration.GetConnectionString("DefaultConnection");
-	if (conString == null)
-	{
-	    throw new ArgumentNullException("Connection string was null.");
-	}
+        String? conString = builder.Configuration.GetConnectionString("DefaultConnection");
+        if (conString == null)
+        {
+            throw new ArgumentNullException("Connection string was null.");
+        }
 
-	builder.Services.Configure<RepositoryOptions>(options =>
-	    {
-		options.ConnectionString = conString;
-	    });
+        builder.Services.Configure<RepositoryOptions>(options =>
+            {
+                options.ConnectionString = conString;
+            });
 
-	builder.Services.AddScoped<IProductsRepository, ProductsRepository>();
-	builder.Services.AddScoped<ICategoriesRepository, CategoriesRepository>();
+        builder.Services.AddScoped<IProductsRepository, ProductsRepository>();
+        builder.Services.AddScoped<ICategoriesRepository, CategoriesRepository>();
 
-	builder.Services.AddScoped<IProductsService, ProductsService>();
-	builder.Services.AddScoped<ICategoriesService, CategoriesService>();
+        builder.Services.AddScoped<IProductsService, ProductsService>();
+        builder.Services.AddScoped<ICategoriesService, CategoriesService>();
         builder.Services.AddScoped<IImagesService, LocalImagesService>();
         builder.Services.AddScoped<ICheckoutService, CheckoutService>();
+        builder.Services.AddScoped<ICartService, CartService>();
 
-	var app = builder.Build();
+        var app = builder.Build();
 
-	// Configure the HTTP request pipeline.
-	if (app.Environment.IsDevelopment())
-	{
-	    app.MapOpenApi();
-	    using (var scope = app.Services.CreateScope())
-	    {
-	        String adminPass = builder.Configuration["SeededUsers:Admin"];
-	        DbInitializer.SetAdminPass(adminPass);
-	        DbInitializer.SeedUsersAndRoles(scope.ServiceProvider).Wait();
-	    }
-	}
+        // Configure the HTTP request pipeline.
+        if (app.Environment.IsDevelopment())
+        {
+            app.MapOpenApi();
+            using (var scope = app.Services.CreateScope())
+            {
+                String adminPass = builder.Configuration["SeededUsers:Admin"];
+                DbInitializer.SetAdminPass(adminPass);
+                DbInitializer.SeedUsersAndRoles(scope.ServiceProvider).Wait();
+            }
+        }
 
-	app.UseHttpsRedirection();
+        app.UseHttpsRedirection();
 
-	app.UseAuthentication();
-	app.UseAuthorization();
+        app.UseAuthentication();
+        app.UseAuthorization();
 
-	app.MapControllers();
-	app.MapRazorPages();
+        app.MapControllers();
+        app.MapRazorPages();
 
-	app.Run();
+        app.Run();
     }
 }

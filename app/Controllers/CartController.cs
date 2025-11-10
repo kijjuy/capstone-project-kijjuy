@@ -10,15 +10,15 @@ public class CartController : Controller
 {
     private readonly ILogger<CartController> _logger;
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IProductsService _productsSercice;
+    private readonly ICartService _cartService;
 
     public CartController(ILogger<CartController> logger,
         UserManager<ApplicationUser> userManager,
-        IProductsService productsSercice)
+        ICartService cartService)
     {
         _logger = logger;
         _userManager = userManager;
-        _productsSercice = productsSercice;
+        _cartService = cartService;
     }
 
     /**
@@ -33,16 +33,11 @@ public class CartController : Controller
     public async Task<IActionResult> Index()
     {
         var user = await _userManager.FindByNameAsync(User.Identity.Name);
-        _logger.LogDebug("cart items:");
-        foreach (long item in user.Cart)
-        {
-            _logger.LogDebug($"{item}");
-        }
 
-        var products = new List<ProductViewModel>();
+        CartViewModel products = null;
         try
         {
-            products = await _productsSercice.GetProductsFromCart(user.Cart);
+            products = await _cartService.GetCartViewModelFromCart(user.Cart);
         }
         catch (Exception e)
         {
@@ -81,7 +76,7 @@ public class CartController : Controller
             return BadRequest(new { message = "Product is already in your cart." });
         }
 
-        bool isAdded = await _productsSercice.AddProductToCart(user.Cart, productId);
+        bool isAdded = await _cartService.AddProductToCart(user.Cart, productId);
 
         if (!isAdded)
         {
@@ -109,7 +104,7 @@ public class CartController : Controller
     {
         var user = await _userManager.FindByNameAsync(User.Identity.Name);
 
-        bool isRemoved = _productsSercice.RemoveFromCart(user.Cart, productId);
+        bool isRemoved = _cartService.RemoveFromCart(user.Cart, productId);
         if (!isRemoved)
         {
             _logger.LogWarning($"User tried to remove cart item with id={productId}. Item was not in cart.");

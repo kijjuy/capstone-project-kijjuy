@@ -12,7 +12,8 @@ public interface IProductsService
     public void DeleteProduct(int productId);
     public Task<int> CreateProduct(CreateProductModel product);
     public Task UpdateProduct(UpdateProductModel product, int id);
-    public Task<List<ProductViewModel>> GetProductsFromCart(List<long> cart);
+    public Task<List<ProductViewModelWithImages>> GetProductsFromCart(List<long> cart);
+    public Task<CartViewModel> GetCartViewModelFromCart(List<long> cart);
     public Task<bool> AddProductToCart(List<long> cart, int productId);
     public bool RemoveFromCart(List<long> cart, int productId);
 }
@@ -74,20 +75,20 @@ public class ProductsService : IProductsService
         foreach (var viewModel in viewProducts)
         {
             var imagesData = await _products.GetImageDataByProductId((int)viewModel.ProductId);
-	    var imageNames = new List<String>();
-	    foreach(var imageData in imagesData) 
-	    {
-		imageNames.Add(imageData.ImageName);
-	    }
+            var imageNames = new List<String>();
+            foreach (var imageData in imagesData)
+            {
+                imageNames.Add(imageData.ImageName);
+            }
 
             var modelWithImage = new ProductViewModelWithImages
             {
                 InternalModel = viewModel,
-		ImageNames = imageNames
+                ImageNames = imageNames
             };
-	    modelsWithImages.Add(modelWithImage);
+            modelsWithImages.Add(modelWithImage);
         }
-	return modelsWithImages;
+        return modelsWithImages;
     }
 
     /**
@@ -268,12 +269,12 @@ public class ProductsService : IProductsService
      * a list. Returns the list of those products.
      * </summary>
      */
-    public async Task<List<ProductViewModel>> GetProductsFromCart(List<long> cart)
+    public async Task<List<ProductViewModelWithImages>> GetProductsFromCart(List<long> cart)
     {
-        var products = new List<ProductViewModel>();
+        var products = new List<ProductViewModelWithImages>();
         foreach (int productId in cart)
         {
-            var product = await GetProductById(productId);
+            var product = await GetProductByIdWithImages(productId);
             if (product == null)
             {
                 _logger.LogWarning($"Cart item with productId={productId} was not found. Now removing it from the cart.");
@@ -283,6 +284,28 @@ public class ProductsService : IProductsService
             products.Add(product);
         }
         return products;
+    }
+
+    /**
+     * <summary>
+     * Gets view models from cart, then gets the sum of their prices and creates a new CartViewModel 
+     * out of view models list and sum of prices for subtotal.
+     * </summary>
+     */
+    public async Task<CartViewModel> GetCartViewModelFromCart(List<long> cart)
+    {
+        var products = await GetProductsFromCart(cart);
+        double subtotal = 0;
+        foreach (var product in products)
+        {
+            subtotal += product.InternalModel.Price;
+        }
+
+        return new CartViewModel
+        {
+            Products = products,
+            Subtotal = subtotal
+        };
     }
 
     /**
