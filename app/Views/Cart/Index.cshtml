@@ -20,17 +20,17 @@
 	<div class="col-3 p-0 m-0">
 	    @if(Model.Products[i].ImageNames.Any()) 
 	    {
-	    <img class="w-50" src="/Images/@Model.Products[i].ImageNames[0]" alt="@Model.Products[i].InternalModel.ProductName primary image">
+	    <img class="w-50" src="/Images/@Model.Products[i].ImageNames[0]" alt="@Model.Products[i].ProductName primary image">
 	    } else 
 	    {
 	    <img class="w-50" src="/Images/placeholder.jpg" alt="placeholder image">
 	    }
 	</div>
 	<div class="col-7">
-	    <p class="">@Model.Products[i].InternalModel.ProductName</p>
-	    <p class="">@Model.Products[i].InternalModel.Price</p>
+	    <p class="">@Model.Products[i].ProductName</p>
+	    <p class="">@Model.Products[i].Price</p>
 	</div>
-	<img onClick="deleteFromCart(@Model.Products[i].InternalModel.ProductId, this)" class="btn col-2" src="Images/delete.png">
+	<img onClick="deleteFromCart(@Model.Products[i].ProductId, this)" class="btn col-2" src="Images/delete.png">
     </div>
     }
 </div>

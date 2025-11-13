@@ -7,6 +7,7 @@ public interface ICheckoutService
 {
     public Task<CheckoutSummaryViewModel> GetCheckoutSummaryFromCart(List<long> cart);
     public Task MarkCartItemsUnavailable(List<long> cart);
+    public Task FinalizeCheckout(UserCheckoutDetails checkoutDetails, List<long> cart);
 }
 
 public class CheckoutService : ICheckoutService
@@ -41,7 +42,7 @@ public class CheckoutService : ICheckoutService
         double subtotal = 0;
         foreach (var product in products)
         {
-            subtotal += product.InternalModel.Price;
+            subtotal += product.Price;
         }
         _logger.LogDebug($"Summed up products subtotal and got subtotal={subtotal}");
 
@@ -61,5 +62,20 @@ public class CheckoutService : ICheckoutService
         {
             await _productsRepo.MarkProductUnavailable(productId);
         }
+    }
+
+    public async Task FinalizeCheckout(UserCheckoutDetails checkoutDetails, List<long> cart)
+    {
+        var products = await _cartService.GetProductsFromCart(cart);
+        double subtotal = 0;
+        foreach (var product in products)
+        {
+            subtotal += product.Price;
+        }
+
+        var taxAmount = Math.Round(subtotal * TAX_RATE, 2);
+        var total = Math.Round(subtotal + taxAmount, 2);
+
+        //TODO: Create order here, make new orders repository
     }
 }

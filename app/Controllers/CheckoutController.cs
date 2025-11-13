@@ -25,7 +25,7 @@ public class CheckoutController : Controller
      * <summary>
      * Gets the user's cart and returns a viewmodel containing subtotal, tax,
      * and total. This is rendered in an mvc view.
-     * </summary>
+  navToCheckout()   * </summary>
      */
     [HttpGet("/checkout")]
     [Authorize]
