@@ -1,10 +1,11 @@
 using app.Models;
+using app.Mappers;
 
 namespace app.Services;
 
 public interface ICartService
 {
-    public Task<List<ProductViewModelWithImages>> GetProductsFromCart(List<long> cart);
+    public Task<List<Product>> GetProductsFromCart(List<long> cart);
     public Task<CartViewModel> GetCartViewModelFromCart(List<long> cart);
     public Task<bool> AddProductToCart(List<long> cart, int productId);
     public bool RemoveFromCart(List<long> cart, int productId);
@@ -14,12 +15,17 @@ public class CartService : ICartService
 {
     private readonly ILogger<ICartService> _logger;
     private readonly IProductsService _productsService;
+    private readonly IProductMapper _productsMapper;
 
-    public CartService(ILogger<ICartService> logger,
-        IProductsService productsService)
+    public CartService(
+        ILogger<ICartService> logger,
+        IProductsService productsService,
+    IProductMapper productsMapper
+    )
     {
         _logger = logger;
         _productsService = productsService;
+        _productsMapper = productsMapper;
     }
 
     /**
@@ -28,12 +34,12 @@ public class CartService : ICartService
      * a list. Returns the list of those products.
      * </summary>
      */
-    public async Task<List<ProductViewModelWithImages>> GetProductsFromCart(List<long> cart)
+    public async Task<List<Product>> GetProductsFromCart(List<long> cart)
     {
-        var products = new List<ProductViewModelWithImages>();
+        var products = new List<Product>();
         foreach (int productId in cart)
         {
-            var product = await _productsService.GetProductByIdWithImages(productId);
+            var product = await _productsService.GetProductById(productId);
             if (product == null)
             {
                 _logger.LogWarning($"Cart item with productId={productId} was not found. Now removing it from the cart.");
@@ -57,12 +63,15 @@ public class CartService : ICartService
         double subtotal = 0;
         foreach (var product in products)
         {
-            subtotal += product.InternalModel.Price;
+            subtotal += product.Price;
         }
 
         return new CartViewModel
         {
-            Products = products,
+            Products = products
+            .Select(async p => await _productsMapper.IntoViewModelWithImages(p))
+            .Select(t => t.Result)
+            .ToList(),
             Subtotal = subtotal
         };
     }

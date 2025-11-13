@@ -44,14 +44,15 @@ public class CheckoutController : Controller
      */
     [HttpGet("/checkout/complete")]
     [Authorize]
-    public async Task<IActionResult> CompleteCheckout()
+    public async Task<IActionResult> CompleteCheckout([FromQuery] UserCheckoutDetails checkoutDetails)
     {
-	//TODO: wait for stripe webhook here to confirm purchase
-	var user = await _userManager.FindByNameAsync(User.Identity!.Name!);
-	await _checkoutService.MarkCartItemsUnavailable(user!.Cart);
-	user.Cart = new List<long>();
-	await _userManager.UpdateAsync(user);
+        //TODO: wait for stripe webhook here to confirm purchase
+        var user = await _userManager.FindByNameAsync(User.Identity!.Name!);
+        await _checkoutService.MarkCartItemsUnavailable(user!.Cart);
+        user.Cart = new List<long>();
+        await _userManager.UpdateAsync(user);
 
-	return RedirectToAction(controllerName: "Home", actionName: "Index");
+
+        return RedirectToAction(controllerName: "Home", actionName: "Index");
     }
 }

@@ -5,10 +5,9 @@ namespace app.Services;
 
 public interface IProductsService
 {
-    public Task<List<ProductViewModel>> GetAllProducts();
-    public Task<List<ProductViewModelWithImages>> GetAllProductsWithImages();
-    public Task<ProductViewModel?> GetProductById(int id);
-    public Task<ProductViewModelWithImages> GetProductByIdWithImages(int id);
+    //TODO: restructure to return base product model, then transform into view models
+    public Task<List<Product>> GetAllProducts();
+    public Task<Product?> GetProductById(int id);
     public void DeleteProduct(int productId);
     public Task<int> CreateProduct(CreateProductModel product);
     public Task UpdateProduct(UpdateProductModel product, int id);
@@ -36,55 +35,9 @@ public class ProductsService : IProductsService
      * them into ProductViewModels.
      * </summary>
      */
-    public async Task<List<ProductViewModel>> GetAllProducts()
+    public async Task<List<Product>> GetAllProducts()
     {
-        List<ProductDataModel> dataProducts = _products.GetAllProducts();
-        List<ProductViewModel> viewProducts = new List<ProductViewModel>();
-
-        foreach (var dataProduct in dataProducts)
-        {
-            var category = await _categoriesService.GetCategoryById(dataProduct.CategoryId);
-            var viewProduct = new ProductViewModel
-            {
-                ProductId = dataProduct.ProductId,
-                CategoryName = category.CategoryName,
-                ProductName = dataProduct.Name,
-                Price = dataProduct.Price,
-                Description = dataProduct.Description,
-            };
-            viewProducts.Add(viewProduct);
-        }
-        return viewProducts;
-    }
-
-    /**
-     * <summary>
-     * Gets all of the images from the database along with image data and
-     * turns them into a list of ProductViewModelWithImages
-     * </summary>
-     */
-    public async Task<List<ProductViewModelWithImages>> GetAllProductsWithImages()
-    {
-        var viewProducts = await GetAllProducts();
-
-        var modelsWithImages = new List<ProductViewModelWithImages>();
-        foreach (var viewModel in viewProducts)
-        {
-            var imagesData = await _products.GetImageDataByProductId((int)viewModel.ProductId);
-            var imageNames = new List<String>();
-            foreach (var imageData in imagesData)
-            {
-                imageNames.Add(imageData.ImageName);
-            }
-
-            var modelWithImage = new ProductViewModelWithImages
-            {
-                InternalModel = viewModel,
-                ImageNames = imageNames
-            };
-            modelsWithImages.Add(modelWithImage);
-        }
-        return modelsWithImages;
+        return await _products.GetAllProducts();
     }
 
     /**
@@ -94,47 +47,14 @@ public class ProductsService : IProductsService
      * or returns null if the product from the repo was null.
      * </summary>
      */
-    public async Task<ProductViewModel?> GetProductById(int id)
+    public async Task<Product?> GetProductById(int id)
     {
         if (id < 1)
         {
             _logger.LogWarning($"Tried to get product with bad id. id={id}");
             throw new ArgumentException("Product id must be greater than 0.");
         }
-        var dataModel = await _products.GetProductById(id);
-        if (dataModel == null)
-        {
-            return null;
-        }
-        var viewProduct = new ProductViewModel
-        {
-            ProductId = dataModel.ProductId,
-            //TODO: Get category name from id here
-            CategoryName = $"Category {dataModel.CategoryId}",
-            ProductName = dataModel.Name,
-            Price = dataModel.Price,
-            Description = dataModel.Description,
-        };
-        return viewProduct;
-    }
-
-    public async Task<ProductViewModelWithImages> GetProductByIdWithImages(int productId)
-    {
-        var internalModel = await GetProductById(productId);
-        var imageNameData = await _products.GetImageDataByProductId(productId);
-        var imageNames = new List<String>();
-
-
-        foreach (var imageData in imageNameData)
-        {
-            imageNames.Add(imageData.ImageName);
-        }
-
-        return new ProductViewModelWithImages
-        {
-            InternalModel = internalModel,
-            ImageNames = imageNames
-        };
+        return await _products.GetProductById(id);
     }
 
     /**
@@ -258,8 +178,6 @@ public class ProductsService : IProductsService
         await image.CopyToAsync(newFile);
         return imageName;
     }
-
-
 
     /**
      * <summary>

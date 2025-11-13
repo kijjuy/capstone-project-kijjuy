@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
 using app.Services;
 using app.Models;
+using app.Mappers;
 
 namespace app.Controllers;
 
@@ -11,14 +12,19 @@ public class ProductsController : Controller
     private readonly ILogger<ProductsController> _logger;
     private readonly IProductsService _productsService;
     private readonly ICategoriesService _categoriesService;
+    private readonly IProductMapper _productMapper;
 
-    public ProductsController(ILogger<ProductsController> logger,
-       IProductsService productsService,
-       ICategoriesService categoriesService)
+    public ProductsController(
+        ILogger<ProductsController> logger,
+        IProductsService productsService,
+        ICategoriesService categoriesService,
+        IProductMapper productMapper
+       )
     {
         _logger = logger;
         _productsService = productsService;
         _categoriesService = categoriesService;
+        _productMapper = productMapper;
     }
 
 
@@ -39,26 +45,30 @@ public class ProductsController : Controller
         _logger.LogDebug($"priceMin: {priceMin}");
         _logger.LogDebug($"priceMax: {priceMax}");
 
-        var products = await _productsService.GetAllProductsWithImages();
+        var baseProducts = await _productsService.GetAllProducts();
+        var products = baseProducts
+            .Select(async p => await _productMapper.IntoViewModelWithImages(p))
+            .Select(t => t.Result);
+
 
         if (nameFilter != null && !nameFilter.Equals(String.Empty))
         {
-            products = products.Where(p => p.InternalModel.ProductName.Contains(nameFilter))
+            products = products.Where(p => p.ProductName.Contains(nameFilter))
             .ToList();
         }
         if (categoryNameFilter != null && !categoryNameFilter.Equals(String.Empty))
         {
-            products = products.Where(p => p.InternalModel.CategoryName.Contains(categoryNameFilter))
+            products = products.Where(p => p.CategoryName.Contains(categoryNameFilter))
             .ToList();
         }
         if (priceMin != 0)
         {
-            products = products.Where(p => p.InternalModel.Price > priceMin)
+            products = products.Where(p => p.Price > priceMin)
             .ToList();
         }
         if (priceMax != 0)
         {
-            products = products.Where(p => p.InternalModel.Price < priceMax)
+            products = products.Where(p => p.Price < priceMax)
             .ToList();
         }
 
@@ -82,7 +92,8 @@ public class ProductsController : Controller
         ProductViewModelWithImages product;
         try
         {
-            product = await _productsService.GetProductByIdWithImages(id);
+            var baseProduct = await _productsService.GetProductById(id);
+            product = await _productMapper.IntoViewModelWithImages(baseProduct);
         }
         catch (Exception e)
         {
@@ -200,7 +211,8 @@ public class ProductsController : Controller
         var categories = await _categoriesService.GetAllCategories();
         ViewData["Categories"] = new SelectList(categories, "CategoryId", "CategoryName");
 
-        var product = await _productsService.GetProductById(id);
+        var baseProduct = await _productsService.GetProductById(id);
+        var product = await _productMapper.IntoViewModel(baseProduct);
         ViewData["CurrentProduct"] = product;
         return View();
     }

@@ -20,12 +20,12 @@ public class CheckoutService : ICheckoutService
     public CheckoutService(ILogger<ICheckoutService> logger,
         IProductsService productsService,
         IProductsRepository productsRepository,
-	ICartService cartService)
+    ICartService cartService)
     {
         _logger = logger;
         _productsService = productsService;
         _productsRepo = productsRepository;
-	_cartService = cartService;
+        _cartService = cartService;
     }
 
     /**

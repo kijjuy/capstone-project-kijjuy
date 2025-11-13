@@ -6,8 +6,8 @@ namespace app.Repositories;
 
 public interface IProductsRepository
 {
-    public List<ProductDataModel> GetAllProducts();
-    public Task<ProductDataModel?> GetProductById(int id);
+    public Task<List<Product>> GetAllProducts();
+    public Task<Product?> GetProductById(int id);
     public int DeleteProduct(int productId);
     public int CreateProduct(CreateProductModel product);
     public Task UpdateProduct(UpdateProductModel product, int id);
@@ -36,13 +36,13 @@ public class ProductsRepository : IProductsRepository
     /**
      * <summary>
      * Fetches a list of all products from the database and maps them
-     * into ProductDataModels.
+     * into Product.
      * </summary>
      */
-    public List<ProductDataModel> GetAllProducts()
+    public async Task<List<Product>> GetAllProducts()
     {
         _logger.LogDebug("Hit GetAllProducts");
-        List<ProductDataModel> products = new List<ProductDataModel>();
+        var products = new List<Product>();
 
         using SqliteConnection db = new SqliteConnection(_connString);
 
@@ -57,17 +57,16 @@ public class ProductsRepository : IProductsRepository
             throw new DbConnectionException(message);
         }
 
-        query.Connection.Open();
-        query.ExecuteNonQuery();
-        using var reader = query.ExecuteReader();
+        await query.Connection.OpenAsync();
+        using var reader = await query.ExecuteReaderAsync();
         _logger.LogDebug("reader created");
 
 
-        while (reader.Read())
+        while (await reader.ReadAsync())
         {
             var rowDict = ReaderMapper.CreateSqlDictionary(reader);
             //_logger.LogDebug($"FieldCount: {reader.FieldCount}");
-            var product = _readerMapper.MapDataToModel<ProductDataModel>(rowDict);
+            var product = _readerMapper.MapDataToModel<Product>(rowDict);
             products.Add(product);
             //_logger.LogDebug("Reading data...");
         }
@@ -82,7 +81,7 @@ public class ProductsRepository : IProductsRepository
      * Returns a single product with a matching id, or null.
      * </summary>
      */
-    public async Task<ProductDataModel?> GetProductById(int id)
+    public async Task<Product?> GetProductById(int id)
     {
         using SqliteConnection db = new SqliteConnection(_connString);
         SqliteCommand query = new SqliteCommand("SELECT * FROM products WHERE product_id = @id AND is_available = 1", db);
@@ -110,7 +109,7 @@ public class ProductsRepository : IProductsRepository
         }
 
         var rowDict = ReaderMapper.CreateSqlDictionary(reader);
-        return _readerMapper.MapDataToModel<ProductDataModel>(rowDict);
+        return _readerMapper.MapDataToModel<Product>(rowDict);
     }
 
     //TODO: Make db calls async

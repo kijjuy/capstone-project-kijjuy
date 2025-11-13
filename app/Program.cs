@@ -1,5 +1,6 @@
 using app.Repositories;
 using app.Services;
+using app.Mappers;
 using app.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
@@ -66,6 +67,9 @@ public class Program
         builder.Services.AddScoped<IImagesService, LocalImagesService>();
         builder.Services.AddScoped<ICheckoutService, CheckoutService>();
         builder.Services.AddScoped<ICartService, CartService>();
+
+        builder.Services.AddScoped<IProductMapper, ProductMapper>();
+
 
         var app = builder.Build();
 

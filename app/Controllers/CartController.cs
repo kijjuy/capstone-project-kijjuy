@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using app.Models;
 using app.Services;
+using app.Mappers;
 
 namespace app.Controllers;
 
@@ -11,14 +12,19 @@ public class CartController : Controller
     private readonly ILogger<CartController> _logger;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ICartService _cartService;
+    private readonly IProductMapper _productMapper;
 
-    public CartController(ILogger<CartController> logger,
+    public CartController(
+        ILogger<CartController> logger,
         UserManager<ApplicationUser> userManager,
-        ICartService cartService)
+        ICartService cartService,
+    IProductMapper productMapper
+    )
     {
         _logger = logger;
         _userManager = userManager;
         _cartService = cartService;
+        _productMapper = productMapper;
     }
 
     /**

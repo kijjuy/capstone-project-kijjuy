@@ -1,17 +1,26 @@
+using app.Models;
+using app.Repositories;
+
 namespace app.Services;
 
 public interface IImagesService
 {
     public Task<byte[]> GetImageBytesByName(String imageName);
+    public Task<List<ImageDataModel>> GetImageDataByProductId(long id);
 }
 
 public class LocalImagesService : IImagesService
 {
     private readonly ILogger<IImagesService> _logger;
+    private readonly IProductsRepository _productsRepo;
 
-    public LocalImagesService(ILogger<IImagesService> logger)
+    public LocalImagesService(
+        ILogger<IImagesService> logger,
+        IProductsRepository prodRepo
+    )
     {
         _logger = logger;
+        _productsRepo = prodRepo;
     }
 
     public async Task<byte[]> GetImageBytesByName(String imageName)
@@ -24,5 +33,10 @@ public class LocalImagesService : IImagesService
         }
 
         return await File.ReadAllBytesAsync(filePath);
+    }
+
+    public async Task<List<ImageDataModel>> GetImageDataByProductId(long id)
+    {
+        return await _productsRepo.GetImageDataByProductId((int)id);
     }
 }
