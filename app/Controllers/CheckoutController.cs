@@ -48,7 +48,9 @@ public class CheckoutController : Controller
     {
         //TODO: wait for stripe webhook here to confirm purchase
         var user = await _userManager.FindByNameAsync(User.Identity!.Name!);
-        await _checkoutService.MarkCartItemsUnavailable(user!.Cart);
+
+	await _checkoutService.FinalizeCheckout(checkoutDetails, user.Cart, user.UserName);
+
         user.Cart = new List<long>();
         await _userManager.UpdateAsync(user);
 
