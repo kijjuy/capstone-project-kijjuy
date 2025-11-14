@@ -48,7 +48,7 @@ CREATE TABLE users (
 DROP TABLE IF EXISTS orders;
 CREATE TABLE orders (
     order_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    user_id INTEGER NOT NULL,
+    user_name NVARCHAR(100) NOT NULL,
     subtotal_paid NUMERIC(7,2) NOT NULL,
     tax_paid NUMERIC(6,2) NOT NULL,
     shipping_paid NUMERIC(5,2) NOT NULL,
