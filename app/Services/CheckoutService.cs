@@ -1,13 +1,15 @@
 using app.Models;
 using app.Repositories;
+using MailKit;
+using MailKit.Net.Smtp;
+using MimeKit;
 
 namespace app.Services;
 
 public interface ICheckoutService
 {
     public Task<CheckoutSummaryViewModel> GetCheckoutSummaryFromCart(List<long> cart);
-    public Task MarkCartItemsUnavailable(List<long> cart);
-    public Task FinalizeCheckout(UserCheckoutDetails checkoutDetails, List<long> cart);
+    public Task FinalizeCheckout(UserCheckoutDetails checkoutDetails, List<long> cart, String userName);
 }
 
 public class CheckoutService : ICheckoutService
