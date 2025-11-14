@@ -16,17 +16,25 @@ public class CheckoutService : ICheckoutService
     private readonly IProductsService _productsService;
     private readonly IProductsRepository _productsRepo;
     private readonly ICartService _cartService;
+    private readonly IOrdersRepository _ordersRepo;
+    private readonly IEmailService _emailService;
     private const double TAX_RATE = 0.13;
 
-    public CheckoutService(ILogger<ICheckoutService> logger,
+    public CheckoutService(
+        ILogger<ICheckoutService> logger,
         IProductsService productsService,
         IProductsRepository productsRepository,
-    ICartService cartService)
+        ICartService cartService,
+        IOrdersRepository ordersRepo,
+	IEmailService emailService
+    )
     {
         _logger = logger;
         _productsService = productsService;
         _productsRepo = productsRepository;
         _cartService = cartService;
+        _ordersRepo = ordersRepo;
+	_emailService = emailService;
     }
 
     /**
@@ -56,15 +64,7 @@ public class CheckoutService : ICheckoutService
         };
     }
 
-    public async Task MarkCartItemsUnavailable(List<long> cart)
-    {
-        foreach (long productId in cart)
-        {
-            await _productsRepo.MarkProductUnavailable(productId);
-        }
-    }
-
-    public async Task FinalizeCheckout(UserCheckoutDetails checkoutDetails, List<long> cart)
+    public async Task FinalizeCheckout(UserCheckoutDetails checkoutDetails, List<long> cart, String userName)
     {
         var products = await _cartService.GetProductsFromCart(cart);
         double subtotal = 0;
@@ -74,8 +74,45 @@ public class CheckoutService : ICheckoutService
         }
 
         var taxAmount = Math.Round(subtotal * TAX_RATE, 2);
-        var total = Math.Round(subtotal + taxAmount, 2);
 
-        //TODO: Create order here, make new orders repository
+        //TODO: temporary shipping number, get later at some point
+        double shippingAmount = 12.99;
+        var total = Math.Round(subtotal + taxAmount + shippingAmount, 2);
+
+        //TODO: temp cc number, get later at some point
+        String ccLast4 = "1234";
+
+	checkoutDetails.ShippingName = "test name";
+	checkoutDetails.ShippingAddress = "123 main street";
+
+
+        int orderId = await _ordersRepo.AddOrder(
+            userName,
+            subtotal,
+            taxAmount,
+            shippingAmount,
+            total,
+            checkoutDetails.ShippingAddress,
+            checkoutDetails.ShippingName,
+            ccLast4,
+            DateTime.Now
+        );
+
+        foreach (long productId in cart)
+        {
+            await _ordersRepo.AddOrderProduct(orderId, productId);
+            await _productsRepo.MarkProductUnavailable(productId);
+        }
+
+	var messageBody = @$"
+	    Thank you for your order!
+	    Total spent: ${total}
+	    ";
+
+	await _emailService.SendEmail(
+		userName,
+		"Ward4Woods Order",
+		messageBody
+	    );
     }
 }

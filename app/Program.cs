@@ -4,6 +4,7 @@ using app.Mappers;
 using app.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace app;
 
@@ -70,8 +71,11 @@ public class Program
         builder.Services.AddScoped<IImagesService, LocalImagesService>();
         builder.Services.AddScoped<ICheckoutService, CheckoutService>();
         builder.Services.AddScoped<ICartService, CartService>();
+        builder.Services.AddScoped<IEmailService, EmailService>();
 
         builder.Services.AddScoped<IProductMapper, ProductMapper>();
+
+        builder.Services.AddTransient<IEmailSender, EmailService>();
 
 
         var app = builder.Build();
