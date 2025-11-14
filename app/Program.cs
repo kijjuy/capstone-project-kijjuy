@@ -59,8 +59,11 @@ public class Program
                 options.ConnectionString = conString;
             });
 
+        ConfigureEmailServiceOptions(builder);
+
         builder.Services.AddScoped<IProductsRepository, ProductsRepository>();
         builder.Services.AddScoped<ICategoriesRepository, CategoriesRepository>();
+        builder.Services.AddScoped<IOrdersRepository, OrdersRepository>();
 
         builder.Services.AddScoped<IProductsService, ProductsService>();
         builder.Services.AddScoped<ICategoriesService, CategoriesService>();
@@ -94,5 +97,42 @@ public class Program
         app.MapRazorPages();
 
         app.Run();
+    }
+
+    /**
+     * <summary>
+     * Gets the email options from user secrets, then creates a new EmailServiceOptions from them.
+     * </summary>
+     */
+    private static void ConfigureEmailServiceOptions(WebApplicationBuilder builder)
+    {
+        String senderName = builder.Configuration["EmailOptions:SenderName"];
+        String senderAddress = builder.Configuration["EmailOptions:SenderAddress"];
+        String SMTPServerAddress = builder.Configuration["EmailOptions:SMTPServerAddress"];
+        String SMTPPortStr = builder.Configuration["EmailOptions:SMTPPort"];
+        String SMTPAuthLogin = builder.Configuration["EmailOptions:SMTPAuthLogin"];
+        String SMTPAuthPassword = builder.Configuration["EmailOptions:SMTPAuthPassword"];
+
+        if (
+            senderName == null ||
+            senderAddress == null ||
+            SMTPServerAddress == null ||
+            SMTPPortStr == null ||
+            SMTPAuthLogin == null ||
+            SMTPAuthPassword == null
+            )
+        {
+            throw new ArgumentNullException("One or more email options were null.");
+        }
+
+        builder.Services.Configure<EmailServiceOptions>(options =>
+        {
+            options.SenderName = senderName;
+            options.SenderAddress = senderAddress;
+            options.SMTPServerAddress = SMTPServerAddress;
+            options.SMTPPort = int.Parse(SMTPPortStr);
+            options.SMTPAuthLogin = SMTPAuthLogin;
+            options.SMTPAuthPassword = SMTPAuthPassword;
+        });
     }
 }
