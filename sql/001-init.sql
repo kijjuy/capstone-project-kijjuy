@@ -43,7 +43,7 @@ CREATE TABLE orders (
     shipping_address NVARCHAR(100) NOT NULL,
     shipping_name NVARCHAR(100) NOT NULL,
     cc_last_4 CHAR(4) NOT NULL,
-    order_date DATE NOT NULL,
+    order_date DATE NOT NULL
 );
 
 DROP TABLE IF EXISTS order_products;
