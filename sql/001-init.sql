@@ -32,19 +32,6 @@ CREATE TABLE images (
     FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 
-DROP TABLE IF EXISTS users;
-CREATE TABLE users (
-    user_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    email TEXT NOT NULL,
-    pass_hash TEXT NOT NULL,
-    first_name NVARCHAR(50),
-    last_name NVARCHAR(50),
-    phone CHAR(10),
-    address NVARCHAR(100),
-    creation_date DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    update_date DATE NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
 DROP TABLE IF EXISTS orders;
 CREATE TABLE orders (
     order_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -57,8 +44,6 @@ CREATE TABLE orders (
     shipping_name NVARCHAR(100) NOT NULL,
     cc_last_4 CHAR(4) NOT NULL,
     order_date DATE NOT NULL,
-
-    FOREIGN KEY(user_id) REFERENCES users(user_id)
 );
 
 DROP TABLE IF EXISTS order_products;
