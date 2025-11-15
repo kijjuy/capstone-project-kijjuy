@@ -33,13 +33,6 @@ public class EmailService : IEmailService, IEmailSender
     {
         _logger = logger;
         _options = options.Value;
-
-        _logger.LogDebug($"SenderName = {_options.SenderName}");
-        _logger.LogDebug($"SenderAddress = {_options.SenderAddress}");
-        _logger.LogDebug($"SMTPServerAddress = {_options.SMTPServerAddress}");
-        _logger.LogDebug($"SMTPPort = {_options.SMTPPort}");
-        _logger.LogDebug($"SMTPAuthLogin = {_options.SMTPAuthLogin}");
-        _logger.LogDebug($"SMTPAuthPassword = {_options.SMTPAuthPassword}");
     }
 
     public async Task SendEmail(String destinationAddress, String subject, String body)
