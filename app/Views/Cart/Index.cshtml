@@ -8,7 +8,7 @@
 @if(Model.Products.Any()) {
 <a class="border p-3 btn btn-primary w-100 h-100" id="checkout-button" asp-controller="Checkout" asp-action="Index">
     <h5 class="text-center">Checkout Now</h5>
-    <h5 class="text-center">Subtotal: @Model.Subtotal</h5>
+    <h5 class="text-center">Subtotal: @String.Format("{0:C2}", Model.Subtotal)</h5>
 </a>
 <div class="container">
 
@@ -28,7 +28,7 @@
 	</div>
 	<div class="col-7">
 	    <p class="">@Model.Products[i].ProductName</p>
-	    <p class="">@Model.Products[i].Price</p>
+	    <p class="">@String.Format("{0:C2}", Model.Products[i].Price)</p>
 	</div>
 	<img onClick="deleteFromCart(@Model.Products[i].ProductId, this)" class="btn col-2" src="Images/delete.png">
     </div>

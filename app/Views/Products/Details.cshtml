@@ -51,7 +51,7 @@
 
     }
     <div class="row mt-4">
-	<h5 class="col-6 text-center">$@Model.Price</h5>
+	<h5 class="col-6 text-center">@String.Format("{0:C2}", Model.Price)</h5>
 	<a class="btn btn-primary col-6" onClick="addToCart(@Model.ProductId)">Add To Cart</a>
     </div>
     <p class="mt-5">@Model.Description</p>
