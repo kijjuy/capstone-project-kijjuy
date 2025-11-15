@@ -27,7 +27,7 @@ public class AdminController : Controller
     [HttpGet("/admin")]
     public async Task<IActionResult> Index()
     {
-        var baseProducts = await _productsService.GetAllProducts();
+        var baseProducts = await _productsService.GetAllProducts(shouldGetUnavailable: true);
         var products = baseProducts
             .Select(async p => await _mapper.IntoViewModel(p))
             .Select(t => t.Result);

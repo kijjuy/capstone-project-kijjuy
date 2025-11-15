@@ -6,8 +6,8 @@ namespace app.Repositories;
 
 public interface IProductsRepository
 {
-    public Task<List<Product>> GetAllProducts();
-    public Task<Product?> GetProductById(int id);
+    public Task<List<Product>> GetAllProducts(bool shouldGetUnavailable);
+    public Task<Product?> GetProductById(int id, bool shouldGetUnavailable);
     public int DeleteProduct(int productId);
     public int CreateProduct(CreateProductModel product);
     public Task UpdateProduct(UpdateProductModel product, int id);
@@ -39,15 +39,24 @@ public class ProductsRepository : IProductsRepository
      * into Product.
      * </summary>
      */
-    public async Task<List<Product>> GetAllProducts()
+    public async Task<List<Product>> GetAllProducts(bool shouldGetUnavailable = false)
     {
         _logger.LogDebug("Hit GetAllProducts");
         var products = new List<Product>();
 
         using SqliteConnection db = new SqliteConnection(_connString);
 
+        SqliteCommand query;
 
-        SqliteCommand query = new SqliteCommand("SELECT * FROM products WHERE is_available = 1;", db);
+        if (shouldGetUnavailable)
+        {
+            query = new SqliteCommand("SELECT * FROM products;", db);
+        }
+        else
+        {
+            query = new SqliteCommand("SELECT * FROM products WHERE is_available = 1;", db);
+        }
+
         _logger.LogDebug("Selected data");
 
         if (query.Connection == null)
@@ -81,10 +90,21 @@ public class ProductsRepository : IProductsRepository
      * Returns a single product with a matching id, or null.
      * </summary>
      */
-    public async Task<Product?> GetProductById(int id)
+    public async Task<Product?> GetProductById(int id, bool shouldGetUnavailable)
     {
         using SqliteConnection db = new SqliteConnection(_connString);
-        SqliteCommand query = new SqliteCommand("SELECT * FROM products WHERE product_id = @id AND is_available = 1", db);
+
+        SqliteCommand query;
+
+        if (shouldGetUnavailable)
+        {
+            query = new SqliteCommand("SELECT * FROM products WHERE product_id = @id;", db);
+        }
+        else
+        {
+            query = new SqliteCommand("SELECT * FROM products WHERE product_id = @id AND is_available = 1", db);
+        }
+
         query.Parameters.AddWithValue("@id", id);
 
         if (query.Connection == null)

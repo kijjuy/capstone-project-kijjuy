@@ -6,8 +6,8 @@ namespace app.Services;
 public interface IProductsService
 {
     //TODO: restructure to return base product model, then transform into view models
-    public Task<List<Product>> GetAllProducts();
-    public Task<Product?> GetProductById(int id);
+    public Task<List<Product>> GetAllProducts(bool shouldGetUnavailable = false);
+    public Task<Product?> GetProductById(int id, bool shouldGetUnavailable = false);
     public void DeleteProduct(int productId);
     public Task<int> CreateProduct(CreateProductModel product);
     public Task UpdateProduct(UpdateProductModel product, int id);
@@ -35,9 +35,9 @@ public class ProductsService : IProductsService
      * them into ProductViewModels.
      * </summary>
      */
-    public async Task<List<Product>> GetAllProducts()
+    public async Task<List<Product>> GetAllProducts(bool shouldGetUnavailable = false)
     {
-        return await _products.GetAllProducts();
+        return await _products.GetAllProducts(shouldGetUnavailable);
     }
 
     /**
@@ -47,14 +47,14 @@ public class ProductsService : IProductsService
      * or returns null if the product from the repo was null.
      * </summary>
      */
-    public async Task<Product?> GetProductById(int id)
+    public async Task<Product?> GetProductById(int id, bool shouldGetUnavailable = false)
     {
         if (id < 1)
         {
             _logger.LogWarning($"Tried to get product with bad id. id={id}");
             throw new ArgumentException("Product id must be greater than 0.");
         }
-        return await _products.GetProductById(id);
+        return await _products.GetProductById(id, shouldGetUnavailable);
     }
 
     /**

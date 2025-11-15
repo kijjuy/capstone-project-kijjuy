@@ -89,11 +89,10 @@ public class ProductsController : Controller
             return BadRequest(new { message = "Product id must be above 0." });
         }
 
-        ProductViewModelWithImages product;
+        Product product;
         try
         {
-            var baseProduct = await _productsService.GetProductById(id);
-            product = await _productMapper.IntoViewModelWithImages(baseProduct);
+            product = await _productsService.GetProductById(id);
         }
         catch (Exception e)
         {
@@ -101,13 +100,15 @@ public class ProductsController : Controller
             $"{e.StackTrace}");
             return new StatusCodeResult(500);
         }
-
-        if (product == null || product.InternalModel == null)
+        if (product == null || product == null)
         {
             return NotFound();
         }
 
-        return View("Details", product);
+        var productViewModel = await _productMapper.IntoViewModelWithImages(product);
+
+
+        return View("Details", productViewModel);
 
     }
 
@@ -211,7 +212,7 @@ public class ProductsController : Controller
         var categories = await _categoriesService.GetAllCategories();
         ViewData["Categories"] = new SelectList(categories, "CategoryId", "CategoryName");
 
-        var baseProduct = await _productsService.GetProductById(id);
+        var baseProduct = await _productsService.GetProductById(id, true);
         var product = await _productMapper.IntoViewModel(baseProduct);
         ViewData["CurrentProduct"] = product;
         return View();
