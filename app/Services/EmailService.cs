@@ -42,7 +42,7 @@ public class EmailService : IEmailService, IEmailSender
         message.To.Add(new MailboxAddress(destinationAddress, destinationAddress));
         message.Subject = subject;
 
-        message.Body = new TextPart("plain")
+        message.Body = new TextPart("html")
         {
             Text = body
         };
