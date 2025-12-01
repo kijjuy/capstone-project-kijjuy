@@ -5,6 +5,7 @@ using app.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Stripe;
 
 namespace app;
 
@@ -61,6 +62,17 @@ public class Program
                 options.ConnectionString = conString;
             });
 
+        builder.Services.Configure<StripeClientOptions>(options =>
+        {
+            String? apiKey = builder.Configuration["StripeSecrets:ApiKey"];
+            if (apiKey == null)
+            {
+                throw new ArgumentNullException("Stripe Api Key was null");
+            }
+            options.ApiKey = apiKey;
+            StripeConfiguration.ApiKey = apiKey;
+        });
+
         ConfigureEmailServiceOptions(builder);
 
         builder.Services.AddScoped<IProductsRepository, ProductsRepository>();
@@ -70,7 +82,7 @@ public class Program
         builder.Services.AddScoped<IProductsService, ProductsService>();
         builder.Services.AddScoped<ICategoriesService, CategoriesService>();
         builder.Services.AddScoped<IImagesService, LocalImagesService>();
-        builder.Services.AddScoped<ICheckoutService, CheckoutService>();
+        builder.Services.AddScoped<ICheckoutService, app.Services.CheckoutService>();
         builder.Services.AddScoped<ICartService, CartService>();
         builder.Services.AddScoped<IEmailService, EmailService>();
 
