@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 using app.Services;
 using app.Models;
+using Stripe.Checkout;
+using Stripe;
 
 namespace app.Controllers;
 
@@ -11,14 +14,20 @@ public class CheckoutController : Controller
     private readonly ILogger<CheckoutController> _logger;
     private readonly ICheckoutService _checkoutService;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ICartService _cartService;
 
-    public CheckoutController(ILogger<CheckoutController> logger,
+    public CheckoutController(
+        ILogger<CheckoutController> logger,
         ICheckoutService checkoutService,
-    UserManager<ApplicationUser> userManager)
+        UserManager<ApplicationUser> userManager,
+        ICartService cartService,
+    IOptions<CheckoutOptions> options
+    )
     {
         _logger = logger;
         _checkoutService = checkoutService;
         _userManager = userManager;
+        _cartService = cartService;
     }
 
     /**
