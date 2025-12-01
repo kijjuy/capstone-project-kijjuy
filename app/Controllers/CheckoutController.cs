@@ -66,4 +66,67 @@ public class CheckoutController : Controller
 
         return RedirectToAction(controllerName: "Home", actionName: "Index");
     }
+
+    [HttpGet("/checkout/stripe")]
+    [Authorize]
+    public async Task<IActionResult> Stripe()
+    {
+        var user = await _userManager.FindByNameAsync(User.Identity!.Name!);
+        var cart = user!.Cart;
+
+        _logger.LogDebug($"sizeof cart: {cart.Count}");
+
+        var products = await _cartService.GetProductsFromCart(cart);
+        _logger.LogDebug($"sizeof products: {products.Count}");
+
+        var lineItems = new List<SessionLineItemOptions>();
+
+        foreach (var product in products)
+        {
+
+            var productData = new SessionLineItemPriceDataProductDataOptions
+            {
+                Name = product.Name,
+                Description = product.Description,
+                TaxCode = "txcd_99999999",
+            };
+
+            var lineItem = new SessionLineItemOptions
+            {
+                Quantity = 1,
+                PriceData = new SessionLineItemPriceDataOptions
+                {
+                    Currency = "CAD",
+                    ProductData = productData,
+                    UnitAmount = (int)(product.Price * 100),
+                }
+            };
+            lineItems.Add(lineItem);
+        }
+
+        _logger.LogDebug($"sizeof lineItems: {lineItems.Count}");
+
+        var options = new SessionCreateOptions
+        {
+            LineItems = lineItems,
+            Mode = "payment",
+            SuccessUrl = "http://localhost:8080/checkout/success"
+        };
+
+        var client = new StripeClient("sk_test_51PPwFrDRzObLxTqvUVjLH4DmU8RyHUl1srpx5lpW45G7xYBctZSRCWufCKrn3h3mGmWVMuYMz4pHdNkBz6pFvsUm00cYFlK9Kr");
+
+
+        var service = new SessionService(client);
+        var session = service.Create(options);
+
+        Response.Headers.Add("Location", session.Url);
+        return new StatusCodeResult(303);
+    }
+
+    [HttpGet("/checkout/success")]
+    [Authorize]
+    public IActionResult Success()
+    {
+        return Json(new { Message = "checkout success!" });
+    }
 }
