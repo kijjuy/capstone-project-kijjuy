@@ -1,8 +1,7 @@
 using app.Models;
 using app.Repositories;
-using MailKit;
-using MailKit.Net.Smtp;
-using MimeKit;
+using Stripe;
+using Stripe.Checkout;
 
 namespace app.Services;
 
