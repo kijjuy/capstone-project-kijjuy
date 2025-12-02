@@ -5,21 +5,21 @@
 <div id="root" class="ms-3 me-3">
     <h1 class="text-center pt-3 pb-5">Welcome to the home page</h1>
     <h5 class="text-center">Browse by Category</h5>
-    <div class="container">
-	<div class="row">	
-	    <div class="col">
+    <div class="position-static">
+	<div class="d-flex justify-content-center">	
+	    <div class="">
 		<a href="/products?categoryNameFilter=@ViewData["cuttingBoard"]">
 		    <img src="Images/placeholder.jpg" class="object-fit-sm-scale" alt="">
 		    <p class="text-center">Cutting Boards</p>
 		</a>
 	    </div>
-	    <div class="col">
+	    <div class="px-2">
 		<a href="/products?categoryNameFilter=@ViewData["charcuterie"]">
 		    <img src="Images/placeholder.jpg" class="object-fit-sm-scale" alt="">
 		    <p class="text-center">Charcuterie Boards</p>
 		</a>
 	    </div>
-	    <div class="col">
+	    <div class="">
 		<a href="/products?categoryNameFilter=@ViewData["choppingBlock"]">
 		    <img src="Images/placeholder.jpg" class="object-fit-sm-scale" alt="">
 		    <p class="text-center">Chopping Blocks</p>
