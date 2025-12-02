@@ -42,7 +42,9 @@
     	    <div class="col-sm-12 col-xl-6">
     		<a class="card bg-dark-subtle pb-0 link-underline link-underline-opacity-0" asp-controller="Products" asp-action="Details" asp-route-id="@product.ProductId">
     		    @if(product.ImageNames.Any()) {
-    		    <img src="/Images/@product.ImageNames.FirstOrDefault()" alt="Image for @product.ProductName">
+		    <div class="ratio ratio-4x3">
+			<img class="object-fit-cover" src="/Images/@product.ImageNames.FirstOrDefault()" alt="Image for @product.ProductName">
+		    </div>
     		    } else {
     		    <img src="/Images/placeholder.jpg" alt="Image for @product.ProductName">
     		    }
