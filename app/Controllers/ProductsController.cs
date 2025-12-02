@@ -72,6 +72,9 @@ public class ProductsController : Controller
             .ToList();
         }
 
+	var categories = await _categoriesService.GetAllCategories();
+        ViewData["Categories"] = new SelectList(categories, "CategoryName", "CategoryName");
+
         return View("Index", products);
     }
 

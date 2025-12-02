@@ -1,5 +1,6 @@
 @{
     Layout = "_Layout";
+    var categories = ViewData["Categories"];
 }
 
 @model IEnumerable<app.Models.ProductViewModelWithImages>
@@ -16,7 +17,9 @@
     			<input class="p-3 rounded container" type="text" name="nameFilter" placeholder="Name"/>
     		    </div>
     		    <div class="container p-0">
-    			<input class="p-3 rounded container mt-3" type="text" name="categoryNameFilter" placeholder="Category Name">
+			<select class="p-3 rounded container mt-3" name="categoryNameFilter" asp-items="(SelectList)categories" class="form-control">
+			    <option value="">-- Select Category --</option> 
+			</select>
     		    </div>
     		    <div class="p-0 row m-0 mt-3">
     		        <input class="col-5 rounded p-3" type="number" name="priceMin" placeholder="Min Price">
