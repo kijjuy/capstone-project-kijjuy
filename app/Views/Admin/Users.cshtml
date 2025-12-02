@@ -1,0 +1,21 @@
+@{
+Layout = "_Layout";
+}
+
+@using app.Models
+@model IEnumerable<UserViewModel>
+
+@if(!Model.Any()) {
+<h1>No users to see.</h1>
+} else {
+    <div class="container">
+    @foreach(var user in Model) {
+	<div>@user.UserName</div>
+	@if(!user.IsAdmin) {
+	<a class="btn btn-primary" href="/admin/users/makeAdmin/@user.UserName">Add Admin</a>
+	} else {
+	<a class="btn btn-danger" href="/admin/users/removeAdmin/@user.UserName">Remove Admin</a>
+	}
+    }
+    </div>
+}
