@@ -157,6 +157,10 @@ namespace app.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.PrimitiveCollection<string>("Cart")
                         .IsRequired()
                         .HasColumnType("TEXT");
