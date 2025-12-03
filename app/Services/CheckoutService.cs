@@ -8,8 +8,8 @@ namespace app.Services;
 public interface ICheckoutService
 {
     public Task<CheckoutSummaryViewModel> GetCheckoutSummaryFromCart(List<long> cart);
-    public Task FinalizeCheckout(UserCheckoutDetails checkoutDetails, List<long> cart, String userName);
     public Task<int> CreatePendingOrder(CheckoutInputModel input, IEnumerable<long> cart, String username);
+    public Task<String> SetupStripe(List<long> cart);
 }
 
 public class CheckoutService : ICheckoutService
@@ -58,58 +58,6 @@ public class CheckoutService : ICheckoutService
         };
     }
 
-    public async Task FinalizeCheckout(UserCheckoutDetails checkoutDetails, List<long> cart, String userName)
-    {
-        var products = await _cartService.GetProductsFromCart(cart);
-        double subtotal = 0;
-        foreach (var product in products)
-        {
-            subtotal += product.Price;
-        }
-
-        var taxAmount = Math.Round(subtotal * TAX_RATE, 2);
-
-        //TODO: temporary shipping number, get later at some point
-        double shippingAmount = 12.99;
-        var total = Math.Round(subtotal + taxAmount + shippingAmount, 2);
-
-        //TODO: temp cc number, get later at some point
-        String ccLast4 = "1234";
-
-	checkoutDetails.ShippingName = "test name";
-	checkoutDetails.ShippingAddress = "123 main street";
-
-
-        int orderId = await _ordersRepo.AddOrder(
-            userName,
-            subtotal,
-            taxAmount,
-            shippingAmount,
-            total,
-            checkoutDetails.ShippingAddress,
-            checkoutDetails.ShippingName,
-            ccLast4,
-            DateTime.Now
-        );
-
-        foreach (long productId in cart)
-        {
-            await _ordersRepo.AddOrderProduct(orderId, productId);
-            await _productsRepo.MarkProductUnavailable(productId);
-        }
-
-	var messageBody = @$"
-	    Thank you for your order!
-	    Total spent: ${total}
-	    ";
-
-	await _emailService.SendEmail(
-		userName,
-		"Ward4Woods Order",
-		messageBody
-	    );
-    }
-
     public async Task<int> CreatePendingOrder(CheckoutInputModel input, IEnumerable<long> cart, String username)
     {
 	var cartValues = await GetCartTotalValues(cart);
@@ -122,6 +70,73 @@ public class CheckoutService : ICheckoutService
 	}
 
 	return result;
+    }
+
+    /** 
+     * <summary>
+     * Loops through all products in cart and sets up a stripe checkout
+     * page from them. 
+     *
+     * <see langword="return"/> Url to stripe checkout page
+     * </summary>
+     */
+    public async Task<String> SetupStripe(List<long> cart) 
+    {
+        _logger.LogDebug($"sizeof cart: {cart.Count}");
+
+	var lineItems = await GetLineItemsFromCart(cart);
+
+        _logger.LogDebug($"sizeof lineItems: {lineItems.Count}");
+
+        var options = new SessionCreateOptions
+        {
+            LineItems = lineItems,
+            Mode = "payment",
+            SuccessUrl = "http://localhost:8080/checkout/success"
+        };
+
+        var client = new StripeClient("sk_test_51PPwFrDRzObLxTqvUVjLH4DmU8RyHUl1srpx5lpW45G7xYBctZSRCWufCKrn3h3mGmWVMuYMz4pHdNkBz6pFvsUm00cYFlK9Kr");
+
+        var service = new SessionService(client);
+        var session = service.Create(options);
+
+	return session.Url;
+    }
+
+    /**
+     * <summary>
+     * Creates list of line items from a user's cart.
+     * </summary>
+     */
+    private async Task<List<SessionLineItemOptions>> GetLineItemsFromCart (List<long> cart) {
+        var products = await _cartService.GetProductsFromCart(cart);
+        _logger.LogDebug($"sizeof products: {products.Count}");
+
+        var lineItems = new List<SessionLineItemOptions>();
+
+        foreach (var product in products)
+        {
+
+            var productData = new SessionLineItemPriceDataProductDataOptions
+            {
+                Name = product.Name,
+                Description = product.Description,
+                TaxCode = "txcd_99999999",
+            };
+
+            var lineItem = new SessionLineItemOptions
+            {
+                Quantity = 1,
+                PriceData = new SessionLineItemPriceDataOptions
+                {
+                    Currency = "CAD",
+                    ProductData = productData,
+                    UnitAmount = (int)(product.Price * 100),
+                }
+            };
+            lineItems.Add(lineItem);
+        }
+	return lineItems;
     }
 
     private async Task<CartTotalValues> GetCartTotalValues(IEnumerable<long> cart) 
