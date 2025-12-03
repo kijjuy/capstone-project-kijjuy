@@ -34,43 +34,24 @@ public class CheckoutController : Controller
      * <summary>
      * Gets the user's cart and returns a viewmodel containing subtotal, tax,
      * and total. This is rendered in an mvc view.
-  navToCheckout()   * </summary>
+     * </summary>
      */
     [HttpGet("/checkout")]
     [Authorize]
     public async Task<IActionResult> Index()
     {
-        var user = await _userManager.FindByNameAsync(User!.Identity!.Name!);
-        var checkoutSummary = await _checkoutService.GetCheckoutSummaryFromCart(user!.Cart);
+        var checkoutSummary = await GetCurrentUserCheckoutSummary(null);
+
+
         return View("Index", checkoutSummary);
     }
 
-    /**
-     * <summary>
-     * Completes the checkout and marks all of the products from the cart as 
-     * not available.
-     * </summary>
-     */
-    [HttpGet("/checkout/complete")]
+
+    [HttpPost("/checkout")]
     [Authorize]
-    public async Task<IActionResult> CompleteCheckout([FromQuery] UserCheckoutDetails checkoutDetails)
+    public async Task<IActionResult> Stripe([FromForm] CheckoutInputModel input)
     {
-        //TODO: wait for stripe webhook here to confirm purchase
-        var user = await _userManager.FindByNameAsync(User.Identity!.Name!);
 
-	await _checkoutService.FinalizeCheckout(checkoutDetails, user.Cart, user.UserName);
-
-        user.Cart = new List<long>();
-        await _userManager.UpdateAsync(user);
-
-
-        return RedirectToAction(controllerName: "Home", actionName: "Index");
-    }
-
-    [HttpGet("/checkout/stripe")]
-    [Authorize]
-    public async Task<IActionResult> Stripe()
-    {
         var user = await _userManager.FindByNameAsync(User.Identity!.Name!);
         var cart = user!.Cart;
 
@@ -123,10 +104,60 @@ public class CheckoutController : Controller
         return new StatusCodeResult(303);
     }
 
+    /**
+     * <summary>
+     * Completes the checkout and marks all of the products from the cart as 
+     * not available.
+     * </summary>
+     */
+    [HttpGet("/checkout/complete")]
+    [Authorize]
+    public async Task<IActionResult> CompleteCheckout([FromQuery] UserCheckoutDetails checkoutDetails)
+    {
+        //TODO: wait for stripe webhook here to confirm purchase
+        var user = await _userManager.FindByNameAsync(User.Identity!.Name!);
+
+	await _checkoutService.FinalizeCheckout(checkoutDetails, user.Cart, user.UserName);
+
+        user.Cart = new List<long>();
+        await _userManager.UpdateAsync(user);
+
+
+        return RedirectToAction(controllerName: "Home", actionName: "Index");
+    }
+
     [HttpGet("/checkout/success")]
     [Authorize]
     public IActionResult Success()
     {
         return Json(new { Message = "checkout success!" });
+    }
+
+    private async Task<CheckoutSummaryViewModel> GetCurrentUserCheckoutSummary(CheckoutInputModel? prevInput) 
+    {
+
+        var user = await _userManager.FindByNameAsync(User!.Identity!.Name!);
+	var checkoutSummary = await _checkoutService.GetCheckoutSummaryFromCart(user!.Cart);
+
+	if(prevInput != null) 
+	{
+	    checkoutSummary.Input = prevInput;
+	    return checkoutSummary;
+	}
+
+	var input = new CheckoutInputModel 
+	{
+	    Name = user.UserName, 
+	    Address = "",
+	};
+
+	if(user.Address != null && !user.Address.Equals("")) 
+	{
+	    input.Address = user.Address;
+	}
+
+	checkoutSummary.Input = input;
+
+	return checkoutSummary;
     }
 }
