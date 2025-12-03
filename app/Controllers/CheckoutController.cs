@@ -51,6 +51,11 @@ public class CheckoutController : Controller
     [Authorize]
     public async Task<IActionResult> Stripe([FromForm] CheckoutInputModel input)
     {
+	if(!ModelState.IsValid) 
+	{
+	    var summary = await GetCurrentUserCheckoutSummary(input);
+	    return View("Index", summary);
+	}
 
         var user = await _userManager.FindByNameAsync(User.Identity!.Name!);
         var cart = user!.Cart;
