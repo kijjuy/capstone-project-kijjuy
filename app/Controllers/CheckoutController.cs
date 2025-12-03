@@ -57,8 +57,14 @@ public class CheckoutController : Controller
 	    return View("Index", summary);
 	}
 
+
         var user = await _userManager.FindByNameAsync(User.Identity!.Name!);
         var cart = user!.Cart;
+
+	int orderId = await _checkoutService.CreatePendingOrder(input, cart, user.UserName);
+	user.CurrentOrderId = orderId;
+
+	await _userManager.UpdateAsync(user);
 
         _logger.LogDebug($"sizeof cart: {cart.Count}");
 

@@ -5,6 +5,13 @@ namespace app.Repositories;
 
 public interface IOrdersRepository
 {
+    public Task<int> CreatePendingOrder(
+	String name,
+	String address,
+	double subtotal, 
+	double tax, 
+	String username
+    );
     public Task<int> AddOrder(
         String userName,
         double subtotal,
@@ -31,6 +38,36 @@ public class OrdersRepository : IOrdersRepository
     {
         _connString = options.Value.ConnectionString;
         _logger = logger;
+    }
+
+    public async Task<int> CreatePendingOrder(
+	String name, 
+	String address,
+	double subtotal, 
+	double tax, 
+	String username
+    )
+    {
+	using var db = new SqliteConnection(_connString);
+	using var query = new SqliteCommand(@"
+	    INSERT INTO orders 
+	    (shipping_name, shipping_address, subtotal_paid, tax_paid, user_name)
+	    VALUES(@shipping_name, @shipping_address, @subtotal_paid, @tax_paid, @user_name)
+	    RETURNING order_id; 
+	", db);
+
+	query.Parameters.AddWithValue("@shipping_name", name);
+	query.Parameters.AddWithValue("@shipping_address", address);
+	query.Parameters.AddWithValue("@subtotal_paid", subtotal);
+	query.Parameters.AddWithValue("@tax_paid", tax);
+	query.Parameters.AddWithValue("@user_name", username);
+
+	await db.OpenAsync();
+	using var reader = await query.ExecuteReaderAsync();
+	int id = reader.GetInt32(0);
+
+	return id;
+
     }
 
     public async Task<int> AddOrder(

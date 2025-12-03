@@ -9,6 +9,7 @@ public interface ICheckoutService
 {
     public Task<CheckoutSummaryViewModel> GetCheckoutSummaryFromCart(List<long> cart);
     public Task FinalizeCheckout(UserCheckoutDetails checkoutDetails, List<long> cart, String userName);
+    public Task<int> CreatePendingOrder(CheckoutInputModel input, IEnumerable<long> cart, String username);
 }
 
 public class CheckoutService : ICheckoutService
@@ -116,4 +117,19 @@ public class CheckoutService : ICheckoutService
 		messageBody
 	    );
     }
+
+    public async Task<int> CreatePendingOrder(CheckoutInputModel input, IEnumerable<long> cart, String username)
+    {
+	var cartValues = await GetCartTotalValues(cart);
+	int result = await _ordersRepo.CreatePendingOrder(input.Name, input.Address, cartValues.Subtotal,
+		cartValues.Tax, username);
+
+	if(result < 1) 
+	{
+	    throw new BadSqlResultException($"Got bad id when inserting pending order. Got id={result}");
+	}
+
+	return result;
+    }
+
 }

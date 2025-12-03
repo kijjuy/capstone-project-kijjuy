@@ -9,6 +9,8 @@ public class ApplicationUser : IdentityUser
 
     public List<long> Cart { get; set; }
 
+    public int CurrentOrderId { get; set; }
+
     public ApplicationUser()
     : base()
     {
