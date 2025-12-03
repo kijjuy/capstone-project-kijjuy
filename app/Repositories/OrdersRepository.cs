@@ -22,7 +22,7 @@ public interface IOrdersRepository
         String shippingName,
         String ccLast4,
         DateTime orderDate
-        );
+    );
     public Task AddOrderProduct(int orderId, long productId);
 }
 
@@ -80,7 +80,7 @@ public class OrdersRepository : IOrdersRepository
         String shippingName,
         String ccLast4,
         DateTime orderDate
-        )
+    )
     {
         using var db = new SqliteConnection(_connString);
 
