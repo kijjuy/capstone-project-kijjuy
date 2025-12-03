@@ -48,21 +48,13 @@ public class CheckoutService : ICheckoutService
      */
     public async Task<CheckoutSummaryViewModel> GetCheckoutSummaryFromCart(List<long> cart)
     {
-        var products = await _cartService.GetProductsFromCart(cart);
-        double subtotal = 0;
-        foreach (var product in products)
-        {
-            subtotal += product.Price;
-        }
-        _logger.LogDebug($"Summed up products subtotal and got subtotal={subtotal}");
+	var cartTotals = await GetCartTotalValues(cart);
 
-        var taxAmount = Math.Round(subtotal * TAX_RATE, 2);
-        var total = Math.Round(subtotal + taxAmount, 2);
         return new CheckoutSummaryViewModel
         {
-            Subtotal = String.Format("{0:C2}", subtotal),
-            Tax = String.Format("{0:C2}", taxAmount),
-            Total = String.Format("{0:C2}", total)
+            Subtotal = String.Format("{0:C2}", cartTotals.Subtotal),
+            Tax = String.Format("{0:C2}", cartTotals.Tax),
+            Total = String.Format("{0:C2}", cartTotals.TotalNoShipping)
         };
     }
 
@@ -130,6 +122,33 @@ public class CheckoutService : ICheckoutService
 	}
 
 	return result;
+    }
+
+    private async Task<CartTotalValues> GetCartTotalValues(IEnumerable<long> cart) 
+    {
+        var products = await _cartService.GetProductsFromCart(cart.ToList());
+        double subtotal = 0;
+        foreach (var product in products)
+        {
+            subtotal += product.Price;
+        }
+        _logger.LogDebug($"Summed up products subtotal and got subtotal={subtotal}");
+
+        var taxAmount = Math.Round(subtotal * TAX_RATE, 2);
+        var total = Math.Round(subtotal + taxAmount, 2);
+
+	return new CartTotalValues {
+	    Subtotal = subtotal,
+	    Tax = taxAmount,
+	    TotalNoShipping = total,
+	};
+    }
+
+    private class CartTotalValues 
+    {
+	public double Subtotal { get; set; }
+	public double Tax { get; set; }
+	public double TotalNoShipping { get; set; }
     }
 
 }
