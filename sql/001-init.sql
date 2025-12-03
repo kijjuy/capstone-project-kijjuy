@@ -38,11 +38,11 @@ CREATE TABLE orders (
     user_name NVARCHAR(100) NOT NULL,
     subtotal_paid NUMERIC(7,2) NOT NULL,
     tax_paid NUMERIC(6,2) NOT NULL,
-    shipping_paid NUMERIC(5,2) NOT NULL,
-    total_paid NUMERIC (7,2) NOT NULL,
+    shipping_paid NUMERIC(5,2),
+    total_paid NUMERIC (7,2),
     shipping_address NVARCHAR(100) NOT NULL,
     shipping_name NVARCHAR(100) NOT NULL,
-    cc_last_4 CHAR(4) NOT NULL,
+    cc_last_4 CHAR(4),
     order_date DATE NOT NULL,
     order_status CHAR(7)
 );
