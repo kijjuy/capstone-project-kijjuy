@@ -9,4 +9,18 @@
 <h1>Tax: @Model.Tax</h1>
 <h1>Total: @Model.Total</h1>
 
-<a asp-controller="Checkout" asp-action="CompleteCheckout">Finish Checkout</a>
+<form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+    <div class="form-floating mb-3">
+        <input asp-for="Input.Name" class="form-control" placeholder="Shipping Name"/>
+        <label asp-for="Input.Name" class="form-label"></label>
+	<span asp-validation-for="Input.Name" class="text-danger"></span>
+    </div>
+    <div class="form-floating mb-3">
+        <input asp-for="Input.Address" class="form-control" placeholder="Shipping Address"/>
+        <label asp-for="Input.Address" class="form-label"></label>
+	<span asp-validation-for="Input.Address" class="text-danger"></span>
+    </div>
+    <button class="btn btn-primary" type="submit">Go To Payment</button>
+</form>
+
