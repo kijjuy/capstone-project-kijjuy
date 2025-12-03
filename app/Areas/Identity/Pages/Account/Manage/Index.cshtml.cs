@@ -93,6 +93,7 @@ namespace app.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnPostAsync()
         {
+
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
@@ -119,7 +120,6 @@ namespace app.Areas.Identity.Pages.Account.Manage
 	    var address = user.Address;
 	    if(Input.Address != address) 
 	    {
-		Console.WriteLine("currently changing address to " + address);
 		user.Address = address;
 		var updateUserResult = await _userManager.UpdateAsync(user);
 		if (!updateUserResult.Succeeded) 
@@ -127,9 +127,6 @@ namespace app.Areas.Identity.Pages.Account.Manage
 		    StatusMessage = "Unexpected error when trying to set address.";
 		    return RedirectToPage();
 		}
-	    } else 
-	    {
-		Console.WriteLine("did not update address");
 	    }
 
             await _signInManager.RefreshSignInAsync(user);
