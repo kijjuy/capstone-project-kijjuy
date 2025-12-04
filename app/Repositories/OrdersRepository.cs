@@ -26,6 +26,7 @@ public interface IOrdersRepository
         DateTime orderDate
     );
     public Task AddOrderProduct(int orderId, long productId);
+    public Task<String> GetUsernameFromOrderId(int orderId);
 }
 
 public class OrdersRepository : IOrdersRepository
@@ -197,5 +198,25 @@ public class OrdersRepository : IOrdersRepository
 
         await query.Connection!.OpenAsync();
         var result = await query.ExecuteNonQueryAsync();
+    }
+
+    public async Task<String> GetUsernameFromOrderId(int orderId)
+    {
+	using var db = new SqliteConnection(_connString);
+	await db.OpenAsync();
+	using var query = new SqliteCommand(@"
+		SELECT user_name FROM orders
+		WHERE order_id = @order_id;
+		", db);
+
+	query.Parameters.AddWithValue("@order_id", orderId);
+
+	using var reader = await query.ExecuteReaderAsync();
+	await reader.ReadAsync();
+
+	String username = reader.GetString(0);
+	_logger.LogDebug($"Got username: {username} from orderid: {orderId}");
+
+	return username;
     }
 }
