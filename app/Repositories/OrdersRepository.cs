@@ -67,7 +67,8 @@ public class OrdersRepository : IOrdersRepository
 
 	await db.OpenAsync();
 	using var reader = await query.ExecuteReaderAsync();
-	int id = reader.GetInt32(0);
+	await reader.ReadAsync();
+	int id = (int)reader.GetInt32(0);
 
 	return id;
 
