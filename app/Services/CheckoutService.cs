@@ -10,6 +10,7 @@ public interface ICheckoutService
     public Task<CheckoutSummaryViewModel> GetCheckoutSummaryFromCart(List<long> cart);
     public Task<int> CreatePendingOrder(CheckoutInputModel input, IEnumerable<long> cart, String username);
     public Task<String> SetupStripe(List<long> cart);
+    public Task CompleteCheckout(int orderId, double shipping, double total);
 }
 
 public class CheckoutService : ICheckoutService
@@ -137,6 +138,21 @@ public class CheckoutService : ICheckoutService
             lineItems.Add(lineItem);
         }
 	return lineItems;
+    }
+
+    public async Task CompleteCheckout(int orderId, double shipping, double total)
+    {
+	_logger.LogDebug("marking order as complete");
+	await _ordersRepo.CompleteOrder(orderId, shipping, total);
+
+	String username = await _ordersRepo.GetUsernameFromOrderId(orderId);
+
+	String message = @$"
+	    Thank you for your order!
+	    Order total: {String.Format("{0:C2}", total)}
+	    ";
+
+	await _emailService.SendEmail(username, "Ward4Woods Order", message);
     }
 
     private async Task<CartTotalValues> GetCartTotalValues(IEnumerable<long> cart) 
