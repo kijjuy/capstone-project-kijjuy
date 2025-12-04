@@ -47,6 +47,11 @@ public class CheckoutController : Controller
     }
 
 
+    /**
+     * <summary>
+     * Sets up stripe checkout and redirects the user to that page.
+     * </summary>
+     */
     [HttpPost("/checkout")]
     [Authorize]
     public async Task<IActionResult> Stripe([FromForm] CheckoutInputModel input)
