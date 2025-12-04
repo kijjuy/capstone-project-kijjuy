@@ -22,6 +22,7 @@ public class CheckoutService : ICheckoutService
     private readonly IOrdersRepository _ordersRepo;
     private readonly IEmailService _emailService;
     private const double TAX_RATE = 0.13;
+    private const double shippingCost = 12.99;
 
     public CheckoutService(
         ILogger<ICheckoutService> logger,
