@@ -12,6 +12,8 @@ public interface IOrdersRepository
 	double tax, 
 	String username
     );
+    public Task CompleteOrder(int orderId, double shipping, double total);
+
     public Task<int> AddOrder(
         String userName,
         double subtotal,
@@ -116,6 +118,69 @@ public class OrdersRepository : IOrdersRepository
         _logger.LogInformation($"Created new order with id={result}");
 
         return result;
+    }
+
+    public async Task CompleteOrder(int orderId, double shipping, double total) 
+    {
+	using var db = new SqliteConnection(_connString);
+	await db.OpenAsync();
+
+	using var transaction = await db.BeginTransactionAsync() as SqliteTransaction;
+
+	using (var command = db.CreateCommand()) {
+	    command.CommandText = @"
+		SELECT product_id FROM order_products
+		WHERE order_id = @order_id;
+		";
+
+	    command.Transaction = transaction;
+	    command.Parameters.AddWithValue("@order_id", orderId);
+
+	    using var reader = await command.ExecuteReaderAsync();
+	    while(await reader.ReadAsync()) 
+	    {
+		int productId = reader.GetInt32(0);
+		using var updateCommand = db.CreateCommand();
+		updateCommand.CommandText = @"
+		    UPDATE products SET	is_available = 0
+		    WHERE product_id = @product_id;
+		    ";
+
+		updateCommand.Transaction = transaction;
+		updateCommand.Parameters.AddWithValue("@product_id", productId);
+
+		int result = await updateCommand.ExecuteNonQueryAsync();
+
+		if(result == 0) 
+		{
+		    throw new InvalidOperationException("Update product result was 0 when it should have been 1");
+		}
+	    }
+	}
+
+	using (var command = db.CreateCommand()) {
+	    command.CommandText = @"
+		UPDATE orders 
+		SET shipping_paid = @shipping_paid,
+		total_paid = @total_paid,
+		order_status = 'complete'
+		WHERE order_id = @order_id;
+		";
+
+	    command.Transaction = transaction;
+	    command.Parameters.AddWithValue("@shipping_paid", shipping);
+	    command.Parameters.AddWithValue("@total_paid", total);
+	    command.Parameters.AddWithValue("@order_id", orderId);
+
+	    int result = await command.ExecuteNonQueryAsync();
+
+	    if(result == 0) {
+		throw new InvalidOperationException("Update order reuslt was 0 when it should have been 1");
+	    }
+
+	}
+
+	await transaction.CommitAsync();
     }
 
     public async Task AddOrderProduct(int orderId, long productId)
