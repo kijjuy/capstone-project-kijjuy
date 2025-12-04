@@ -108,6 +108,14 @@ public class CheckoutService : ICheckoutService
 	    },
 	};
 
+	var autoTax =  new SessionAutomaticTaxOptions {
+	    Enabled = true,
+	};
+
+	var shippingAddrOptions = new SessionShippingAddressCollectionOptions {
+	    AllowedCountries = new List<String> { "CA" },
+	};
+
         var options = new SessionCreateOptions
         {
             LineItems = lineItems,
@@ -115,6 +123,8 @@ public class CheckoutService : ICheckoutService
             SuccessUrl = "http://localhost:8080/checkout/success",
 	    ClientReferenceId = orderId.ToString(),
 	    ShippingOptions = shippingOptions,
+	    AutomaticTax = autoTax,
+	    ShippingAddressCollection = shippingAddrOptions,
         };
 
         var client = new StripeClient("sk_test_51PPwFrDRzObLxTqvUVjLH4DmU8RyHUl1srpx5lpW45G7xYBctZSRCWufCKrn3h3mGmWVMuYMz4pHdNkBz6pFvsUm00cYFlK9Kr");
