@@ -9,7 +9,7 @@ public interface ICheckoutService
 {
     public Task<CheckoutSummaryViewModel> GetCheckoutSummaryFromCart(List<long> cart);
     public Task<int> CreatePendingOrder(CheckoutInputModel input, IEnumerable<long> cart, String username);
-    public Task<String> SetupStripe(List<long> cart);
+    public Task<String> SetupStripe(List<long> cart, int orderId);
     public Task CompleteCheckout(int orderId, double shipping, double total);
 }
 
@@ -70,6 +70,11 @@ public class CheckoutService : ICheckoutService
 	    throw new BadSqlResultException($"Got bad id when inserting pending order. Got id={result}");
 	}
 
+	foreach(long productId in cart) 
+	{
+	    await _ordersRepo.AddOrderProduct(result, productId);
+	}
+
 	return result;
     }
 
@@ -81,7 +86,7 @@ public class CheckoutService : ICheckoutService
      * <see langword="return"/> Url to stripe checkout page
      * </summary>
      */
-    public async Task<String> SetupStripe(List<long> cart) 
+    public async Task<String> SetupStripe(List<long> cart, int orderId) 
     {
         _logger.LogDebug($"sizeof cart: {cart.Count}");
 
@@ -89,11 +94,26 @@ public class CheckoutService : ICheckoutService
 
         _logger.LogDebug($"sizeof lineItems: {lineItems.Count}");
 
+	var shippingOptions = new List<SessionShippingOptionOptions> {
+	    new SessionShippingOptionOptions {
+		ShippingRateData = new SessionShippingOptionShippingRateDataOptions {
+		    Type = "fixed_amount",
+		    FixedAmount = new SessionShippingOptionShippingRateDataFixedAmountOptions {
+			Amount = (long)(shippingCost * 100),
+			Currency = "CAD"
+		    },
+		    DisplayName = "Standard Shipping",
+		},
+	    },
+	};
+
         var options = new SessionCreateOptions
         {
             LineItems = lineItems,
             Mode = "payment",
-            SuccessUrl = "http://localhost:8080/checkout/success"
+            SuccessUrl = "http://localhost:8080/checkout/success",
+	    ClientReferenceId = orderId.ToString(),
+	    ShippingOptions = shippingOptions,
         };
 
         var client = new StripeClient("sk_test_51PPwFrDRzObLxTqvUVjLH4DmU8RyHUl1srpx5lpW45G7xYBctZSRCWufCKrn3h3mGmWVMuYMz4pHdNkBz6pFvsUm00cYFlK9Kr");
