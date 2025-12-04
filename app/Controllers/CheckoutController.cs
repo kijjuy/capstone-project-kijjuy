@@ -75,6 +75,67 @@ public class CheckoutController : Controller
         return new StatusCodeResult(303);
     }
 
+    [HttpPost("/checkout/webhook")]
+    public async Task<IActionResult> StripeWebhook() 
+    {
+	var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+	//_logger.LogDebug(json);
+	Event stripeEvent;
+
+	try 
+	{
+	    stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], _webhookSecret);
+	} catch(Exception e) {
+	    _logger.LogError("Error getting stripe event from request headers");
+	    _logger.LogError(e.Message);
+	    return BadRequest();
+	}
+
+	if(stripeEvent.Type == EventTypes.CheckoutSessionCompleted)
+	{
+	    var session = stripeEvent.Data.Object as Stripe.Checkout.Session;
+
+	    if(session == null) 
+	    {
+		_logger.LogError("Webhook had null session");
+		return BadRequest();
+	    }
+
+	    String orderIdStr = session.ClientReferenceId;
+	    int orderId;
+	    try {
+		orderId = Int32.Parse(orderIdStr);
+	    } catch(Exception e) {
+		_logger.LogError("Error parsing order id from session.");
+		_logger.LogError(e.Message);
+		return BadRequest();
+	    }
+
+	    double shipping;
+	    try {
+		shipping = Math.Round((double)((long)session.ShippingCost.AmountTotal) / 100, 2);
+	    } catch(Exception e) {
+		_logger.LogError("ShippingCost.AmountTotal was not found in the stripe session.");
+		_logger.LogError(e.Message);
+		return BadRequest();
+	    }
+
+	    double total;
+	    try
+	    {
+		total = Math.Round((double)((long)session.AmountTotal!) / 100, 2);
+	    } catch(Exception e)
+	    {
+		_logger.LogError("AmountTotal was not found in the stripe session.");
+		return BadRequest();
+	    }
+
+	    await _checkoutService.CompleteCheckout(orderId, shipping, total);
+	} 
+
+	return Ok();
+    }
+
     [HttpGet("/checkout/success")]
     [Authorize]
     public IActionResult Success()
