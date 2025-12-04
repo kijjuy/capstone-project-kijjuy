@@ -1,4 +1,5 @@
 -- First database migration
+-- Dropped orders column for CCLast4
 
 DROP TABLE IF EXISTS categories;
 
@@ -42,7 +43,6 @@ CREATE TABLE orders (
     total_paid NUMERIC (7,2),
     shipping_address NVARCHAR(100) NOT NULL,
     shipping_name NVARCHAR(100) NOT NULL,
-    cc_last_4 CHAR(4),
     order_date DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     order_status CHAR(7)
 );
