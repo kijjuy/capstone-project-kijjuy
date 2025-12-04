@@ -30,7 +30,7 @@ public class ProductsRepository : IProductsRepository
         _logger = logger;
         _connString = options.Value.ConnectionString;
         _readerMapper = readerMapper;
-        _logger.LogDebug($"---------------- conn string in reposisotry: {_connString}");
+        _logger.LogTrace($"---------------- conn string in reposisotry: {_connString}");
     }
 
     /**
@@ -120,8 +120,8 @@ public class ProductsRepository : IProductsRepository
         using var reader = await query.ExecuteReaderAsync();
         reader.Read();
 
-        _logger.LogDebug($"FieldCount of reader={reader.FieldCount}");
-        _logger.LogDebug($"Reader.HasRows={reader.HasRows}");
+        _logger.LogTrace($"FieldCount of reader={reader.FieldCount}");
+        _logger.LogTrace($"Reader.HasRows={reader.HasRows}");
         if (!reader.HasRows)
         {
             _logger.LogWarning($"Could not find product with id={id}. Returning null.");
