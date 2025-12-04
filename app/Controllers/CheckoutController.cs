@@ -137,10 +137,21 @@ public class CheckoutController : Controller
 	return Ok();
     }
 
+
+    /**
+     * <summary>
+     * Endpoint stripe redirects to when order is complete.
+     * </summary>
+     */
     [HttpGet("/checkout/success")]
     [Authorize]
-    public IActionResult Success()
+    public async Task<IActionResult> Success()
     {
+	var user = await _userManager.FindByNameAsync(User.Identity.Name);
+	user.CurrentOrderId = 0;
+	user.Cart = new List<long>();
+	_logger.LogDebug("updating using with empty cart and 0 order id");
+	await _userManager.UpdateAsync(user);
         return Json(new { Message = "checkout success!" });
     }
 
