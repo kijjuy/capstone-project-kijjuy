@@ -176,6 +176,11 @@ public class CheckoutService : ICheckoutService
 	await _emailService.SendEmail(username, "Ward4Woods Order", message);
     }
 
+    /**
+     * <summary>
+     * Constructs an object containing values of product subtotal, tax, and total (without tax).
+     * </summary>
+     */
     private async Task<CartTotalValues> GetCartTotalValues(IEnumerable<long> cart) 
     {
         var products = await _cartService.GetProductsFromCart(cart.ToList());
