@@ -22,7 +22,7 @@ public class CheckoutService : ICheckoutService
     private readonly IOrdersRepository _ordersRepo;
     private readonly IEmailService _emailService;
     private const double TAX_RATE = 0.13;
-    private const double shippingCost = 12.99;
+    public const double shippingCost = 12.99;
 
     public CheckoutService(
         ILogger<ICheckoutService> logger,
@@ -56,7 +56,8 @@ public class CheckoutService : ICheckoutService
         {
             Subtotal = String.Format("{0:C2}", cartTotals.Subtotal),
             Tax = String.Format("{0:C2}", cartTotals.Tax),
-            Total = String.Format("{0:C2}", cartTotals.TotalNoShipping)
+	    Shipping = String.Format("{0:C2}", cartTotals.Shipping),
+            Total = String.Format("{0:C2}", cartTotals.TotalNoShipping),
         };
     }
 
@@ -202,11 +203,12 @@ public class CheckoutService : ICheckoutService
         _logger.LogDebug($"Summed up products subtotal and got subtotal={subtotal}");
 
         var taxAmount = Math.Round(subtotal * TAX_RATE, 2);
-        var total = Math.Round(subtotal + taxAmount, 2);
+        var total = Math.Round(subtotal + taxAmount + shippingCost, 2);
 
 	return new CartTotalValues {
 	    Subtotal = subtotal,
 	    Tax = taxAmount,
+	    Shipping = shippingCost,
 	    TotalNoShipping = total,
 	};
     }
@@ -215,6 +217,7 @@ public class CheckoutService : ICheckoutService
     {
 	public double Subtotal { get; set; }
 	public double Tax { get; set; }
+	public double Shipping { get; set; }
 	public double TotalNoShipping { get; set; }
     }
 
