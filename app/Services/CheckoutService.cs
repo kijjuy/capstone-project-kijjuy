@@ -121,7 +121,7 @@ public class CheckoutService : ICheckoutService
         {
             LineItems = lineItems,
             Mode = "payment",
-            SuccessUrl = "http://localhost:8080/checkout/success",
+            SuccessUrl = "https://localhost:8080/checkout/success",
 	    ClientReferenceId = orderId.ToString(),
 	    ShippingOptions = shippingOptions,
 	    AutomaticTax = autoTax,
