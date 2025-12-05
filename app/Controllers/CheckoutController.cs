@@ -21,7 +21,7 @@ public class CheckoutController : Controller
         ICheckoutService checkoutService,
         UserManager<ApplicationUser> userManager,
         ICartService cartService,
-    IOptions<CheckoutOptions> options
+	IOptions<CheckoutOptions> options,
     )
     {
         _logger = logger;
