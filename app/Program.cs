@@ -30,6 +30,12 @@ public class Program
 
         builder.Services.AddAuthorization();
 
+	builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+	{
+	    googleOptions.ClientId = builder.Configuration["OAuth:GoogleId"]!;
+	    googleOptions.ClientSecret = builder.Configuration["OAuth:GoogleSecret"]!;
+	});
+
         builder.Logging.AddConsole();
 
 #if DEBUG
