@@ -5,7 +5,6 @@ namespace app.Services;
 
 public interface IProductsService
 {
-    //TODO: restructure to return base product model, then transform into view models
     public Task<List<Product>> GetAllProducts(bool shouldGetUnavailable = false);
     public Task<Product?> GetProductById(int id, bool shouldGetUnavailable = false);
     public void DeleteProduct(int productId);
