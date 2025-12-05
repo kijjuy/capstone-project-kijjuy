@@ -35,21 +35,21 @@ public class CategoriesRepository : ICategoriesRepository
      */
     public async Task<List<Category>> GetAllCategories()
     {
-        _logger.LogDebug("Hit GetAllCategories");
+        _logger.LogTrace("Hit GetAllCategories");
         var categories = new List<Category>();
         using SqliteConnection db = new SqliteConnection(_connString);
-        _logger.LogDebug("Created db connection");
+        _logger.LogTrace("Created db connection");
 
         SqliteCommand query = new SqliteCommand("SELECT * FROM categories", db);
         query.Connection.Open();
-        _logger.LogDebug("opened db connection");
+        _logger.LogTrace("opened db connection");
 
         using var reader = await query.ExecuteReaderAsync();
-        _logger.LogDebug("executed query");
+        _logger.LogTrace("executed query");
 
         while (await reader.ReadAsync())
         {
-            _logger.LogDebug("mapping to object...");
+            _logger.LogTrace("mapping to object...");
             var sqlDict = ReaderMapper.CreateSqlDictionary(reader);
             var category = _mapper.MapDataToModel<Category>(sqlDict);
             categories.Add(category);

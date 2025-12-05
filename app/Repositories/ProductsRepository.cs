@@ -41,7 +41,7 @@ public class ProductsRepository : IProductsRepository
      */
     public async Task<List<Product>> GetAllProducts(bool shouldGetUnavailable = false)
     {
-        _logger.LogDebug("Hit GetAllProducts");
+        _logger.LogTrace("Hit GetAllProducts");
         var products = new List<Product>();
 
         using SqliteConnection db = new SqliteConnection(_connString);
@@ -57,7 +57,7 @@ public class ProductsRepository : IProductsRepository
             query = new SqliteCommand("SELECT * FROM products WHERE is_available = 1;", db);
         }
 
-        _logger.LogDebug("Selected data");
+        _logger.LogTrace("Selected data");
 
         if (query.Connection == null)
         {
@@ -68,7 +68,7 @@ public class ProductsRepository : IProductsRepository
 
         await query.Connection.OpenAsync();
         using var reader = await query.ExecuteReaderAsync();
-        _logger.LogDebug("reader created");
+        _logger.LogTrace("reader created");
 
 
         while (await reader.ReadAsync())
@@ -80,8 +80,8 @@ public class ProductsRepository : IProductsRepository
             //_logger.LogDebug("Reading data...");
         }
 
-        _logger.LogDebug($"size of products: {products.Count}");
-        _logger.LogDebug("Exiting GetAllProducts");
+        _logger.LogTrace($"size of products: {products.Count}");
+        _logger.LogTrace("Exiting GetAllProducts");
         return products;
     }
 
