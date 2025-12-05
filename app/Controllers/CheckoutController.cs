@@ -15,6 +15,7 @@ public class CheckoutController : Controller
     private readonly ICheckoutService _checkoutService;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ICartService _cartService;
+    private readonly String _webhookSecret;
 
     public CheckoutController(
         ILogger<CheckoutController> logger,
@@ -22,6 +23,7 @@ public class CheckoutController : Controller
         UserManager<ApplicationUser> userManager,
         ICartService cartService,
 	IOptions<CheckoutOptions> options,
+	IConfiguration config
     )
     {
         _logger = logger;
