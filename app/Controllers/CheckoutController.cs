@@ -45,6 +45,11 @@ public class CheckoutController : Controller
     {
         var checkoutSummary = await GetCurrentUserCheckoutSummary(null);
 
+	if(checkoutSummary.Subtotal.Equals(String.Format("{0:C2}", 0))) 
+	{
+	    return RedirectToAction("Index", "Home");
+	}
+
 
         return View("Index", checkoutSummary);
     }
@@ -151,11 +156,17 @@ public class CheckoutController : Controller
     public async Task<IActionResult> Success()
     {
 	var user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+	if(user.CurrentOrderId == 0) 
+	{
+	    return RedirectToAction("Index", "Home");
+	}
+
 	user.CurrentOrderId = 0;
 	user.Cart = new List<long>();
 	_logger.LogDebug("updating using with empty cart and 0 order id");
 	await _userManager.UpdateAsync(user);
-        return Json(new { Message = "checkout success!" });
+        return RedirectToAction("Index", "Home");
     }
 
     private async Task<CheckoutSummaryViewModel> GetCurrentUserCheckoutSummary(CheckoutInputModel? prevInput) 
