@@ -30,6 +30,7 @@ public class CheckoutController : Controller
         _checkoutService = checkoutService;
         _userManager = userManager;
         _cartService = cartService;
+	_webhookSecret = config["Stripe:WebhookSecret"];
     }
 
     /**
