@@ -3,6 +3,7 @@
     Layout = "_Layout";
     var categories = ViewData["Categories"];
     var curProduct = (ProductViewModel)ViewData["CurrentProduct"];
+    ViewData["Title"] = "Update " + curProduct.ProductName; 
 }
 
 @using app.Models
