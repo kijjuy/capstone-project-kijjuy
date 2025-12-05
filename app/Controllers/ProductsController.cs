@@ -38,7 +38,10 @@ public class ProductsController : Controller
         [FromQuery] String nameFilter,
         [FromQuery] String categoryNameFilter,
         [FromQuery] double priceMin,
-        [FromQuery] double priceMax)
+        [FromQuery] double priceMax,
+	[FromQuery] String sortType,
+	[FromQuery] String reverseSort
+    )
     {
         _logger.LogDebug($"nameFilter: {nameFilter}");
         _logger.LogDebug($"categoryNameFilter: {categoryNameFilter}");
@@ -71,6 +74,26 @@ public class ProductsController : Controller
             products = products.Where(p => p.Price < priceMax)
             .ToList();
         }
+
+	if(sortType != null && !sortType.Equals(""))
+	{
+	    _logger.LogDebug($"Got sortType of {sortType}");
+	    if(sortType.Equals("price"))
+	    {
+		_logger.LogDebug("Sorting by price");
+		products = products.OrderBy(p => p.Price);
+	    }
+	    if(sortType.Equals("name"))
+	    {
+		_logger.LogDebug("Sorting by name");
+		products = products.OrderBy(p => p.ProductName);
+	    }
+	    if(reverseSort != null && reverseSort.Equals("on"))
+	    {
+		_logger.LogDebug("Reversing sort");
+		products = products.Reverse();
+	    }
+	}
 
 	var categories = await _categoriesService.GetAllCategories();
         ViewData["Categories"] = new SelectList(categories, "CategoryName", "CategoryName");
