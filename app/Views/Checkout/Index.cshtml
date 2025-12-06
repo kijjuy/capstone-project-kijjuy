@@ -6,10 +6,12 @@
 @using app.Models
 @model CheckoutSummaryViewModel
 
-<h1>Subtotal: @Model.Subtotal</h1>
-<h1>Tax: @Model.Tax</h1>
-<h1>Shipping: @Model.Shipping</h1>
-<h1>Total: @Model.Total</h1>
+<div class="text-center mt-2">
+    <h1 class="p-2">Subtotal: @Model.Subtotal</h1>
+    <h1 class="p-2">Tax: @Model.Tax</h1>
+    <h1 class="p-2">Shipping: @Model.Shipping</h1>
+    <h1 class="p-2">Total: @Model.Total</h1>
+</div>
 
 <form method="post">
     <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
