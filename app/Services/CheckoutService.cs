@@ -23,6 +23,7 @@ public class CheckoutService : ICheckoutService
     private readonly IOrdersRepository _ordersRepo;
     private readonly IEmailService _emailService;
     private readonly String _stripeClientSecret;
+    private readonly String _stripeReturnUrl;
     private const double TAX_RATE = 0.13;
     public const double shippingCost = 12.99;
 
@@ -43,6 +44,7 @@ public class CheckoutService : ICheckoutService
         _ordersRepo = ordersRepo;
 	_emailService = emailService;
 	_stripeClientSecret = config["StripeSecrets:ApiKey"];
+	_stripeReturnUrl = config["Stripe:ReturnUrl"];
     }
 
     /**
@@ -125,7 +127,7 @@ public class CheckoutService : ICheckoutService
         {
             LineItems = lineItems,
             Mode = "payment",
-            SuccessUrl = "https://localhost:8080/checkout/success",
+            SuccessUrl = _stripeReturnUrl,
 	    ClientReferenceId = orderId.ToString(),
 	    ShippingOptions = shippingOptions,
 	    AutomaticTax = autoTax,
