@@ -27,6 +27,7 @@ public interface IOrdersRepository
     );
     public Task AddOrderProduct(int orderId, long productId);
     public Task<String> GetUsernameFromOrderId(int orderId);
+    public Task<double> GetTotalByOrderId(int orderId);
 }
 
 public class OrdersRepository : IOrdersRepository
@@ -219,5 +220,22 @@ public class OrdersRepository : IOrdersRepository
 	_logger.LogDebug($"Got username: {username} from orderid: {orderId}");
 
 	return username;
+    }
+
+    public async Task<double> GetTotalByOrderId(int orderId)
+    {
+	using var db = new SqliteConnection(_connString);
+	using var query = new SqliteCommand(@"
+		SELECT total_paid FROM orders
+		WHERE order_id = @order_id;
+	", db);
+
+	query.Parameters.AddWithValue("@order_id", orderId);
+
+	using var reader = await query.ExecuteReaderAsync();
+	await reader.ReadAsync();
+	double total = reader.GetDouble(0);
+
+	return total;
     }
 }
