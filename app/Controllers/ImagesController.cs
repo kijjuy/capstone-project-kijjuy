@@ -26,15 +26,24 @@ public class ImagesController : ControllerBase
     public async Task<IActionResult> GetImageByName(String imageName)
     {
 	byte[] fileContent;
-	try {
+	try 
+	{
 	    fileContent = await _imagesService.GetImageBytesByName(imageName);
-	} catch(Exception e) {
-	    if(!e.GetType().Equals(typeof(FileNotFoundException))) {
-		throw;
-	    }
-	    _logger.LogError($"Image with name={imageName} not found. Error={e.Message}");
-	    return NotFound();
+	    return File(fileContent, "image/jpeg");
+	} catch(Exception e) 
+	{
+	    _logger.LogWarning($"Image with name={imageName} not found. Error={e.Message}");
 	}
-        return File(fileContent, "image/jpeg");
+
+	try
+	{
+	    fileContent = await _imagesService.GetImageBytesByName("placeholder.jpg");
+	    return File(fileContent, "image/jpeg");
+	} catch(Exception e)
+	{
+	    _logger.LogError("Could not stream placeholder image.");
+	    _logger.LogError(e.Message);
+	}
+	return NotFound();
     }
 }
