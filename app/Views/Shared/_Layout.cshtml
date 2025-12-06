@@ -1,44 +1,65 @@
+@{
+    bool isAdmin = false;
+    if(User != null && User.Identity.IsAuthenticated)
+    {
+	if(User.IsInRole("Admin"))
+	{
+	    isAdmin = true;
+	}
+    }
+}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>@ViewData["Title"]</title>
+	<link rel="stylesheet" href="~/css/main.css">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </head>
 <body>
-
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-      <div class="container-fluid">
-	    <a class="navbar-brand" href="/">Ward 4 Woods</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-	      <div id="link-container" class="d-flex container-fluid p-0 m-0">
-		  <div class="flex-grow-1">
-		    <ul class="navbar-nav">
-              	      <li class="nav-item">
-              	        <a class="nav-link" href="/products">Products</a>
-              	      </li>
-              	      <li class="nav-item">
-              	        <a class="nav-link" href="/cart">Cart</a>
-              	      </li>
-              	    </ul>
-		  </div>
-		  <div class="justify-content-end">
-		    <partial name="_LoginPartial" />
-		  </div>
-	      </div>
-            </div>
-      </div>
-    </nav>
-    
-    @RenderBody()
-    <footer class="footer">
-	attribution: <a href="https://www.flaticon.com/free-icons/delete" title="delete icons">Delete icons created by Ilham Fitrotul Hayat - Flaticon</a>
-    </footer>
+    <div class="page-container">
+	<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    	  <div class="container-fluid">
+    	        <a class="navbar-brand" href="/">Ward 4 Woods</a>
+    	        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    	          <span class="navbar-toggler-icon"></span>
+    	        </button>
+    	        <div class="collapse navbar-collapse" id="navbarNav">
+    	          <div id="link-container" class="container-fluid p-0 m-0 d-block d-lg-flex">
+    	    	  <div class="flex-grow-1">
+    	    	    <ul class="navbar-nav">
+    	          	      <li class="nav-item">
+    	          	        <a class="nav-link" href="/products">Products</a>
+    	          	      </li>
+    	          	      <li class="nav-item">
+    	          	        <a class="nav-link" href="/cart">Cart</a>
+    	          	      </li>
+    	    	      @if(isAdmin)
+    	    	      {
+    	    	      <li class="nav-item">
+    	    		  <a class="nav-link" asp-controller="Admin" asp-action="Index">Admin</a>
+    	    	      </li>
+    	    	      }
+    	          	    </ul>
+    	    	  </div>
+    	    	  <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center mt-lg-0 gap-2 gap-lg-3">
+    	    	    <partial name="_LoginPartial" />
+    	    	  </div>
+    	          </div>
+    	        </div>
+    	  </div>
+    	</nav>
+    	
+	<main class="content">
+	   @RenderBody()
+	</main>
+    	<footer class="footer">
+    	    attribution: <a href="https://www.flaticon.com/free-icons/delete" title="delete icons">Delete icons created by Ilham Fitrotul Hayat - Flaticon</a>
+    	</footer>
+    </div>
 </body>
 @RenderSection("Scripts", required: false)
 </html>
