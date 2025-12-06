@@ -9,7 +9,7 @@
 <div class="row" id="root">
 
     <div class="col-xxl-3 col-sm-12" id="filter-container">
-	<div id="filter-reveal" class="btn btn-primary m-3 p-3" onClick="toggleFilter()">Show Filter</div>
+	<div id="filter-reveal" class="btn btn-primary m-3 p-3">Show Filter</div>
     	
     	<div id="filter-root" class="bg-dark-subtle m-3" hidden>
     	    <form action="/products">
@@ -80,9 +80,6 @@
     </div>
 </div>
 
-<script>
-    function toggleFilter() {
-	let filterElement = document.querySelector("#filter-root");
-	filterElement.hidden = !filterElement.hidden
-    }
-</script>
+@section Scripts{
+    <script src="~/js/productIndex.js"></script>
+}

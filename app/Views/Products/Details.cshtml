@@ -53,25 +53,12 @@
     }
     <div class="row mt-4">
 	<h5 class="col-6 text-center">@String.Format("{0:C2}", Model.Price)</h5>
-	<a class="btn btn-primary col-6" onClick="addToCart(@Model.ProductId)">Add To Cart</a>
+	<a data-product-id="@Model.ProductId" id="add-to-cart-btn" class="btn btn-primary col-6">Add To Cart</a>
     </div>
     <p class="mt-5">@Model.Description</p>
 
 </div>
-<script>
-    async function addToCart(productId) {
-	var res = await fetch("/api/cart/" + productId, {
-	    method: "POST"
-	});
 
-	if(res.status == 400) {
-	    alert("Product already in cart.");
-	    return;
-	}
-
-	if(res.status == 500) {
-	    alert("Error adding product to cart.");
-	}
-	alert("Product added to cart.");
-    }
-</script>
+@section Scripts {
+<script src="~/js/productDetails.js"></script>
+}

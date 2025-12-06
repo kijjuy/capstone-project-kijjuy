@@ -31,7 +31,7 @@
 	    <p class="">@Model.Products[i].ProductName</p>
 	    <p class="">@String.Format("{0:C2}", Model.Products[i].Price)</p>
 	</div>
-	<img onClick="deleteFromCart(@Model.Products[i].ProductId, this)" class="btn col-2" src="Images/delete.png">
+	<img data-product-id="@Model.Products[i].ProductId" class="btn col-2 cart-delete" src="Images/delete.png" alt="delete button for @Model.Products[i].ProductName">
     </div>
     }
 </div>
@@ -40,23 +40,8 @@
     <h3>No items in cart.</h3>
 }
 
-<script>
-    async function deleteFromCart(productId, callingElement) {
-	var res = await fetch("/api/cart/" + productId, {
-	    method: "DELETE"
-	});
-
-	if(res.status == 400) {
-	    alert("Error removing item from cart.");
-	    return;
-	}
-
-	window.location.reload();
-    }
-
-    function navToCheckout() {
-	console.log("nav to checkout");
-    }
-
-
-</script>
+@section Scripts {
+    <script src="~/js/cartIndex.js">
+    
+    </script>
+}
