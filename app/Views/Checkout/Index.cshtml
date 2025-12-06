@@ -13,18 +13,24 @@
     <h1 class="p-2">Total: @Model.Total</h1>
 </div>
 
-<form method="post">
-    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-    <div class="form-floating mb-3">
-        <input asp-for="Input.Name" class="form-control" placeholder="Shipping Name"/>
-        <label asp-for="Input.Name" class="form-label"></label>
-	<span asp-validation-for="Input.Name" class="text-danger"></span>
-    </div>
-    <div class="form-floating mb-3">
-        <input asp-for="Input.Address" class="form-control" placeholder="Shipping Address"/>
-        <label asp-for="Input.Address" class="form-label"></label>
-	<span asp-validation-for="Input.Address" class="text-danger"></span>
-    </div>
-    <button class="btn btn-primary" type="submit">Go To Payment</button>
-</form>
+<div class="p-4">
+    <form method="post">
+	<div class="d-flex flex-column align-items-center">
+	    <div class="w-50">
+		<div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            	<div class="form-floating mb-3">
+            	    <input asp-for="Input.Name" class="form-control" placeholder="Shipping Name"/>
+            	    <label asp-for="Input.Name" class="form-label"></label>
+		    <span asp-validation-for="Input.Name" class="text-danger"></span>
+            	</div>
+            	<div class="form-floating mb-3">
+            	    <input asp-for="Input.Address" class="form-control" placeholder="Shipping Address"/>
+            	    <label asp-for="Input.Address" class="form-label"></label>
+		    <span asp-validation-for="Input.Address" class="text-danger"></span>
+            	</div>
+            	<button class="btn btn-primary container-fluid" type="submit">Go To Payment</button>
+	    </div>
+	</div>
+    </form>
+</div>
 
