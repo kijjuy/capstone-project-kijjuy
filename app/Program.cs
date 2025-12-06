@@ -99,8 +99,41 @@ public class Program
 
         var app = builder.Build();
 
-        // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment())
+	app.Use(async (context, next) =>
+	{
+	    context.Response.Headers.Add(
+		"Content-Security-Policy",
+		"default-src 'self';" + 
+		"script-src 'self' https://cdn.jsdelivr.net;" + 
+		"style-src 'self' https://cdn.jsdelivr.net;" + 
+		"font-src 'self';" + 
+		"img-src 'self' data:;" + 
+		"connect-src 'self';" +          
+    		"media-src 'self';" +            
+    		"frame-src 'none';" +            
+    		"object-src 'none';" +           
+    		"frame-ancestors 'none';" +      
+    		"base-uri 'self';" +            
+    		"form-action 'self';" +          
+    		"upgrade-insecure-requests;"  
+	    );
+
+	    await next();
+	});
+
+	app.Use(async (context, next) =>
+	{
+	    context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+	    await next();
+	});
+
+	app.Use(async (context, next) =>
+	{
+	    context.Response.Headers.Add("X-Frame-Options", "DENY");
+	    await next();
+	});
+
+
         {
             app.MapOpenApi();
             using (var scope = app.Services.CreateScope())
