@@ -14,6 +14,7 @@ public interface IProductsRepository
     public Task CreateImage(int productId, String imageName);
     public Task<List<ImageDataModel>> GetImageDataByProductId(int productId);
     public Task MarkProductUnavailable(long productId);
+    public Task<List<Product>> GetProductsByOrderId(int orderId);
 }
 
 public class ProductsRepository : IProductsRepository
