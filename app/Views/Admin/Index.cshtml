@@ -31,7 +31,7 @@
 	    <a asp-controller="Products" asp-action="Update" asp-route-id="@product.ProductId" class="btn btn-primary">Update</a>
 	</div>
 	<div class="col-2">
-	    <a onClick="deleteProduct(@product.ProductId)" class="btn btn-danger">Delete</a>
+	    <a bs-data-productId="@product.ProductId" class="btn btn-danger delete-btn">Delete</a>
 	</div>
     </div>
     }
@@ -41,21 +41,5 @@
 <h5>No products found. Check back later!</h5>
 }
 
-<script>
-    async function deleteProduct(productId) {
-	console.log("Delete item hit with value " + productId);
-	let shouldDelete = confirm(`Are you sure you want to delete product with id=${productId}?`);
-	if(!shouldDelete) {
-	    return;
-	}
-
-	let res = await fetch("/api/products/" + productId, {
-	    method: "DELETE"
-	});
-	if(res.status != 204) {
-	    alert("Error deleting product. Please check application logs.");
-	    return;
-	}
-	window.location.reload();
-    }
+<script src="~/js/adminIndex.js">
 </script>
