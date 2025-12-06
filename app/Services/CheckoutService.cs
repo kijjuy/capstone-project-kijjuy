@@ -182,11 +182,10 @@ public class CheckoutService : ICheckoutService
 
 	String username = await _ordersRepo.GetUsernameFromOrderId(orderId);
 
-	String message = @$"
-	    Thank you for your order!
-	    Order total: {String.Format("{0:C2}", total)}
-	    ";
+	var products = await _productsRepo.GetProductsByOrderId(orderId);
 
+	String message = BuildInvoiceEmail(username, products, total);
+	_logger.LogInformation("Order complete, sending order.");
 	await _emailService.SendEmail(username, "Ward4Woods Order", message);
     }
 
@@ -223,5 +222,118 @@ public class CheckoutService : ICheckoutService
 	public double Shipping { get; set; }
 	public double TotalNoShipping { get; set; }
     }
+
+    public string BuildInvoiceEmail(string customerName, List<Models.Product> products, double total)
+    {
+    var sb = new StringBuilder();
+
+    sb.Append(@"
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='UTF-8'>
+<title>Your Ward 4 Woods Order</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        color: #333;
+        background-color: #f7f7f7;
+        padding: 20px;
+    }
+    .container {
+        max-width: 600px;
+        margin: auto;
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #e0e0e0;
+    }
+    h1 {
+        text-align: center;
+        color: #2c3e50;
+    }
+    .header {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+    .summary {
+        margin-bottom: 20px;
+        padding: 10px;
+        background: #eef6ff;
+        border-left: 4px solid #3874cb;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+    th {
+        background: #3874cb;
+        color: white;
+        padding: 10px;
+        text-align: left;
+    }
+    td {
+        padding: 10px;
+        border-bottom: 1px solid #dddddd;
+    }
+    .total-row td {
+        font-size: 18px;
+        border-top: 2px solid #3874cb;
+        font-weight: bold;
+    }
+    .footer {
+        margin-top: 25px;
+        font-size: 12px;
+        text-align: center;
+        color: #777;
+    }
+</style>
+</head>
+<body>
+<div class='container'>
+    <div class='header'>
+        <h1>Thank You for Your Order!</h1>
+        <p>Your Ward 4 Woods invoice is below.</p>
+    </div>
+
+    <div class='summary'>
+        <strong>Hello " + customerName + @"!</strong><br/>
+        Thank you for supporting our small woodworking business.<br/>
+        Below is a summary of your order.
+    </div>
+
+    <table>
+        <tr>
+            <th style='width:60%;'>Product</th>
+            <th style='width:20%;'>Price</th>
+        </tr>");
+
+    foreach (var p in products)
+    {
+        sb.Append($@"
+        <tr>
+            <td>{System.Net.WebUtility.HtmlEncode(p.Name)}</td>
+            <td>{p.Price.ToString("C2")}</td>
+        </tr>");
+    }
+
+    sb.Append($@"
+        <tr class='total-row'>
+            <td>Total</td>
+            <td>{total.ToString("C2")}</td>
+        </tr>
+    </table>
+
+    <div class='footer'>
+        If you have any questions about your order, simply reply to this email.<br/>
+        &copy; {DateTime.Now.Year} Ward 4 Woods. All rights reserved.
+    </div>
+</div>
+</body>
+</html>");
+
+    return sb.ToString();
+}
 
 }
