@@ -21,6 +21,7 @@ public class CheckoutService : ICheckoutService
     private readonly ICartService _cartService;
     private readonly IOrdersRepository _ordersRepo;
     private readonly IEmailService _emailService;
+    private readonly String _stripeClientSecret;
     private const double TAX_RATE = 0.13;
     public const double shippingCost = 12.99;
 
@@ -30,7 +31,8 @@ public class CheckoutService : ICheckoutService
         IProductsRepository productsRepository,
         ICartService cartService,
         IOrdersRepository ordersRepo,
-	IEmailService emailService
+	IEmailService emailService,
+	IConfiguration config
     )
     {
         _logger = logger;
@@ -39,6 +41,7 @@ public class CheckoutService : ICheckoutService
         _cartService = cartService;
         _ordersRepo = ordersRepo;
 	_emailService = emailService;
+	_stripeClientSecret = config["StripeSecrets:ApiKey"];
     }
 
     /**
@@ -128,7 +131,7 @@ public class CheckoutService : ICheckoutService
 	    ShippingAddressCollection = shippingAddrOptions,
         };
 
-        var client = new StripeClient("sk_test_51PPwFrDRzObLxTqvUVjLH4DmU8RyHUl1srpx5lpW45G7xYBctZSRCWufCKrn3h3mGmWVMuYMz4pHdNkBz6pFvsUm00cYFlK9Kr");
+        var client = new StripeClient(_stripeClientSecret);
 
         var service = new SessionService(client);
         var session = service.Create(options);
