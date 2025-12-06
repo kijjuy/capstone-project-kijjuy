@@ -5,6 +5,7 @@ using app.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using System.Globalization;
 using Stripe;
 
 namespace app;
@@ -15,6 +16,9 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+	var cultureInfo = new CultureInfo("en-CA");
+	CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+	CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
         builder.Services.AddDbContext<IdentityContext>(options =>
             options.UseSqlite(builder.Configuration.GetConnectionString("IdentityConnection"))

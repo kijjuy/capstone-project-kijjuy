@@ -3,31 +3,34 @@
     ViewData["Title"] = "Home";
 }
 
-<div id="root" class="ms-3 me-3">
+<div id="root" class="container mt-3">
     <h1 class="text-center pt-3 pb-5">Welcome to the home page</h1>
-    <h5 class="text-center">Browse by Category</h5>
-    <div class="position-static">
-	<div class="d-flex justify-content-center">	
-	    <div class="">
-		<a href="/products?categoryNameFilter=@ViewData["cuttingBoard"]">
-		    <img src="Images/homeImg1.jpg" class="object-fit-sm-scale" alt="">
-		    <p class="text-center">Cutting Boards</p>
-		</a>
-	    </div>
-	    <div class="px-2">
-		<a href="/products?categoryNameFilter=@ViewData["charcuterie"]">
-		    <img src="Images/homeImg2.jpg" class="object-fit-sm-scale" alt="">
-		    <p class="text-center">Charcuterie Boards</p>
-		</a>
-	    </div>
-	    <div class="">
-		<a href="/products?categoryNameFilter=@ViewData["choppingBlock"]">
-		    <img src="Images/homeImg3.jpg" class="object-fit-sm-scale" alt="">
-		    <p class="text-center">Chopping Blocks</p>
-		</a>
-	    </div>
-	</div>
+
+    <h5 class="text-center mb-4">Browse by Category</h5>
+
+    <div class="row text-center">
+        <div class="col-12 col-sm-6 col-md-4 mb-4">
+            <a href="/products?categoryNameFilter=@ViewData["cuttingBoard"]" class="text-decoration-none text-dark">
+                <img src="Images/homeImg1.jpg" class="img-fluid rounded" alt="Cutting Boards">
+                <p class="mt-2">Cutting Boards</p>
+            </a>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4 mb-4">
+            <a href="/products?categoryNameFilter=@ViewData["charcuterie"]" class="text-decoration-none text-dark">
+                <img src="Images/homeImg2.jpg" class="img-fluid rounded" alt="Charcuterie Boards">
+                <p class="mt-2">Charcuterie Boards</p>
+            </a>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4 mb-4">
+            <a href="/products?categoryNameFilter=@ViewData["choppingBlock"]" class="text-decoration-none text-dark">
+                <img src="Images/homeImg3.jpg" class="img-fluid rounded" alt="Chopping Blocks">
+                <p class="mt-2">Chopping Blocks</p>
+            </a>
+        </div>
     </div>
-    <h5 class="mt-3">About us</h5>
+
+    <h5 class="mt-5">About us</h5>
     <p>We are a small business based in Hamilton, ON. Here you can get top of the line cutting boards.</p>
 </div>

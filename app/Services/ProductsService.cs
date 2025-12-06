@@ -162,10 +162,10 @@ public class ProductsService : IProductsService
             throw;
         }
 
-        FileStream newFile;
         try
         {
-            newFile = File.Create(imagePath);
+            using var newFile = File.Create(imagePath);
+	    await image.CopyToAsync(newFile);
         }
         catch (Exception e)
         {
@@ -174,7 +174,6 @@ public class ProductsService : IProductsService
             throw;
         }
 
-        await image.CopyToAsync(newFile);
         return imageName;
     }
 
