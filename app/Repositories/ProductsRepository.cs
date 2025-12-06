@@ -304,5 +304,46 @@ public class ProductsRepository : IProductsRepository
         var result = await query.ExecuteNonQueryAsync();
         _logger.LogInformation($"Set product with id={productId} to not available.");
     }
+
+    public async Task<List<Product>> GetProductsByOrderId(int orderId)
+    {
+	using var db = new SqliteConnection(_connString);
+	await db.OpenAsync();
+	using var query = new SqliteCommand(@"
+		SELECT product_id
+		FROM order_products
+		WHERE order_id = @order_id;" 
+	,db);
+
+	query.Parameters.AddWithValue("@order_id", orderId);
+
+	using var reader = await query.ExecuteReaderAsync();
+
+	var products = new List<Product>();
+
+	while(await reader.ReadAsync())
+	{
+	    int productId = reader.GetInt32(0);
+	    using var productQuery = new SqliteCommand(@"
+		    SELECT * FROM products
+		    WHERE product_id = @product_id;
+	    ", db);
+
+	    productQuery.Parameters.AddWithValue("@product_id", productId);
+
+	    using (var prodReader = await productQuery.ExecuteReaderAsync())
+	    {
+		await prodReader.ReadAsync();
+
+            	var rowDict = ReaderMapper.CreateSqlDictionary(prodReader);
+	    	var product = _readerMapper.MapDataToModel<Product>(rowDict);
+
+	    	products.Add(product);
+		await prodReader.CloseAsync();
+	    }
+	}
+
+	return products;
+    }
 }
 
