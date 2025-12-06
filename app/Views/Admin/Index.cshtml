@@ -8,6 +8,11 @@
 
 <h1 class="text-center mt-3">Admin Panel</h1>
 
+<div class="d-flex container-fluid">
+    <a class="btn btn-lg btn-primary w-100 m-5" asp-controller="Products" asp-action="Create">Create New Product</a>
+    <a class="btn btn-lg btn-primary w-100 m-5" asp-action="Users">Manage Users</a>
+</div>
+
 @if(Model.Any()) 
 {
 <div class="container-fluid">
