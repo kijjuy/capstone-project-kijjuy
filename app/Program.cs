@@ -134,14 +134,11 @@ public class Program
 	});
 
 
+        using (var scope = app.Services.CreateScope())
         {
-            app.MapOpenApi();
-            using (var scope = app.Services.CreateScope())
-            {
-                String adminPass = builder.Configuration["SeededUsers:Admin"];
-                DbInitializer.SetAdminPass(adminPass);
-                DbInitializer.SeedUsersAndRoles(scope.ServiceProvider).Wait();
-            }
+            String adminPass = builder.Configuration["SeededUsers:Admin"];
+            DbInitializer.SetAdminPass(adminPass);
+            DbInitializer.SeedUsersAndRoles(scope.ServiceProvider).Wait();
         }
 
         app.UseHttpsRedirection();
