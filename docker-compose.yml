@@ -10,6 +10,7 @@ services:
     volumes:
       - ./db:/db
       - ./Images:/App/Images
+      - ./logs:/logs
     networks:
       - app
 
