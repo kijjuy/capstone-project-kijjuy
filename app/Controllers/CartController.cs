@@ -40,7 +40,13 @@ public class CartController : Controller
     {
         var user = await _userManager.FindByNameAsync(User.Identity.Name);
 
-        CartViewModel products = null;
+	_logger.LogInformation($"User with name={user.UserName} is viewing their cart.");
+
+        CartViewModel products = new CartViewModel {
+	    Products = new List<app.Models.ProductViewModelWithImages>(),
+	    Subtotal = 0,
+	};
+
         try
         {
             products = await _cartService.GetCartViewModelFromCart(user.Cart);
@@ -49,6 +55,7 @@ public class CartController : Controller
         {
             _logger.LogWarning($"Error getting items from cart. Fixing cart.\n{e.StackTrace}");
             FixCart(user);
+	    return Redirect("/");
         }
 
         return View("Index", products);
@@ -73,8 +80,26 @@ public class CartController : Controller
             return BadRequest(new { message = "ProductId must be greater than 0" });
         }
 
-        var user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+	
+	ApplicationUser user = new ApplicationUser();
+	try 
+	{
+	    user = await _userManager.FindByNameAsync(User.Identity.Name);
+	    if (user == null) 
+	    {
+		throw new Exception("Error getting user from FindByNameAsync");
+	    }
+	} 
+	catch(Exception e) 
+	{
+	    _logger.LogWarning(e, "Error getting user. Perhaps they are not logged in?");
+	    Response.Redirect("/Identity/Account/Login");
+	    return StatusCode(303);
+	}
         _logger.LogDebug($"user cart length before adding: {user.Cart.Count()}");
+
+
 
         if (user.Cart.Contains(productId))
         {
@@ -89,6 +114,8 @@ public class CartController : Controller
             _logger.LogWarning($"Error adding to cart with productId={productId}");
             return new StatusCodeResult(500);
         }
+
+	_logger.LogInformation($"User with name={user.UserName} added product with id={productId} to their cart.");
 
         _logger.LogDebug($"user cart length after adding: {user.Cart.Count()}");
 

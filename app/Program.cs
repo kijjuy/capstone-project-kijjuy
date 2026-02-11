@@ -5,7 +5,13 @@ using app.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.HttpOverrides;
+using System.Globalization;
 using Stripe;
+using System.Net;
+using Microsoft.AspNetCore.Mvc;
+using Serilog;
+using Serilog.AspNetCore;
 
 namespace app;
 
@@ -34,16 +40,38 @@ public class Program
 	{
 	    googleOptions.ClientId = builder.Configuration["OAuth:GoogleId"]!;
 	    googleOptions.ClientSecret = builder.Configuration["OAuth:GoogleSecret"]!;
+	    googleOptions.CallbackPath = builder.Configuration["OAuth:GoogleCallback"];
 	});
 
-        builder.Logging.AddConsole();
+	builder.Logging.ClearProviders();
+	if(builder.Environment.IsDevelopment())
+	{
+	    builder.Host.UseSerilog((context, services, config) => {
+		config
+		    .ReadFrom.Configuration(context.Configuration)
+		    .ReadFrom.Services(services)
+		    .Enrich.FromLogContext()
+		    .WriteTo.Console();
+	    });
 
-#if DEBUG
-        builder.Services.AddControllersWithViews()
-            .AddRazorRuntimeCompilation();
-#else
-	builder.Services.AddControllersWithViews();
-#endif
+	    builder.Services.AddControllersWithViews()
+		.AddRazorRuntimeCompilation();
+	    Log.Logger.Information("Build is in development");
+	} 
+	else
+	{
+	    builder.Host.UseSerilog((context, services, config) => {
+		config
+		    .ReadFrom.Configuration(context.Configuration)
+		    .ReadFrom.Services(services)
+		    .Enrich.FromLogContext()
+		    .WriteTo.Console()
+		    .WriteTo.File("/logs/app.log", rollingInterval: RollingInterval.Day);
+	    });
+
+	    builder.Services.AddControllersWithViews();
+	    Log.Logger.Information("Build is in production");
+	}
 
         builder.WebHost.ConfigureKestrel((context, serverOptions) =>
             {
@@ -97,7 +125,28 @@ public class Program
         builder.Services.AddTransient<IEmailSender, EmailService>();
 
 
+
         var app = builder.Build();
+
+	app.Use(async (context, prev) =>
+	{
+	    await prev.Invoke();
+	    if(context.Response.StatusCode.Equals((int)HttpStatusCode.NotFound) || 
+	       context.Response.StatusCode.Equals((int)HttpStatusCode.InternalServerError) ||
+	       context.Response.StatusCode.Equals((int)HttpStatusCode.MethodNotAllowed))
+	    {
+		context.Response.StatusCode = (int)HttpStatusCode.Redirect;
+		context.Response.Redirect("/");
+	    }
+	});
+
+	var options = new ForwardedHeadersOptions
+	{
+	    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+	};
+	options.KnownNetworks.Clear();
+	options.KnownProxies.Clear();
+	app.UseForwardedHeaders(options);
 
 	app.Use(async (context, next) =>
 	{
@@ -150,6 +199,7 @@ public class Program
 
         app.MapControllers();
         app.MapRazorPages();
+
 
         app.Run();
     }

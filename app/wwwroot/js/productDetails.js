@@ -7,14 +7,25 @@ document.querySelector("#add-to-cart-btn").addEventListener("click", async (e) =
         method: "POST"
     });
 
+    if(res.redirected && res.url.includes("Login")) {
+	window.location.href = res.url;
+	return;
+    }
+
     if(res.status == 400) {
         alert("Product already in cart.");
         return;
     }
 
-    if(res.status == 500) {
-        alert("Error adding product to cart.");
+
+    if(res.status == 200) {
+	alert("Product added to cart.");
+	return;
     }
-    alert("Product added to cart.");
+
+
+    alert("Error adding product to cart.");
+
+
 });
 

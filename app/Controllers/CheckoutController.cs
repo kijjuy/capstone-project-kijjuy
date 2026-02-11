@@ -80,8 +80,8 @@ public class CheckoutController : Controller
 	await _userManager.UpdateAsync(user);
 
 	String url = await _checkoutService.SetupStripe(cart, orderId);
-	Response.Redirect(url);
-        return new StatusCodeResult(303);
+
+	return Redirect(url);
     }
 
     [HttpPost("/checkout/webhook")]
