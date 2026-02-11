@@ -11,7 +11,6 @@ using Stripe;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
-using Serilog.AspNetCore;
 
 namespace app;
 
