@@ -67,3 +67,7 @@ html, body, main {
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
 }
+
+.cart-delete {
+    height: 75px;
+}
