@@ -71,3 +71,7 @@ html, body, main {
 .cart-delete {
     height: 75px;
 }
+
+#checkout-button {
+    border-radius: 0px;
+}
