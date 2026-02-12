@@ -58,7 +58,7 @@
     	    @foreach(var product in Model) 
     	    {
     	    <div class="col-sm-12 col-xl-6">
-    		<a class="card bg-dark-subtle pb-0 link-underline link-underline-opacity-0" asp-controller="Products" asp-action="Details" asp-route-id="@product.ProductId">
+    		<a id="product-card" class="card bg-dark-subtle pb-0 link-underline link-underline-opacity-0" asp-controller="Products" asp-action="Details" asp-route-id="@product.ProductId">
     		    @if(product.ImageNames.Any()) {
 		    <div class="ratio ratio-4x3">
 			<img class="object-fit-cover" src="/Images/@product.ImageNames.FirstOrDefault()" alt="Image for @product.ProductName">

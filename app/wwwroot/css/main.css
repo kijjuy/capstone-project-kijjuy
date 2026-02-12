@@ -27,3 +27,8 @@ html, body {
 .cart-image {
     height: 150px;
 }
+
+#product-card {
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+}
