@@ -31,8 +31,8 @@
 	    <p class="">@Model.Products[i].ProductName</p>
 	    <p class="">@String.Format("{0:C2}", Model.Products[i].Price)</p>
 	</div>
-	<div class="col-2 d-flex align-items-center justify-content-center">
-	    <img data-product-id="@Model.Products[i].ProductId" class="btn img-fluid cart-delete" src="Images/delete.png" alt="delete button for @Model.Products[i].ProductName">
+	<div class="col-2 d-flex align-items-center justify-content-center h-100">
+	    <img data-product-id="@Model.Products[i].ProductId" class="btn cart-delete" src="Images/delete.png" alt="delete button for @Model.Products[i].ProductName">
 	</div>
     </div>
     }
