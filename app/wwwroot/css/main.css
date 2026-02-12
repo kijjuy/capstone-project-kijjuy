@@ -17,9 +17,9 @@ main {
 }
 
 .navbar-brand {
-    --bs-navbar-brand-color: #e0b087;
-    --bs-navbar-activate-color: #e0b087;
-    --bs-navbar-brand-hover-color: #e0b087;
+    --bs-navbar-brand-color: white;
+    --bs-navbar-activate-color: white;
+    --bs-navbar-brand-hover-color: white;
 }
 
 .nav-link {
@@ -32,6 +32,10 @@ main {
 
 h5, p {
     color: #e0b087;
+}
+
+.font-white {
+    color: white;
 }
 
 .font-720c {
