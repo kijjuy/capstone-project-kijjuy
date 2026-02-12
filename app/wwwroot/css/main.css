@@ -1,7 +1,42 @@
-html, body {
+html, body, main {
     height: 100%;
     margin: 0;
+    background-color: #37181f;
 }
+
+.font-720c {
+    color: #e0b087;
+}
+
+.font-7565c {
+    color: #c87a33;
+}
+
+.font-7526c {
+    color: #833a21;
+}
+
+.font-4975c {
+    color: #37181f;
+}
+
+.font-black-4c {
+    color: #272018;
+}
+
+.font-4273c {
+    color: #454040;
+}
+
+
+/*
+ * #e0b087
+ * #c87a33
+ * #833a21
+ * #37181f
+ * #272018
+ * #454040
+ */
 
 .page-container {
     display: flex;
