@@ -6,10 +6,21 @@ html, body {
 
 main {
     background-color: #37181f;
+    padding-top: 3.5rem;
 }
 
 .nav-background-gradient {
     background: linear-gradient(to bottom, #292018 0%,#464141 25%,#464141 25%,#292018 61%);
+}
+
+nav {
+    z-index: 5;
+}
+
+.font-indie {
+    font-family: "indie", sans-serif;
+    font-weight: 400;
+    font-style: normal;
 }
 
 .background-black-4c {
@@ -37,10 +48,6 @@ main {
 
 #navbar-toggler {
     background-color: white;
-}
-
-h5, p {
-    color: #e0b087;
 }
 
 .font-white {
