@@ -5,12 +5,11 @@
     ViewData["Title"] = "Log in";
 }
 
-<div class="container">
+<div class="container pt-4">
     <div class="justify-content-center">
-	<h1>@ViewData["Title"]</h1>
+	<h1 class="font-white">@ViewData["Title"]</h1>
         <section>
             <form id="account" method="post">
-                <h2>Use a local account to log in.</h2>
                 <hr />
                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                 <div class="form-floating mb-3">
@@ -24,7 +23,7 @@
                     <span asp-validation-for="Input.Password" class="text-danger"></span>
                 </div>
                 <div class="checkbox mb-3">
-                    <label asp-for="Input.RememberMe" class="form-label">
+                    <label class="font-white" asp-for="Input.RememberMe" class="form-label">
                         <input class="form-check-input" asp-for="Input.RememberMe" />
                         @Html.DisplayNameFor(m => m.Input.RememberMe)
                     </label>
@@ -32,6 +31,14 @@
                 <div>
                     <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
                 </div>
+
+		<form method="post" asp-page="ExternalLogin">
+	    	    <div class="my-3">
+	    	        <button class="btn btn-lg btn-primary w-100" type="submit" name="provider" value="Google">
+	    	            <i class="fa fa-google"></i> Sign in with Google
+	    	        </button>
+	    	    </div>
+	    	</form>
                 <div>
                     <p>
                         <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
@@ -45,13 +52,6 @@
                 </div>
             </form>
 
-	    <form method="post" asp-page="ExternalLogin">
-		<div class="my-3">
-		    <button class="btn btn-lg btn-primary w-100" type="submit" name="provider" value="Google">
-		        <i class="fa fa-google"></i> Sign in with Google
-		    </button>
-		</div>
-	    </form>
         </section>
     </div>
 </div>
