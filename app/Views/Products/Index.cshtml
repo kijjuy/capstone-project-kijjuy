@@ -6,9 +6,9 @@
 
 @model IEnumerable<app.Models.ProductViewModelWithImages>
 
-<div class="row" id="root">
+<div class="pt-xxl-4 d-flex flex-column flex-xxl-row w-100" id="root">
 
-    <div class="col-xxl-3 col-sm-12" id="filter-container">
+    <div class="" id="filter-container">
 	<div id="filter-reveal" class="btn btn-primary m-3 p-3">Show Filter</div>
     	
     	<div id="filter-root" class="bg-dark-subtle m-3" hidden>
@@ -58,15 +58,15 @@
     	    @foreach(var product in Model) 
     	    {
     	    <div class="col-sm-12 col-xl-6">
-    		<a id="product-card" class="card bg-dark-subtle pb-0 link-underline link-underline-opacity-0" asp-controller="Products" asp-action="Details" asp-route-id="@product.ProductId">
+    		<a id="product-card" class="card background-4273c pb-0 link-underline link-underline-opacity-0" asp-controller="Products" asp-action="Details" asp-route-id="@product.ProductId">
     		    @if(product.ImageNames.Any()) {
 		    <div class="ratio ratio-4x3">
-			<img class="object-fit-cover" src="/Images/@product.ImageNames.FirstOrDefault()" alt="Image for @product.ProductName">
+			<img class="" src="/Images/@product.ImageNames.FirstOrDefault()" alt="Image for @product.ProductName">
 		    </div>
     		    } else {
     		    <img src="/Images/placeholder.jpg" alt="Image for @product.ProductName">
     		    }
-		    <h5 class="p-1">@product.ProductName - @String.Format("{0:C2}", product.Price)</h5>
+		    <h5 class="p-1 border-top text-center">@product.ProductName - @String.Format("{0:C2}", product.Price)</h5>
     		</a>
     		
     	    	<br />

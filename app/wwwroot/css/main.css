@@ -8,8 +8,16 @@ main {
     background-color: #37181f;
 }
 
+.nav-background-gradient {
+    background: linear-gradient(to bottom, #292018 0%,#464141 25%,#464141 25%,#292018 61%);
+}
+
 .background-black-4c {
     background-color: #272018;
+}
+
+.card {
+    --bs-card-bg: #454040;
 }
 
 .background-720c {
@@ -24,6 +32,7 @@ main {
 
 .nav-link {
     --bs-nav-link-color: #e0b087;
+    --bs-nav-link-hover-color: #e0b087;
 }
 
 #navbar-toggler {
@@ -80,6 +89,11 @@ h5, p {
 
 .content {
     flex: 1; 
+}
+
+.row {
+    padding-right: 0px;
+    padding-left: 0px;
 }
 
 .footer {
