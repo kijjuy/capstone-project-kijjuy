@@ -7,7 +7,7 @@
 @model CartViewModel
 
 @if(Model != null && Model.Products != null && Model.Products.Any()) {
-<a class="border p-3 btn btn-primary w-100 h-100" id="checkout-button" asp-controller="Checkout" asp-action="Index">
+<a class="border pt-4 p-3 btn btn-primary w-100 h-100" id="checkout-button" asp-controller="Checkout" asp-action="Index">
     <h5 class="text-center">Checkout Now</h5>
     <h5 class="text-center">Subtotal: @String.Format("{0:C2}", Model.Subtotal)</h5>
 </a>
