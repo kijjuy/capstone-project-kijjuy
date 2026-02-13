@@ -16,6 +16,8 @@ namespace app;
 
 public class Program
 {
+    private const String CorsName = "_myAllowSpecificOrigin";
+
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
@@ -127,6 +129,18 @@ public class Program
         builder.Services.AddTransient<IEmailSender, EmailService>();
 
 
+	builder.Services.AddCors(options => 
+	{
+	    options.AddPolicy(name: CorsName, policy => 
+	    {
+		policy.WithOrigins(
+			"self",
+			"https://cdn.jsdelivr.net",
+			"https://use.typekit.net"
+			);
+	    });
+	});
+
 
         var app = builder.Build();
 
@@ -150,27 +164,28 @@ public class Program
 	options.KnownProxies.Clear();
 	app.UseForwardedHeaders(options);
 
-	app.Use(async (context, next) =>
-	{
-	    context.Response.Headers.Add(
-		"Content-Security-Policy",
-		"default-src 'self';" + 
-		"script-src 'self' https://cdn.jsdelivr.net;" + 
-		"style-src 'self' https://cdn.jsdelivr.net;" + 
-		"font-src 'self';" + 
-		"img-src 'self' data:;" + 
-		"connect-src 'self';" +          
-    		"media-src 'self';" +            
-    		"frame-src 'none';" +            
-    		"object-src 'none';" +           
-    		"frame-ancestors 'none';" +      
-    		"base-uri 'self';" +            
-    		"form-action 'self';" +          
-    		"upgrade-insecure-requests;"  
-	    );
+	app.UseCors(CorsName);
+	//app.Use(async (context, next) =>
+	//{
+	//    context.Response.Headers.Add(
+	//	"Content-Security-Policy",
+	//	"default-src 'self';" + 
+	//	"script-src 'self' https://cdn.jsdelivr.net;" + 
+	//	"style-src 'self' https://cdn.jsdelivr.net";" + 
+	//	"font-src 'self' https://use.typekit.net/dme2jbu.css;" + 
+	//	"img-src 'self' data:;" + 
+	//	"connect-src 'self';" +          
+    	//	"media-src 'self';" +            
+    	//	"frame-src 'none';" +            
+    	//	"object-src 'none';" +           
+    	//	"frame-ancestors 'none';" +      
+    	//	"base-uri 'self';" +            
+    	//	"form-action 'self';" +          
+    	//	"upgrade-insecure-requests;"  
+	//    );
 
-	    await next();
-	});
+	//    await next();
+	//});
 
 	app.Use(async (context, next) =>
 	{
