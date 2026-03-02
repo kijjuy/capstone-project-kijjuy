@@ -165,27 +165,27 @@ public class Program
 	app.UseForwardedHeaders(options);
 
 	app.UseCors(CorsName);
-	//app.Use(async (context, next) =>
-	//{
-	//    context.Response.Headers.Add(
-	//	"Content-Security-Policy",
-	//	"default-src 'self';" + 
-	//	"script-src 'self' https://cdn.jsdelivr.net;" + 
-	//	"style-src 'self' https://cdn.jsdelivr.net";" + 
-	//	"font-src 'self' https://use.typekit.net/dme2jbu.css;" + 
-	//	"img-src 'self' data:;" + 
-	//	"connect-src 'self';" +          
-    	//	"media-src 'self';" +            
-    	//	"frame-src 'none';" +            
-    	//	"object-src 'none';" +           
-    	//	"frame-ancestors 'none';" +      
-    	//	"base-uri 'self';" +            
-    	//	"form-action 'self';" +          
-    	//	"upgrade-insecure-requests;"  
-	//    );
+	app.Use(async (context, next) =>
+	{
+	    context.Response.Headers.Add(
+		"Content-Security-Policy",
+		"default-src 'self';" + 
+		"script-src 'self' https://cdn.jsdelivr.net;" + 
+		"style-src 'self' https://cdn.jsdelivr.net https://use.typekit.net https://p.typekit.net;" + 
+		"font-src 'self' https://use.typekit.net https://p.typekit.net;" + 
+		"img-src 'self' data:;" + 
+		"connect-src 'self';" +          
+    		"media-src 'self';" +            
+    		"frame-src 'none';" +            
+    		"object-src 'none';" +           
+    		"frame-ancestors 'none';" +      
+    		"base-uri 'self';" +            
+    		"form-action 'self';" +          
+    		"upgrade-insecure-requests;"  
+	    );
 
-	//    await next();
-	//});
+	    await next();
+	});
 
 	app.Use(async (context, next) =>
 	{
