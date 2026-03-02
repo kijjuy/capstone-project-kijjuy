@@ -7,7 +7,7 @@
 
 <div id="content-root" class="p-3">
 
-    <h1>@Model.ProductName</h1>
+    <h1 class="text-white">@Model.ProductName</h1>
     
     @if(Model.ImageNames.Any()) 
     {
@@ -52,10 +52,10 @@
 
     }
     <div class="row mt-4">
-	<h5 class="col-6 text-center">@String.Format("{0:C2}", Model.Price)</h5>
+	<h5 class="col-6 text-center font-white">@String.Format("{0:C2}", Model.Price)</h5>
 	<a data-product-id="@Model.ProductId" id="add-to-cart-btn" class="btn btn-primary col-6">Add To Cart</a>
     </div>
-    <p class="mt-5">@Model.Description</p>
+    <p class="mt-5 font-white">@Model.Description</p>
 
 </div>
 
